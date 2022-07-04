@@ -1,4 +1,4 @@
-import { Client } from 'discord.js';
+import { Client, Intents } from 'discord.js';
 import { onInteractionCreate } from './bot/listeners/onInteractionCreate';
 import { onReady } from './bot/listeners/onReady';
 import { fetchDiscordMembers } from './fetchDiscordMembers';
@@ -12,7 +12,7 @@ const startBot = async () => {
   console.log(`Invite link: ${inviteLink}`);
 
   const client = new Client({
-    intents: [],
+    intents: [Intents.FLAGS.GUILD_MEMBERS],
   });
   onReady(client);
   onInteractionCreate(client);
