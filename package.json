@@ -2,11 +2,13 @@
   "name": "starkbot",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
   "private": true,
   "engines": {
     "node": ">=18",
     "pnpm": "7"
+  },
+  "scripts": {
+    "dev": "nx run-many --target start --all --parallel --output-style stream"
   },
   "dependencies": {
     "@swc/helpers": "~0.3.3",

@@ -1,11 +1,26 @@
-export * from './lib/discord-bot';
-
 import { Client } from 'discord.js';
+import { onInteractionCreate } from './bot/listeners/onInteractionCreate';
+import { onReady } from './bot/listeners/onReady';
+import { fetchDiscordMembers } from './fetchDiscordMembers';
+import { getConfig } from './utils';
 
-console.log('Bot is starting...');
+const startBot = async () => {
+  const token = getConfig('DISCORD_BOT_TOKEN');
+  const clientId = getConfig('DISCORD_CLIENT_ID');
 
-const client = new Client({
-  intents: [],
-});
+  const inviteLink = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&permissions=0&scope=bot%20applications.commands`;
+  console.log(`Invite link: ${inviteLink}`);
 
-console.log(client);
+  const client = new Client({
+    intents: [],
+  });
+  onReady(client);
+  onInteractionCreate(client);
+
+  console.log('Bot is starting...');
+  await client.login(token);
+
+  await Promise.all([fetchDiscordMembers(client)]);
+};
+
+startBot();

@@ -2,6 +2,7 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
-    "discord-bot": "packages/discord-bot"
+    "discord-bot": "packages/discord-bot",
+    "starknet-devnet": "packages/starknet-devnet"
   }
 }

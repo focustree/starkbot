@@ -2,13 +2,13 @@
 
 Assign discord roles based on owned NFTs ✨
 
+## Getting Started
+
+```
+pnpm nx dev
+```
+
 ## nx
-
-### Generate new package
-
-```
-pnpm nx generate @nrwl/js:library --buildable --compiler=swc --name=<package-name>
-```
 
 ### Lint
 
