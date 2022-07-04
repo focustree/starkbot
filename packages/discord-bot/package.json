@@ -1,9 +1,0 @@
-{
-  "name": "@starkbot/discord-bot",
-  "version": "0.0.1",
-  "type": "commonjs",
-  "dependencies": {
-    "discord.js": "^13.8.1",
-    "dotenv": "^16.0.1"
-  }
-}

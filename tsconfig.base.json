@@ -16,7 +16,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@starkbot/discord-bot": ["packages/discord-bot/src/index.ts"]
+      "@starkbot/discord-bot": ["apps/discord-bot/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

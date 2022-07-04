@@ -1,11 +1,7 @@
 {
-  "extends": "@nrwl/workspace/presets/npm.json",
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "npmScope": "starkbot",
-  "affected": {
-    "defaultBase": "main"
-  },
   "implicitDependencies": {
-    "pnpm-workspace.yaml": "*",
     "pnpm-lock.yaml": "*",
     "package.json": {
       "dependencies": "*",
@@ -27,8 +23,5 @@
       "dependsOn": ["^build"]
     }
   },
-  "workspaceLayout": {
-    "appsDir": "packages",
-    "libsDir": "packages"
-  }
+  "defaultProject": "discord-bot"
 }

@@ -1,0 +1,44 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/discord-bot/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/discord-bot",
+        "main": "apps/discord-bot/src/index.ts",
+        "tsConfig": "apps/discord-bot/tsconfig.app.json",
+        "assets": ["apps/discord-bot/src/assets"]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/discord-bot/src/environments/environment.ts",
+              "with": "apps/discord-bot/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "start": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "discord-bot:build"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/discord-bot/**/*.ts"]
+      }
+    }
+  },
+  "tags": []
+}
