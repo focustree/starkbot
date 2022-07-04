@@ -11,6 +11,7 @@
     "dev": "nx run-many --target start --all --parallel --output-style stream"
   },
   "dependencies": {
+    "async-mutex": "^0.3.2",
     "discord.js": "^13.8.1"
   },
   "devDependencies": {

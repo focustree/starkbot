@@ -1,8 +1,10 @@
 import { Client, Intents } from 'discord.js';
 import { onInteractionCreate } from './bot/listeners/onInteractionCreate';
 import { onReady } from './bot/listeners/onReady';
-import { fetchDiscordMembers } from './fetchDiscordMembers';
-import { getConfig } from './utils';
+import { DiscordState } from './discord/discordState';
+import { fetchDiscordMembers } from './discord/fetchDiscordMembers';
+import { StarknetState } from './starknet/starknetState';
+import { getConfig, schedule } from './utils';
 
 const startBot = async () => {
   const token = getConfig('DISCORD_BOT_TOKEN');
@@ -20,7 +22,31 @@ const startBot = async () => {
   console.log('Bot is starting...');
   await client.login(token);
 
-  await Promise.all([fetchDiscordMembers(client)]);
+  const discordState = new DiscordState();
+  const starknetState = new StarknetState();
+  starknetState.updateUser({
+    discordId: '244940825572802560',
+    walletAddress: '0x1',
+    ownedNFTs: new Set(),
+  });
+  starknetState.updateUser({
+    discordId: '449645914416480257',
+    walletAddress: '0x2',
+    ownedNFTs: new Set(),
+  });
+  starknetState.updateUser({
+    discordId: '946041152082182164',
+    walletAddress: '0x3',
+    ownedNFTs: new Set(),
+  });
+  starknetState.updateUser({
+    discordId: '986383996227313725',
+    walletAddress: '0x3',
+    ownedNFTs: new Set(),
+  });
+  await Promise.all([
+    schedule(() => fetchDiscordMembers({ client, discordState }), 5),
+  ]);
 };
 
 startBot();
