@@ -1,0 +1,34 @@
+{
+  "extends": "@nrwl/workspace/presets/npm.json",
+  "npmScope": "starkbot",
+  "affected": {
+    "defaultBase": "main"
+  },
+  "implicitDependencies": {
+    "pnpm-workspace.yaml": "*",
+    "pnpm-lock.yaml": "*",
+    "package.json": {
+      "dependencies": "*",
+      "devDependencies": "*"
+    },
+    ".eslintrc.json": "*"
+  },
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "@nrwl/nx-cloud",
+      "options": {
+        "cacheableOperations": ["build", "lint", "test", "e2e"],
+        "accessToken": "NTdjMzQyM2YtYmVjMi00ODBhLWFhYzItY2YxNDdlNmU5ZDRlfHJlYWQtd3JpdGU="
+      }
+    }
+  },
+  "targetDefaults": {
+    "build": {
+      "dependsOn": ["^build"]
+    }
+  },
+  "workspaceLayout": {
+    "appsDir": "packages",
+    "libsDir": "packages"
+  }
+}
