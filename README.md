@@ -5,7 +5,7 @@ Assign discord roles based on owned NFTs ✨
 ## Getting Started
 
 ```
-pnpm nx dev
+pnpm dev
 ```
 
 ## nx
