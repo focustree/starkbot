@@ -16,10 +16,10 @@ export function initFirebase(config: Config) {
     connectFirestoreEmulator(firestore, 'localhost', 8080);
   }
 
-  const collections = {
-    guilds: createCollection<GuildDoc>(firestore, 'guilds'),
-  };
-  return { app, firestore, ...collections };
+  const guilds = createCollection<GuildDoc>(firestore, 'guilds');
+  const membersOfGuild = (guildId: string) =>
+    createCollection<MemberDoc>(firestore, `guilds/${guildId}/members`);
+  return { app, firestore, guilds, membersOfGuild };
 }
 
 export type Firebase = ReturnType<typeof initFirebase>;
@@ -27,10 +27,11 @@ export type Firebase = ReturnType<typeof initFirebase>;
 export interface GuildDoc {
   id: string;
   name: string;
-  members: Array<{
-    id: string;
-    username: string;
-  }>;
+}
+
+export interface MemberDoc {
+  id: string;
+  username: string;
 }
 
 // This is just a helper to add the type to the db responses
