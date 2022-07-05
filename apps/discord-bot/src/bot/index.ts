@@ -1,7 +1,16 @@
-import { Client, Intents } from 'discord.js';
+import {
+  BaseCommandInteraction,
+  ChatInputApplicationCommandData,
+  Client,
+  Intents,
+} from 'discord.js';
 import { Config } from '../config';
-import { onInteractionCreate } from './listeners/onInteractionCreate';
-import { onReady } from './listeners/onReady';
+import { AddRule } from './commands/addRule';
+import { Hello } from './commands/hello';
+import { onInteractionCreate } from './events/interactionCreate';
+import { onReady } from './events/ready';
+
+export const commands = [Hello, AddRule];
 
 export async function initDiscordClient(config: Config) {
   const client = new Client({
@@ -12,6 +21,11 @@ export async function initDiscordClient(config: Config) {
   onInteractionCreate(client);
 
   await client.login(config.discordToken);
+  await client.application.commands.set(commands);
 
   return client;
+}
+
+export interface Command extends ChatInputApplicationCommandData {
+  run: (client: Client, interaction: BaseCommandInteraction) => Promise<void>;
 }
