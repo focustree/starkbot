@@ -11,7 +11,9 @@
     "dev": "nx run-many --target start --all --parallel --output-style stream"
   },
   "dependencies": {
-    "discord.js": "^13.8.1"
+    "discord.js": "^13.8.1",
+    "pnpm": "^7.5.0",
+    "starknet": "^3.16.1"
   },
   "devDependencies": {
     "@nrwl/cli": "14.4.0",
