@@ -19,10 +19,17 @@ const fetchDiscordMembersForGuild =
     });
     console.log('Fetching members for guild:', guild.name);
     const guildMembers = await guild.members.fetch();
-    for (const [id, member] of guildMembers) {
-      await setDoc(doc(ctx.firebase.membersOfGuild(guild.id), id), {
-        id,
+    for (const [_, member] of guildMembers) {
+      for (const [_, role] of member.roles.cache) {
+        await setDoc(doc(ctx.firebase.rolesOfGuild(guild.id), role.id), {
+          id: role.id,
+          name: role.name,
+        });
+      }
+      await setDoc(doc(ctx.firebase.membersOfGuild(guild.id), member.id), {
+        id: member.id,
         username: member.user.username,
+        roleIds: member.roles.cache.map((r) => r.id),
       });
     }
   };
