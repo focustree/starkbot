@@ -10,6 +10,12 @@
           "echo 'Checkout http://127.0.0.1:5050/is_alive to see if the node is running'"
         ]
       }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["node apps/starknet/script-test.js"]
+      }
     }
   },
   "tags": []
