@@ -1,57 +1,27 @@
-import { Client, Intents } from 'discord.js';
-import { onInteractionCreate } from './bot/listeners/onInteractionCreate';
-import { onReady } from './bot/listeners/onReady';
-import { DiscordState } from './discord/discordState';
-import { fetchDiscordMembers } from './discord/fetchDiscordMembers';
-import { StarknetState } from './starknet/starknetState';
-import { getConfig, schedule } from './utils';
-import { initializeApp } from 'firebase/app';
+import { Client } from 'discord.js';
 
-const startBot = async () => {
-  const token = getConfig('DISCORD_BOT_TOKEN');
-  const clientId = getConfig('DISCORD_CLIENT_ID');
-  const firebaseConfig = JSON.parse(getConfig('FIREBASE_CONFIG'));
+import { fetchDiscordMembers } from './workers/fetchDiscordMembers';
+import { schedule } from './utils';
+import { config } from './config';
+import { initDiscordClient } from './bot';
+import { Firebase, initFirebase } from './firebase';
 
-  const inviteLink = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&permissions=0&scope=bot%20applications.commands`;
-  console.log(`Invite link: ${inviteLink}`);
+export interface AppContext {
+  discordClient: Client;
+  firebase: Firebase;
+}
 
-  const app = initializeApp(firebaseConfig);
-  console.log(`Firebase app initialized: ${app.options.appId}`);
+const runApp = async () => {
+  console.log('Running in env:', config.env);
 
-  const client = new Client({
-    intents: [Intents.FLAGS.GUILD_MEMBERS],
-  });
-  onReady(client);
-  onInteractionCreate(client);
+  const discordClient = await initDiscordClient(config);
+  console.log('Discord client initialized');
 
-  console.log('Bot is starting...');
-  await client.login(token);
+  const firebase = await initFirebase(config);
+  console.log('Firebase client initialized');
+  const ctx = { discordClient, firebase };
 
-  const discordState = new DiscordState();
-  const starknetState = new StarknetState();
-  starknetState.updateUser({
-    discordId: '244940825572802560',
-    walletAddress: '0x1',
-    ownedNFTs: new Set(),
-  });
-  starknetState.updateUser({
-    discordId: '449645914416480257',
-    walletAddress: '0x2',
-    ownedNFTs: new Set(),
-  });
-  starknetState.updateUser({
-    discordId: '946041152082182164',
-    walletAddress: '0x3',
-    ownedNFTs: new Set(),
-  });
-  starknetState.updateUser({
-    discordId: '986383996227313725',
-    walletAddress: '0x3',
-    ownedNFTs: new Set(),
-  });
-  await Promise.all([
-    schedule(() => fetchDiscordMembers({ client, discordState }), 5),
-  ]);
+  await Promise.all([schedule(fetchDiscordMembers(ctx), 5)]);
 };
 
-startBot();
+runApp();
