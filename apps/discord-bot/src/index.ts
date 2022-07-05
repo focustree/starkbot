@@ -5,13 +5,18 @@ import { DiscordState } from './discord/discordState';
 import { fetchDiscordMembers } from './discord/fetchDiscordMembers';
 import { StarknetState } from './starknet/starknetState';
 import { getConfig, schedule } from './utils';
+import { initializeApp } from 'firebase/app';
 
 const startBot = async () => {
   const token = getConfig('DISCORD_BOT_TOKEN');
   const clientId = getConfig('DISCORD_CLIENT_ID');
+  const firebaseConfig = JSON.parse(getConfig('FIREBASE_CONFIG'));
 
   const inviteLink = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&permissions=0&scope=bot%20applications.commands`;
   console.log(`Invite link: ${inviteLink}`);
+
+  const app = initializeApp(firebaseConfig);
+  console.log(`Firebase app initialized: ${app.options.appId}`);
 
   const client = new Client({
     intents: [Intents.FLAGS.GUILD_MEMBERS],

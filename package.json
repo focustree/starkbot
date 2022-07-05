@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "async-mutex": "^0.3.2",
-    "discord.js": "^13.8.1"
+    "discord.js": "^13.8.1",
+    "firebase": "^9.8.4"
   },
   "devDependencies": {
     "@nrwl/cli": "14.4.0",
@@ -26,6 +27,7 @@
     "@typescript-eslint/parser": "^5.29.0",
     "eslint": "~8.15.0",
     "eslint-config-prettier": "8.1.0",
+    "firebase-tools": "^11.2.0",
     "nx": "14.4.0",
     "prettier": "^2.6.2",
     "ts-node": "~10.8.0",
