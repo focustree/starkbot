@@ -1,19 +1,19 @@
 import { Client, CommandInteraction, Interaction } from 'discord.js';
 import { Command, commands } from '..';
+import { addRuleId, handleAddRule } from '../commands/addRule';
 
 export function onInteractionCreate(client: Client): void {
   client.on('interactionCreate', async (interaction: Interaction) => {
     if (interaction.isCommand()) {
       await handleCommand(client, interaction);
-    } else if (interaction.isModalSubmit()) {
-      const favoriteColor =
-        interaction.fields.getTextInputValue('favoriteColorInput');
-      const hobbies = interaction.fields.getTextInputValue('hobbiesInput');
-      console.log({ favoriteColor, hobbies });
-      await interaction.reply({
-        content: 'Thanks for the info!',
-        ephemeral: true,
-      });
+      return;
+    }
+
+    if (interaction.isModalSubmit()) {
+      if (interaction.customId === addRuleId) {
+        await handleAddRule(interaction);
+        return;
+      }
     }
   });
 }
