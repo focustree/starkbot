@@ -1,5 +1,7 @@
 # Secrets
 .env
+.env.*
+!.env.example
 
 # compiled output
 /dist
@@ -30,11 +32,10 @@ node_modules
 /connect.lock
 /coverage
 /libpeerconnection.log
-npm-debug.log
+*-debug.log
 yarn-error.log
 testem.log
 /typings
-.pnpm-debug.log
 
 # System Files
 .DS_Store

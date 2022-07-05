@@ -1,26 +1,27 @@
-import { Client, Intents } from 'discord.js';
-import { onInteractionCreate } from './bot/listeners/onInteractionCreate';
-import { onReady } from './bot/listeners/onReady';
-import { fetchDiscordMembers } from './fetchDiscordMembers';
-import { getConfig } from './utils';
+import { Client } from 'discord.js';
 
-const startBot = async () => {
-  const token = getConfig('DISCORD_BOT_TOKEN');
-  const clientId = getConfig('DISCORD_CLIENT_ID');
+import { fetchDiscordMembers } from './workers/fetchDiscordMembers';
+import { schedule } from './utils';
+import { config } from './config';
+import { initDiscordClient } from './bot';
+import { Firebase, initFirebase } from './firebase';
 
-  const inviteLink = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&permissions=0&scope=bot%20applications.commands`;
-  console.log(`Invite link: ${inviteLink}`);
+export interface AppContext {
+  discordClient: Client;
+  firebase: Firebase;
+}
 
-  const client = new Client({
-    intents: [Intents.FLAGS.GUILD_MEMBERS],
-  });
-  onReady(client);
-  onInteractionCreate(client);
+const runApp = async () => {
+  console.log('Running in env:', config.env);
 
-  console.log('Bot is starting...');
-  await client.login(token);
+  const discordClient = await initDiscordClient(config);
+  console.log('Discord client initialized');
 
-  await Promise.all([fetchDiscordMembers(client)]);
+  const firebase = await initFirebase(config);
+  console.log('Firebase client initialized');
+  const ctx = { discordClient, firebase };
+
+  await Promise.all([schedule(fetchDiscordMembers(ctx), 5)]);
 };
 
-startBot();
+runApp();

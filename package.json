@@ -8,10 +8,14 @@
     "pnpm": "7"
   },
   "scripts": {
-    "dev": "nx run-many --target start --all --parallel --output-style stream"
+    "dev": "nx run-many --target start --all --parallel --output-style stream",
+    "dev:infra": "nx run-many --target start --projects starknet,firebase --parallel --output-style stream",
+    "dev:bot": "nx start discord-bot"
   },
   "dependencies": {
+    "async-mutex": "^0.3.2",
     "discord.js": "^13.8.1",
+    "firebase": "^9.8.4",
     "pnpm": "^7.5.0",
     "starknet": "^3.16.1"
   },
@@ -27,6 +31,7 @@
     "@typescript-eslint/parser": "^5.29.0",
     "eslint": "~8.15.0",
     "eslint-config-prettier": "8.1.0",
+    "firebase-tools": "^11.2.0",
     "nx": "14.4.0",
     "prettier": "^2.6.2",
     "ts-node": "~10.8.0",

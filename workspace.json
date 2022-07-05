@@ -3,6 +3,7 @@
   "version": 2,
   "projects": {
     "discord-bot": "apps/discord-bot",
-    "starknet-devnet": "apps/starknet-devnet"
+    "starknet": "apps/starknet",
+    "firebase": "apps/firebase"
   }
 }
