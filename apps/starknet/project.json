@@ -7,7 +7,8 @@
       "options": {
         "commands": [
           "docker run -p 127.0.0.1:5050:5050 shardlabs/starknet-devnet",
-          "echo 'Checkout http://127.0.0.1:5050/is_alive to see if the node is running'"
+          "echo 'Checkout http://127.0.0.1:5050/is_alive to see if the node is running'",
+          "node script-test.js"
         ]
       }
     }
