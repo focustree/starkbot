@@ -1,3 +1,4 @@
+import { useAppContext } from '@starkbot/discord-bot';
 import {
   BaseCommandInteraction,
   Client,
@@ -9,7 +10,9 @@ import {
   SelectMenuInteraction,
   TextInputComponent,
 } from 'discord.js';
+import { doc, setDoc } from 'firebase/firestore';
 import { Command } from '..';
+import { formatRule } from '../../utils';
 
 export const addRuleCommandName = 'starkbot-add-rule';
 export const addRuleRoleId = `${addRuleCommandName}-role`;
@@ -90,6 +93,12 @@ export async function handleAddRuleSubmitModal(
     addRuleTokenAddressId
   );
 
+  const { rulesOfGuild } = useAppContext().firebase;
+  await setDoc(doc(rulesOfGuild(interaction.guild.id)), {
+    roleId: selectedRoleId,
+    tokenAddress,
+  });
+
   await interaction.reply({
     content: `Created new rule: ${formatRule({
       role: selectedRole.name,
@@ -97,16 +106,4 @@ export async function handleAddRuleSubmitModal(
     })}`,
     ephemeral: true,
   });
-}
-
-function formatRule({
-  role,
-  tokenAddress,
-}: {
-  role: string;
-  tokenAddress: string;
-}) {
-  return `\`\`\`
-  • Role: ${role}
-  • Token Address: ${tokenAddress}\`\`\``;
 }

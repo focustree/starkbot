@@ -7,10 +7,11 @@ import {
 import { Config } from '../config';
 import { AddRule } from './commands/addRule';
 import { Hello } from './commands/hello';
+import { ListRules } from './commands/listRules';
 import { onInteractionCreate } from './events/interactionCreate';
 import { onReady } from './events/ready';
 
-export const commands = [Hello, AddRule];
+export const commands = [Hello, AddRule, ListRules];
 
 export async function initDiscordClient(config: Config) {
   const client = new Client({
