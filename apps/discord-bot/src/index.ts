@@ -11,6 +11,14 @@ export interface AppContext {
   firebase: Firebase;
 }
 
+var _appContext: AppContext;
+export function useAppContext() {
+  if (!_appContext) {
+    throw new Error('App context not initialized');
+  }
+  return _appContext;
+}
+
 const runApp = async () => {
   console.log('Running in env:', config.env);
 
@@ -19,7 +27,9 @@ const runApp = async () => {
 
   const firebase = await initFirebase(config);
   console.log('Firebase client initialized');
+
   const ctx = { discordClient, firebase };
+  _appContext = ctx;
 
   await Promise.all([schedule(fetchDiscordMembers(ctx), 5)]);
 };
