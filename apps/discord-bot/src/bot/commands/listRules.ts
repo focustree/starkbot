@@ -21,7 +21,7 @@ export const ListRules: Command = {
     });
 
     await interaction.followUp({
-      content: `You have set ${rules.length} rules: \n${rules
+      content: `You have ${rules.length} active rules: \n${rules
         .map((rule) => formatRule(rule))
         .join('\n')}`,
     });

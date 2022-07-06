@@ -6,11 +6,12 @@ import {
 } from 'discord.js';
 import { Config } from '../config';
 import { AddRule } from './commands/addRule';
+import { DeleteRule } from './commands/deleteRule';
 import { ListRules } from './commands/listRules';
 import { onInteractionCreate } from './events/interactionCreate';
 import { onReady } from './events/ready';
 
-export const commands = [AddRule, ListRules];
+export const commands = [AddRule, ListRules, DeleteRule];
 
 export async function initDiscordClient(config: Config) {
   const client = new Client({

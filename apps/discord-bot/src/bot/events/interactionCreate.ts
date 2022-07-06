@@ -6,6 +6,7 @@ import {
   handleAddRuleSelectRole,
   addRuleRoleId,
 } from '../commands/addRule';
+import { deleteRuleId, handleDeleteRule } from '../commands/deleteRule';
 
 export function onInteractionCreate(client: Client): void {
   client.on('interactionCreate', async (interaction: Interaction) => {
@@ -17,8 +18,12 @@ export function onInteractionCreate(client: Client): void {
     if (interaction.isSelectMenu()) {
       if (interaction.customId === addRuleRoleId) {
         await handleAddRuleSelectRole(interaction);
+        return;
       }
-      return;
+      if (interaction.customId === deleteRuleId) {
+        await handleDeleteRule(interaction);
+        return;
+      }
     }
 
     if (interaction.isModalSubmit()) {
