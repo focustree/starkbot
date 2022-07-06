@@ -6,51 +6,107 @@ import {
   Modal,
   ModalActionRowComponent,
   ModalSubmitInteraction,
+  SelectMenuInteraction,
   TextInputComponent,
 } from 'discord.js';
 import { Command } from '..';
 
-export const addRuleId = 'starkbot-add-rule';
-const tokenAddressId = 'tokenAdress';
-const roleId = 'role';
+export const addRuleCommandName = 'starkbot-add-rule';
+export const addRuleRoleId = `${addRuleCommandName}-role`;
+export const addRuleTokenAddressId = `${addRuleCommandName}-token-address`;
+
+const cache = new Map<string, string>();
 
 export const AddRule: Command = {
-  name: addRuleId,
+  name: addRuleCommandName,
   description: 'Assign a role based on owned NFTs',
   run: async (client: Client, interaction: BaseCommandInteraction) => {
-    const modal = new Modal()
-      .setCustomId(addRuleId)
-      .setTitle('Add Rule')
-      .addComponents(
-        new MessageActionRow<ModalActionRowComponent>().addComponents(
-          new TextInputComponent()
-            .setCustomId(tokenAddressId)
-            .setLabel('Token contract address')
-            .setStyle('SHORT')
-        ),
-        new MessageActionRow<ModalActionRowComponent>().addComponents(
-          new MessageSelectMenu()
-            .setCustomId(roleId)
-            .setPlaceholder('Select role')
-            .setMinValues(1)
-            .setMaxValues(1)
-            .addOptions([
-              { label: 'Admin', value: 'admin' },
-              { label: 'User', value: 'user' },
-            ])
-        )
-      );
+    await interaction.deferReply();
+    const roleOptions = interaction.guild.roles.cache.map((role) => ({
+      label: role.name,
+      value: role.id,
+    }));
+    const row = new MessageActionRow().addComponents(
+      new MessageSelectMenu()
+        .setCustomId(addRuleRoleId)
+        .setPlaceholder('Select a role')
+        .addOptions(roleOptions)
+    );
 
-    await interaction.showModal(modal);
+    await interaction.followUp({
+      content: 'Select the role you want to create a rule for:',
+      components: [row],
+    });
+    return;
   },
 };
 
-export async function handleAddRule(interaction: ModalSubmitInteraction) {
-  const tokenAddress = interaction.fields.getTextInputValue(tokenAddressId);
-  const role = interaction.fields.getField(roleId).value;
-  console.log({ tokenAddress, role });
+export async function handleAddRuleSelectRole(
+  interaction: SelectMenuInteraction
+) {
+  const [selectedRoleId] = interaction.values;
+  const selectedRole = interaction.guild.roles.cache.get(selectedRoleId);
+
+  const modal = new Modal()
+    .setCustomId(addRuleCommandName)
+    .setTitle(`Add a rule for ${selectedRole.name}`)
+    .addComponents(
+      new MessageActionRow<ModalActionRowComponent>().addComponents(
+        new TextInputComponent()
+          .setCustomId(addRuleTokenAddressId)
+          .setLabel('Token contract address')
+          .setStyle('SHORT')
+      )
+    );
+
+  cache.set(interaction.member.user.id, selectedRoleId);
+  await interaction.showModal(modal);
+}
+
+export async function handleAddRuleSubmitModal(
+  interaction: ModalSubmitInteraction
+) {
+  const selectedRoleId = cache.get(interaction.member.user.id);
+  if (!selectedRoleId) {
+    console.error('No role selected');
+    await interaction.reply({
+      content: 'No role selected',
+      ephemeral: true,
+    });
+    return;
+  }
+  cache.delete(selectedRoleId);
+  const selectedRole = interaction.guild.roles.cache.get(selectedRoleId);
+  if (!selectedRole) {
+    console.error('Role not found');
+    await interaction.reply({
+      content: 'Role not found',
+      ephemeral: true,
+    });
+    return;
+  }
+
+  const tokenAddress = interaction.fields.getTextInputValue(
+    addRuleTokenAddressId
+  );
+
   await interaction.reply({
-    content: 'Thanks for the info!',
+    content: `Created new rule: ${formatRule({
+      role: selectedRole.name,
+      tokenAddress,
+    })}`,
     ephemeral: true,
   });
+}
+
+function formatRule({
+  role,
+  tokenAddress,
+}: {
+  role: string;
+  tokenAddress: string;
+}) {
+  return `\`\`\`
+  • Role: ${role}
+  • Token Address: ${tokenAddress}\`\`\``;
 }

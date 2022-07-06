@@ -1,6 +1,11 @@
 import { Client, CommandInteraction, Interaction } from 'discord.js';
 import { Command, commands } from '..';
-import { addRuleId, handleAddRule } from '../commands/addRule';
+import {
+  addRuleCommandName,
+  handleAddRuleSubmitModal,
+  handleAddRuleSelectRole,
+  addRuleRoleId,
+} from '../commands/addRule';
 
 export function onInteractionCreate(client: Client): void {
   client.on('interactionCreate', async (interaction: Interaction) => {
@@ -9,9 +14,16 @@ export function onInteractionCreate(client: Client): void {
       return;
     }
 
+    if (interaction.isSelectMenu()) {
+      if (interaction.customId === addRuleRoleId) {
+        await handleAddRuleSelectRole(interaction);
+      }
+      return;
+    }
+
     if (interaction.isModalSubmit()) {
-      if (interaction.customId === addRuleId) {
-        await handleAddRule(interaction);
+      if (interaction.customId === addRuleCommandName) {
+        await handleAddRuleSubmitModal(interaction);
         return;
       }
     }
