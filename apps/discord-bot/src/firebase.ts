@@ -16,31 +16,57 @@ export function initFirebase(config: Config) {
     connectFirestoreEmulator(firestore, 'localhost', 8080);
   }
 
-  const guilds = createCollection<GuildDoc>(firestore, 'guilds');
+  const guilds = createCollection<DiscordGuildDoc>(firestore, 'discordGuilds');
   const membersOfGuild = (guildId: string) =>
-    createCollection<MemberDoc>(firestore, `guilds/${guildId}/members`);
+    createCollection<DiscordMemberDoc>(
+      firestore,
+      `discordGuilds/${guildId}/members`
+    );
   const rolesOfGuild = (guildId: string) =>
-    createCollection<RoleDoc>(firestore, `guilds/${guildId}/roles`);
+    createCollection<DiscordRoleDoc>(
+      firestore,
+      `discordGuilds/${guildId}/roles`
+    );
   const rulesOfGuild = (guildId: string) =>
-    createCollection<RuleDoc>(firestore, `guilds/${guildId}/rules`);
+    createCollection<RuleDoc>(firestore, `discordGuilds/${guildId}/rules`);
+  const starknetIds = createCollection<StarknetIdDoc>(firestore, 'starknetIds');
+  const starknetAccounts = createCollection<StarknetAccountDoc>(
+    firestore,
+    'starknetAccounts'
+  );
+  const tokensOfAccount = (accountAddress: string) =>
+    createCollection<TokenDoc>(
+      firestore,
+      `starknetAccounts/${accountAddress}/tokens`
+    );
 
-  return { app, firestore, guilds, membersOfGuild, rolesOfGuild, rulesOfGuild };
+  return {
+    app,
+    firestore,
+    guilds,
+    membersOfGuild,
+    rolesOfGuild,
+    rulesOfGuild,
+    starknetIds,
+    starknetAccounts,
+    tokensOfAccount,
+  };
 }
 
 export type Firebase = ReturnType<typeof initFirebase>;
 
-export interface GuildDoc {
+export interface DiscordGuildDoc {
   id: string;
   name: string;
 }
 
-export interface MemberDoc {
+export interface DiscordMemberDoc {
   id: string;
   username: string;
   roleIds: Array<string>;
 }
 
-export interface RoleDoc {
+export interface DiscordRoleDoc {
   id: string;
   name: string;
 }
@@ -48,6 +74,21 @@ export interface RoleDoc {
 export interface RuleDoc {
   roleId: string;
   tokenAddress: string;
+}
+
+export interface StarknetIdDoc {
+  id: number;
+  accountAddress: string;
+  discordMemberId: string;
+}
+
+export interface StarknetAccountDoc {
+  address: string;
+}
+
+export interface TokenDoc {
+  address: string;
+  balance: number;
 }
 
 // This is just a helper to add the type to the db responses

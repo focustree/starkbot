@@ -5,6 +5,8 @@ import { schedule } from './utils';
 import { config } from './config';
 import { initDiscordClient } from './bot';
 import { Firebase, initFirebase } from './firebase';
+import { fetchStarknetIds } from './workers/fetchStartknetIds';
+import { applyRules } from './workers/applyRules';
 
 export interface AppContext {
   discordClient: Client;
@@ -20,18 +22,21 @@ export function useAppContext() {
 }
 
 const runApp = async () => {
-  console.log('Running in env:', config.env);
+  console.log('Env:', config.env);
 
   const discordClient = await initDiscordClient(config);
   console.log('Discord client initialized');
 
-  const firebase = await initFirebase(config);
+  const firebase = initFirebase(config);
   console.log('Firebase client initialized');
 
-  const ctx = { discordClient, firebase };
-  _appContext = ctx;
+  _appContext = { discordClient, firebase };
 
-  await Promise.all([schedule(fetchDiscordMembers(ctx), 5)]);
+  await Promise.all([
+    schedule(fetchDiscordMembers, 5),
+    schedule(fetchStarknetIds, 5),
+    schedule(applyRules, 5),
+  ]);
 };
 
 runApp();
