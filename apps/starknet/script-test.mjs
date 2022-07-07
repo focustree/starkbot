@@ -29,10 +29,33 @@ const starkKeyPub = ec.getStarkKey(starkKeyPair);
 const compiledAccount = json.parse(
   fs.readFileSync("./contract/account.json").toString("ascii")
 );
+
+console.log("Deploying account contract...")
+
+const account_data = stark.compileCalldata({
+  //public_key: shortString.encodeShortString(starkKeyPub),
+  public_key: starkKeyPub
+});
+
 const accountResponse = await provider.deployContract({
   contract: compiledAccount,
   addressSalt: starkKeyPub,
+  constructorCalldata: account_data,
 });
+
+await provider.waitForTransaction(accountResponse.transaction_hash);
+
+console.log("Creating contract for account...")
+const accountContract = new Contract(
+  compiledAccount.abi,
+  accountResponse.address
+);
+
+console.log("initializing contract ...");
+
+//const initializeResponse = await accountContract.initialize(starkKeyPub, "0");
+
+//await provider.waitForTransaction(initializeResponse.transaction_hash);
 
 const account = new Account(provider, accountResponse.address, starkKeyPair);
 
@@ -59,8 +82,6 @@ console.log("Deploying NFT smart contract on-chain")
 const compiled_nft = json.parse(
   fs.readFileSync("./contract/nft.json").toString("ascii")
 );
-
-const account_address_int = parseInt(account.address, 16);
 
 const constructor_data = stark.compileCalldata({
   name: shortString.encodeShortString("NFT identity"),
