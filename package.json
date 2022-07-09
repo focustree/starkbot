@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "async-mutex": "^0.3.2",
+    "axios": "^0.27.2",
     "discord.js": "^13.8.1",
     "firebase": "^9.8.4",
     "pnpm": "^7.5.0",

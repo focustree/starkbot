@@ -18,3 +18,15 @@ export function sleep(s: number) {
     setTimeout(resolve, s * 1000);
   });
 }
+
+export function formatRule({
+  role,
+  tokenAddress,
+}: {
+  role: string;
+  tokenAddress: string;
+}) {
+  return `\`\`\`
+  • Role: ${role}
+  • Token Address: ${tokenAddress}\`\`\``;
+}
