@@ -7,7 +7,7 @@ Assign discord roles based on owned NFTs ✨
 Check out the [demo video](https://youtu.be/t6fzjxRs_TA) to understand how to use `starkbot`:
 
 <a href="https://youtu.be/t6fzjxRs_TA" target="_blank">
- <img src="http://img.youtube.com/vi/t6fzjxRs_TA/hqdefault.jpg" alt="Watch the starkbot demo video" width="498" height="240" border="10" />
+ <img src="http://img.youtube.com/vi/t6fzjxRs_TA/hqdefault.jpg" alt="Watch the starkbot demo video" width="375" height="240" border="10" />
 </a>
 
 ## Bot Setup
@@ -16,7 +16,7 @@ Check out the [demo video](https://youtu.be/t6fzjxRs_TA) to understand how to us
 2. Assign it a role and put this role at the top of your role list (so it can manage the below roles)
 3. Create your first rule
 ```
-starkbot-add-rule
+/starkbot-add-rule
 ```
 
 ## Roadmap
