@@ -35,7 +35,7 @@ const runApp = async () => {
   await Promise.all([
     schedule(fetchDiscordMembers, 5),
     schedule(fetchStarknetIds, 5),
-    schedule(applyRules, 5),
+    schedule(applyRules, 1),
   ]);
 };
 

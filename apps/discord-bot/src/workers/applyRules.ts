@@ -1,5 +1,5 @@
 import { OAuth2Guild } from 'discord.js';
-import { getDocs } from 'firebase/firestore';
+import { doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import { defaultProvider, number, stark } from 'starknet';
 import { useAppContext } from '..';
 
@@ -22,6 +22,9 @@ export async function applyRulesForGuild(g: OAuth2Guild) {
   for (const [id, member] of guildMembers) {
     try {
       const accountAddress = await getAccountAddress(id);
+      if (!accountAddress) {
+        continue;
+      }
       for (const rule of rules) {
         const {
           result: [balanceHex],
@@ -32,10 +35,13 @@ export async function applyRulesForGuild(g: OAuth2Guild) {
         });
         const balance = parseInt(number.hexToDecimalString(balanceHex));
         if (balance == 0 && member.roles.cache.has(rule.roleId)) {
-          console.log('Remove  role:', member.roles.cache.get(rule.roleId));
+          console.log(
+            'Remove  role:',
+            member.roles.cache.get(rule.roleId).name
+          );
           await member.roles.remove(rule.roleId);
         } else if (balance > 0 && !member.roles.cache.has(rule.roleId)) {
-          console.log('Add role:', member.roles.cache.get(rule.roleId));
+          console.log('Add role:', rule.roleId);
           await member.roles.add(rule.roleId);
         }
       }
@@ -45,10 +51,17 @@ export async function applyRulesForGuild(g: OAuth2Guild) {
   }
 }
 
-async function getAccountAddress(discordMemberId: string) {
-  // Gabin
-  if (discordMemberId === '244940825572802560') {
-    return '0x0367c0c4603a29Bc5aCA8E07C6A2776D7C0d325945aBB4f772f448b345Ca4Cf7';
+async function getAccountAddress(
+  discordMemberId: string
+): Promise<string | null> {
+  const starknetIdsColRef = useAppContext().firebase.starknetIds;
+  const q = query(
+    starknetIdsColRef,
+    where('discordMemberId', '==', discordMemberId)
+  );
+  const starknetIdsSnapshot = await getDocs(q);
+  if (starknetIdsSnapshot.docs.length == 0) {
+    return null;
   }
-  return `0x${discordMemberId}`;
+  return starknetIdsSnapshot.docs[0].data().accountAddress;
 }
