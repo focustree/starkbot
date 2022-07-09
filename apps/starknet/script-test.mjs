@@ -21,11 +21,16 @@ const provider = new Provider({
 });
 
 /// Creating new account
-console.log("Creating new account");
+/// console.log("Creating new account");
 
-const starkKeyPair = ec.genKeyPair();
-const starkKeyPub = ec.getStarkKey(starkKeyPair);
+/*const starkKeyPair = ec.genKeyPair();
+const starkKeyPub = ec.getStarkKey(starkKeyPair);*/
 
+const starkKeyPair = "0x12a3d6c43960b3584038485740e0176b";
+const starkKeyPub = "0x5af3e5be5a80a26d10201d8e64b10fd9fc0a34063567bab8cdc6d72628e525d";
+const account_address = "0x3d5cf3f090408f45105e22d726dfbd2306a30780bf86c31f91fd62119118662"
+
+/*
 const compiledAccount = json.parse(
   fs.readFileSync("./contract/account.json").toString("ascii")
 );
@@ -45,6 +50,8 @@ const accountResponse = await provider.deployContract({
 
 await provider.waitForTransaction(accountResponse.transaction_hash);
 
+console.log(accountResponse.address);
+
 console.log("Creating contract for account...")
 const accountContract = new Contract(
   compiledAccount.abi,
@@ -57,7 +64,11 @@ console.log("initializing contract ...");
 
 //await provider.waitForTransaction(initializeResponse.transaction_hash);
 
-const account = new Account(provider, accountResponse.address, starkKeyPair);
+*/
+
+console.log("Getting user account");
+
+const account = new Account(provider, account_address, starkKeyPair);
 
 /// Deploying Starknet ID smart contract on-chain
 console.log("Deploying Starknet ID smart contract on-chain")
