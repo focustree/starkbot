@@ -11,20 +11,21 @@ import {
   TextInputComponent,
 } from 'discord.js';
 import { doc, setDoc } from 'firebase/firestore';
+import { number } from 'starknet';
 import { Command } from '..';
 import { formatRule } from '../../utils';
 
 export const addRuleCommandName = 'starkbot-add-rule';
 export const addRuleRoleId = `${addRuleCommandName}-role`;
 export const addRuleTokenAddressId = `${addRuleCommandName}-token-address`;
-export const addRuleMinNFT = `${addRuleCommandName}-min-nft`;
-export const addRuleMaxNFT = `${addRuleCommandName}-max-nft`;
+export const addRuleMinBalanceId = `${addRuleCommandName}-min-balance`;
+export const addRuleMaxBalanceId = `${addRuleCommandName}-max-balance`;
 
 const cache = new Map<string, string>();
 
 export const AddRule: Command = {
   name: addRuleCommandName,
-  description: 'Assign a role based on owned NFTs',
+  description: 'Assign a role based on owned balances',
   run: async (client: Client, interaction: BaseCommandInteraction) => {
     await interaction.deferReply();
     const roleOptions = interaction.guild.roles.cache.map((role) => ({
@@ -64,14 +65,14 @@ export async function handleAddRuleSelectRole(
       ),
       new MessageActionRow<ModalActionRowComponent>().addComponents(
         new TextInputComponent()
-          .setCustomId(addRuleMinNFT)
-          .setLabel('Minimum NFT to own for this role')
+          .setCustomId(addRuleMinBalanceId)
+          .setLabel('Minimum balance')
           .setStyle('SHORT')
       ),
       new MessageActionRow<ModalActionRowComponent>().addComponents(
         new TextInputComponent()
-          .setCustomId(addRuleMaxNFT)
-          .setLabel('Maximum NFT to own for this role')
+          .setCustomId(addRuleMaxBalanceId)
+          .setLabel('Maximum balance')
           .setStyle('SHORT')
       )
     );
@@ -104,31 +105,61 @@ export async function handleAddRuleSubmitModal(
   const tokenAddress = interaction.fields.getTextInputValue(
     addRuleTokenAddressId
   );
-
-  const minNFT = parseInt(interaction.fields.getTextInputValue(addRuleMinNFT));
-
-  const maxNFT = parseInt(interaction.fields.getTextInputValue(addRuleMaxNFT));
-
-  if (minNFT == NaN || minNFT < 0) {
-    console.error('Wrong value for minimum NFT, positive integer is required');
+  if (tokenAddress == '') {
+    console.error('No token address provided');
     await interaction.reply({
-      content: 'Wrong value for minNFT',
+      content: '⚠️ No token address provided',
+    });
+    return;
+  }
+  if (!number.isHex(tokenAddress)) {
+    console.error('Token adress is not a valid hex string');
+    await interaction.reply({
+      content: '⚠️ Token address is not a valid hex string',
     });
     return;
   }
 
-  if (maxNFT == NaN || maxNFT < 0) {
-    console.error('Wrong value for maximum NFT, positive integer is required');
+  let minBalanceInput =
+    interaction.fields.getTextInputValue(addRuleMinBalanceId);
+  if (minBalanceInput == '') {
+    console.error('Please provide a minimum balance');
     await interaction.reply({
-      content: 'Wrong value for maxNFT',
+      content: '⚠️ Please provide a minimum balance',
+    });
+    return;
+  }
+  const minBalance = parseInt(minBalanceInput);
+  if (isNaN(minBalance) || minBalance < 0) {
+    console.error(
+      'Wrong value for minimum balance, positive integer is required'
+    );
+    await interaction.reply({
+      content: 'Wrong value for minBalance',
     });
     return;
   }
 
-  if (maxNFT < minNFT) {
+  let maxBalanceInput =
+    interaction.fields.getTextInputValue(addRuleMaxBalanceId);
+  if (maxBalanceInput == '') {
+    maxBalanceInput = `${Number.MAX_SAFE_INTEGER}`;
+  }
+  const maxBalance = parseInt(maxBalanceInput);
+  if (isNaN(maxBalance) || maxBalance < 0) {
+    console.error(
+      'Wrong value for maximum balance, positive integer is required'
+    );
+    await interaction.reply({
+      content: 'Wrong value for maxBalance',
+    });
+    return;
+  }
+
+  if (maxBalance < minBalance) {
     console.error('Maximum must be bigger than minimum');
     await interaction.reply({
-      content: 'min bigger than max',
+      content: 'Min bigger than max',
     });
     return;
   }
@@ -137,16 +168,16 @@ export async function handleAddRuleSubmitModal(
   await setDoc(doc(rulesOfGuild(interaction.guild.id)), {
     roleId: selectedRoleId,
     tokenAddress,
-    minNFT,
-    maxNFT,
+    minBalance,
+    maxBalance,
   });
 
   await interaction.reply({
     content: `Created new rule: ${formatRule({
       role: selectedRole.name,
       tokenAddress,
-      minNFT,
-      maxNFT,
+      minBalance,
+      maxBalance,
     })}`,
   });
 }

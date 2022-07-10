@@ -34,13 +34,20 @@ export async function applyRulesForGuild(g: OAuth2Guild) {
           calldata: stark.compileCalldata({ owner: accountAddress }),
         });
         const balance = parseInt(number.hexToDecimalString(balanceHex));
-        if ((balance < rule.minNFT || balance > rule.maxNFT) && member.roles.cache.has(rule.roleId)) {
+        if (
+          (balance < rule.minBalance || balance > rule.maxBalance) &&
+          member.roles.cache.has(rule.roleId)
+        ) {
           console.log(
             'Remove  role:',
             member.roles.cache.get(rule.roleId).name
           );
           await member.roles.remove(rule.roleId);
-        } else if (balance >= rule.minNFT && balance <= rule.maxNFT && !member.roles.cache.has(rule.roleId)) {
+        } else if (
+          balance >= rule.minBalance &&
+          balance <= rule.maxBalance &&
+          !member.roles.cache.has(rule.roleId)
+        ) {
           console.log('Add role:', rule.roleId);
           await member.roles.add(rule.roleId);
         }

@@ -22,17 +22,21 @@ export function sleep(s: number) {
 export function formatRule({
   role,
   tokenAddress,
-  minNFT,
-  maxNFT,
+  minBalance,
+  maxBalance,
 }: {
   role: string;
   tokenAddress: string;
-  minNFT: number;
-  maxNFT: number;
+  minBalance: number;
+  maxBalance: number;
 }) {
   return `\`\`\`
   • Role: ${role}
   • Token Address: ${tokenAddress}
-  • Min NFT: ${minNFT}
-  • Max NFT: ${maxNFT}\`\`\``;
+  • Min Balance: ${minBalance}
+  • Max Balance: ${maxBalance}\`\`\``;
+}
+
+export function formatShortTokenAddress(tokenAddress: string) {
+  return tokenAddress.slice(0, 6) + '...' + tokenAddress.slice(-4);
 }

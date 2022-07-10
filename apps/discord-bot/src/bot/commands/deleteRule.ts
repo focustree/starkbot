@@ -8,7 +8,7 @@ import {
 } from 'discord.js';
 import { deleteDoc, doc, getDoc, getDocs } from 'firebase/firestore';
 import { Command } from '..';
-import { formatRule } from '../../utils';
+import { formatRule, formatShortTokenAddress } from '../../utils';
 
 export const deleteRuleCommandName = 'starkbot-delete-rule';
 export const deleteRuleId = `${deleteRuleCommandName}-role`;
@@ -22,14 +22,22 @@ export const DeleteRule: Command = {
     const { rulesOfGuild } = useAppContext().firebase;
     const rulesSnapshot = await getDocs(rulesOfGuild(interaction.guild.id));
     const ruleOptions = rulesSnapshot.docs.map((doc) => {
-      const { roleId, tokenAddress, minNFT, maxNFT } = doc.data();
+      const { roleId, tokenAddress, minBalance, maxBalance } = doc.data();
       const role = interaction.guild.roles.cache.get(roleId);
       return {
         label: role.name,
         value: doc.id,
-        description: `Token Address: ${tokenAddress}, Min NFT: ${minNFT}, Max NFT: ${maxNFT}`,
+        description: `Token Address: ${formatShortTokenAddress(
+          tokenAddress
+        )}, Min: ${minBalance}, Max: ${maxBalance}`,
       };
     });
+    if (ruleOptions.length === 0) {
+      await interaction.followUp({
+        content: 'No rules active',
+      });
+      return;
+    }
 
     const row = new MessageActionRow().addComponents(
       new MessageSelectMenu()
@@ -55,15 +63,15 @@ export async function handleDeleteRule(interaction: SelectMenuInteraction) {
   );
   const ruleSnapshot = await getDoc(ruleDocRef);
   await deleteDoc(ruleDocRef);
-  const { roleId, tokenAddress, minNFT, maxNFT } = ruleSnapshot.data();
+  const { roleId, tokenAddress, minBalance, maxBalance } = ruleSnapshot.data();
   const role = interaction.guild.roles.cache.get(roleId);
 
   await interaction.reply({
     content: `Deleted rule: ${formatRule({
       role: role.name,
       tokenAddress,
-      minNFT,
-      maxNFT,
+      minBalance,
+      maxBalance,
     })}`,
   });
 }

@@ -22,7 +22,11 @@ export function useAppContext() {
 }
 
 const runApp = async () => {
-  console.log('Env:', config.env);
+  console.log('Config:', {
+    env: config.env,
+    projectId: config.firebaseConfig.projectId,
+    discordInviteLink: config.discordInviteLink,
+  });
 
   const discordClient = await initDiscordClient(config);
   console.log('Discord client initialized');
