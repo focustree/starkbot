@@ -2,23 +2,45 @@
 
 Assign discord roles based on owned NFTs ✨
 
-## Bot Usage
 
-Check out the [demo video](https://youtu.be/t6fzjxRs_TA) to understand how to use `starkbot`:
+Check out the [demo video](https://youtu.be/t6fzjxRs_TA):
 
 <a href="https://youtu.be/t6fzjxRs_TA" target="_blank">
  <img src="http://img.youtube.com/vi/t6fzjxRs_TA/hqdefault.jpg" alt="Watch the starkbot demo video" width="375" height="240" border="10" />
 </a>
 
+If you want to try it out live, follow those steps:
+1. [Create a Starknet ID](https://starknet.id/) and verify your discord user id.
+2. [Mint a BRIQ NFT](https://briq.construction) with the same wallet
+3. [Go to the Focus Tree's discord](https://discord.gg/GSaSNyZs). You should get assigned the `🧱 Briq` role.
+4. You can try to add you own rules by typing `/starkbot-add-rule` in #general
+
 ## Bot Setup
 
-1. Invite `starkbot` to your Discord server
+### Using our infra
+
+1. [Invite starkbot](https://discord.com/api/oauth2/authorize?client_id=993439991822815292&permissions=0&scope=bot%20applications.commands) to your Discord server
 2. Assign it a role and put this role at the top of your role list (so it can manage the below roles)
 3. Create your first rule
+
 ```
 /starkbot-add-rule
 ```
 
+### On-premise
+
+You can run the already prepared docker image:
+```
+docker run --env-file .env ghcr.io/gabsn/starkbot-discord-bot:v1
+```
+You need to create a `.env` file with your own discord and firebase credentials:
+```
+ENV=prod
+DISCORD_CLIENT_SECRET=
+DISCORD_CLIENT_ID=
+DISCORD_BOT_TOKEN=
+FIREBASE_CONFIG={...}
+```
 ## Roadmap
 
 ### Features
