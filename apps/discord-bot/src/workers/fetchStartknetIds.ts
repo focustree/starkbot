@@ -54,13 +54,13 @@ async function fetchStarknetIdsForGuild(guild: DiscordGuildDoc) {
 }
 
 async function fetchStarknetIdsForMember(discordMemberId: string) {
-  if (Object.keys(defaultStarknetIds).includes(discordMemberId)) {
-    return defaultStarknetIds[discordMemberId];
-  }
+  // if (Object.keys(defaultStarknetIds).includes(discordMemberId)) {
+  //   return defaultStarknetIds[discordMemberId];
+  // }
 
   try {
     const { data, status } = await axios.get(
-      'http://indexer.starknet.id:8080/fetch_token_id',
+      'https://indexer.starknet.id/fetch_token_id',
       {
         params: {
           type: '28263441981469284', // discord

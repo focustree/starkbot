@@ -10,7 +10,8 @@
   "scripts": {
     "dev": "nx run-many --target start --all --parallel --output-style stream",
     "dev:infra": "nx run-many --target start --projects starknet,firebase --parallel --output-style stream",
-    "dev:bot": "nx start discord-bot"
+    "dev:bot": "nx start discord-bot",
+    "docker:build:base": "docker build -f base.dockerfile -t ghcr.io/gabsn/starkbot-base:latest . "
   },
   "dependencies": {
     "async-mutex": "^0.3.2",

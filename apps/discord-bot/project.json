@@ -38,6 +38,28 @@
       "options": {
         "lintFilePatterns": ["apps/discord-bot/**/*.ts"]
       }
+    },
+    "docker:build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "docker build -f ./apps/discord-bot/Dockerfile -t ghcr.io/gabsn/starkbot-discord-bot:latest ."
+        ]
+      }
+    },
+    "docker:push": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["docker push ghcr.io/gabsn/starkbot-discord-bot:latest"]
+      }
+    },
+    "docker:run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "docker run -d --env-file .env.prod ghcr.io/gabsn/starkbot-discord-bot"
+        ]
+      }
     }
   },
   "tags": []
