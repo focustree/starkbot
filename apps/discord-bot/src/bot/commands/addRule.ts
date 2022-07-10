@@ -17,6 +17,8 @@ import { formatRule } from '../../utils';
 export const addRuleCommandName = 'starkbot-add-rule';
 export const addRuleRoleId = `${addRuleCommandName}-role`;
 export const addRuleTokenAddressId = `${addRuleCommandName}-token-address`;
+export const addRuleMinNFT = `${addRuleCommandName}-min-nft`;
+export const addRuleMaxNFT = `${addRuleCommandName}-max-nft`;
 
 const cache = new Map<string, string>();
 
@@ -59,6 +61,18 @@ export async function handleAddRuleSelectRole(
           .setCustomId(addRuleTokenAddressId)
           .setLabel('Token contract address')
           .setStyle('SHORT')
+      ),
+      new MessageActionRow<ModalActionRowComponent>().addComponents(
+        new TextInputComponent()
+          .setCustomId(addRuleMinNFT)
+          .setLabel('Minimum NFT to own for this role')
+          .setStyle('SHORT')
+      ),
+      new MessageActionRow<ModalActionRowComponent>().addComponents(
+        new TextInputComponent()
+          .setCustomId(addRuleMaxNFT)
+          .setLabel('Maximum NFT to own for this role')
+          .setStyle('SHORT')
       )
     );
 
@@ -93,17 +107,55 @@ export async function handleAddRuleSubmitModal(
     addRuleTokenAddressId
   );
 
+  const minNFT = parseInt(interaction.fields.getTextInputValue(
+    addRuleMinNFT
+  ));
+
+  const maxNFT = parseInt(interaction.fields.getTextInputValue(
+    addRuleMaxNFT
+  ));
+
+  if (minNFT == NaN || minNFT < 0) {
+    console.error('Wrong value for minimum NFT, positive integer is required');
+    await interaction.reply({
+      content: 'Wrong value for minNFT',
+      ephemeral: true,
+    });
+    return;
+  }
+
+  if (maxNFT == NaN || maxNFT < 0) {
+    console.error('Wrong value for maximum NFT, positive integer is required');
+    await interaction.reply({
+      content: 'Wrong value for maxNFT',
+      ephemeral: true,
+    });
+    return;
+  }
+
+  if (maxNFT < minNFT) {
+    console.error('Maximum must be bigger than minimum');
+    await interaction.reply({
+      content: 'min bigger than max',
+      ephemeral: true,
+    });
+    return;
+  }
+
   const { rulesOfGuild } = useAppContext().firebase;
   await setDoc(doc(rulesOfGuild(interaction.guild.id)), {
     roleId: selectedRoleId,
     tokenAddress,
+    minNFT,
+    maxNFT,
   });
 
   await interaction.reply({
     content: `Created new rule: ${formatRule({
       role: selectedRole.name,
       tokenAddress,
+      minNFT,
+      maxNFT,
     })}`,
-    ephemeral: true,
   });
 }

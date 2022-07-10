@@ -15,9 +15,9 @@ export const ListRules: Command = {
     const { rulesOfGuild } = useAppContext().firebase;
     const rulesSnapshot = await getDocs(rulesOfGuild(interaction.guild.id));
     const rules = rulesSnapshot.docs.map((doc) => {
-      const { roleId, tokenAddress } = doc.data();
+      const { roleId, tokenAddress, minNFT, maxNFT } = doc.data();
       const role = interaction.guild.roles.cache.get(roleId);
-      return { role: role.name, tokenAddress };
+      return { role: role.name, tokenAddress, minNFT, maxNFT };
     });
 
     await interaction.followUp({

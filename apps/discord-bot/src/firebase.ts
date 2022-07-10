@@ -74,6 +74,8 @@ export interface DiscordRoleDoc {
 export interface RuleDoc {
   roleId: string;
   tokenAddress: string;
+  minNFT: number;
+  maxNFT: number;
 }
 
 export interface StarknetIdDoc {

@@ -14,7 +14,7 @@
     "test": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["node apps/starknet/script-test.js"]
+        "commands": ["node apps/starknet/script-test.mjs"]
       }
     }
   },
