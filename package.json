@@ -20,7 +20,6 @@
     "axios": "^0.27.2",
     "discord.js": "^13.8.1",
     "firebase": "^9.8.4",
-    "pnpm": "^7.5.0",
     "starknet": "^3.16.1"
   },
   "devDependencies": {

@@ -18,7 +18,6 @@ specifiers:
   firebase: ^9.8.4
   firebase-tools: ^11.2.0
   nx: 14.4.0
-  pnpm: ^7.5.0
   prettier: ^2.6.2
   starknet: ^3.16.1
   ts-node: ~10.8.0
@@ -30,7 +29,6 @@ dependencies:
   axios: 0.27.2
   discord.js: 13.8.1
   firebase: 9.8.4
-  pnpm: 7.5.0
   starknet: 3.16.1
 
 devDependencies:
@@ -7080,12 +7078,6 @@ packages:
     resolution: {integrity: sha512-8V9+HQPupnaXMA23c5hvl69zXvTwTzyAYasnkb0Tts4XvO4CliqONMOnvlq26rkhLC3nWDFBJf73LU1e1VZLaQ==}
     engines: {node: '>= 6'}
     dev: true
-
-  /pnpm/7.5.0:
-    resolution: {integrity: sha512-sb9wJNyx/d8l3Gze2jI1y8BGNbb/ga+JT3SrGNiH+C5KbtZ4wmgePBWGjaiGugcpT9+vQ5MO//+QlVWhMCpedQ==}
-    engines: {node: '>=14.6'}
-    hasBin: true
-    dev: false
 
   /portfinder/1.0.28:
     resolution: {integrity: sha512-Se+2isanIcEqf2XMHjyUKskczxbPH7dQnlMjXX6+dybayyHvAf/TCgyMRlzf/B6QDhAEFOGes0pzRo3by4AbMA==}

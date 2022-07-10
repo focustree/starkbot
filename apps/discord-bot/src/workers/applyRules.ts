@@ -1,5 +1,5 @@
 import { OAuth2Guild } from 'discord.js';
-import { connectFirestoreEmulator, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
+import { getDocs, query, where } from 'firebase/firestore';
 import { defaultProvider, number, stark } from 'starknet';
 import { useAppContext } from '..';
 
@@ -22,7 +22,6 @@ export async function applyRulesForGuild(g: OAuth2Guild) {
   for (const [id, member] of guildMembers) {
     try {
       const accountAddress = await getAccountAddress(id);
-      console.log(accountAddress);
       if (!accountAddress) {
         continue;
       }
@@ -35,7 +34,6 @@ export async function applyRulesForGuild(g: OAuth2Guild) {
           calldata: stark.compileCalldata({ owner: accountAddress }),
         });
         const balance = parseInt(number.hexToDecimalString(balanceHex));
-        console.log(balance);
         if ((balance < rule.minNFT || balance > rule.maxNFT) && member.roles.cache.has(rule.roleId)) {
           console.log(
             'Remove  role:',
