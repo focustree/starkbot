@@ -71,7 +71,7 @@ export async function handleAddRuleSelectRole(
       new MessageActionRow<ModalActionRowComponent>().addComponents(
         new TextInputComponent()
           .setCustomId(addRuleMaxNFT)
-          .setLabel('Maximum NFT to own for this role (Type Infinity for no limit)')
+          .setLabel('Maximum NFT to own for this role')
           .setStyle('SHORT')
       )
     );
@@ -157,6 +157,5 @@ export async function handleAddRuleSubmitModal(
       minNFT,
       maxNFT,
     })}`,
-    ephemeral: true,
   });
 }

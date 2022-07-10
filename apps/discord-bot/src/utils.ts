@@ -32,5 +32,7 @@ export function formatRule({
 }) {
   return `\`\`\`
   • Role: ${role}
-  • Token Address: ${tokenAddress}\`\`\``;
+  • Token Address: ${tokenAddress}
+  • Min NFT: ${minNFT}
+  • Max NFT: ${maxNFT}\`\`\``;
 }
