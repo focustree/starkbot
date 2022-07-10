@@ -9,5 +9,6 @@ export const config = {
   firebaseConfig: JSON.parse(getConfig('FIREBASE_CONFIG')) as FirebaseOptions,
 };
 config.discordInviteLink = `https://discord.com/api/oauth2/authorize?client_id=${config.discordClientId}&permissions=0&scope=bot%20applications.commands`;
+console.log('Config:', config);
 
 export type Config = typeof config;

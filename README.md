@@ -12,9 +12,10 @@ Check out the [demo video](https://youtu.be/t6fzjxRs_TA) to understand how to us
 
 ## Bot Setup
 
-1. Invite `starkbot` to your Discord server
+1. [Invite starkbot](https://discord.com/api/oauth2/authorize?client_id=993439991822815292&permissions=0&scope=bot%20applications.commands) to your Discord server
 2. Assign it a role and put this role at the top of your role list (so it can manage the below roles)
 3. Create your first rule
+
 ```
 /starkbot-add-rule
 ```
