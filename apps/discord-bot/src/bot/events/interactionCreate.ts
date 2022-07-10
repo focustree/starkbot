@@ -49,7 +49,6 @@ async function handleCommand(
     console.error(error);
     interaction.followUp({
       content: 'An error has occurred',
-      ephemeral: true,
     });
   }
 }

@@ -59,7 +59,11 @@ export async function handleDeleteRule(interaction: SelectMenuInteraction) {
   const role = interaction.guild.roles.cache.get(roleId);
 
   await interaction.reply({
-    content: `Deleted rule: ${formatRule({ role: role.name, tokenAddress, minNFT, maxNFT })}`,
-    ephemeral: true,
+    content: `Deleted rule: ${formatRule({
+      role: role.name,
+      tokenAddress,
+      minNFT,
+      maxNFT,
+    })}`,
   });
 }

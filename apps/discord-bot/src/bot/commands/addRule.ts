@@ -88,7 +88,6 @@ export async function handleAddRuleSubmitModal(
     console.error('No role selected');
     await interaction.reply({
       content: 'No role selected',
-      ephemeral: true,
     });
     return;
   }
@@ -98,7 +97,6 @@ export async function handleAddRuleSubmitModal(
     console.error('Role not found');
     await interaction.reply({
       content: 'Role not found',
-      ephemeral: true,
     });
     return;
   }
@@ -107,19 +105,14 @@ export async function handleAddRuleSubmitModal(
     addRuleTokenAddressId
   );
 
-  const minNFT = parseInt(interaction.fields.getTextInputValue(
-    addRuleMinNFT
-  ));
+  const minNFT = parseInt(interaction.fields.getTextInputValue(addRuleMinNFT));
 
-  const maxNFT = parseInt(interaction.fields.getTextInputValue(
-    addRuleMaxNFT
-  ));
+  const maxNFT = parseInt(interaction.fields.getTextInputValue(addRuleMaxNFT));
 
   if (minNFT == NaN || minNFT < 0) {
     console.error('Wrong value for minimum NFT, positive integer is required');
     await interaction.reply({
       content: 'Wrong value for minNFT',
-      ephemeral: true,
     });
     return;
   }
@@ -128,7 +121,6 @@ export async function handleAddRuleSubmitModal(
     console.error('Wrong value for maximum NFT, positive integer is required');
     await interaction.reply({
       content: 'Wrong value for maxNFT',
-      ephemeral: true,
     });
     return;
   }
@@ -137,7 +129,6 @@ export async function handleAddRuleSubmitModal(
     console.error('Maximum must be bigger than minimum');
     await interaction.reply({
       content: 'min bigger than max',
-      ephemeral: true,
     });
     return;
   }
