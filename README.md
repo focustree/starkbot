@@ -2,7 +2,6 @@
 
 Assign discord roles based on owned NFTs ✨
 
-
 Check out the [demo video](https://youtu.be/t6fzjxRs_TA):
 
 <a href="https://youtu.be/t6fzjxRs_TA" target="_blank">
@@ -10,6 +9,7 @@ Check out the [demo video](https://youtu.be/t6fzjxRs_TA):
 </a>
 
 If you want to try it out live, follow those steps:
+
 1. [Create a Starknet ID](https://starknet.id/) and verify your discord user id.
 2. [Mint a BRIQ NFT](https://briq.construction) with the same wallet
 3. [Go to the Focus Tree's discord](https://discord.gg/GSaSNyZs). You should get assigned the `🧱 Briq` role.
@@ -30,17 +30,26 @@ If you want to try it out live, follow those steps:
 ### On-premise
 
 You can run the already prepared docker image:
+
 ```
 docker run --env-file .env ghcr.io/gabsn/starkbot-discord-bot:v1
 ```
+
 You need to create a `.env` file with your own discord and firebase credentials:
+
 ```
 ENV=prod
 DISCORD_CLIENT_SECRET=
 DISCORD_CLIENT_ID=
 DISCORD_BOT_TOKEN=
-FIREBASE_CONFIG={...}
+FIREBASE_CONFIG={"projectId": "<Your Project ID>"}
+FIRESTORE_EMULATOR_HOST=localhost:8081
+STARKNET_ID_CONTRACT_ADDRESS=0x033233531959c1da39c28daf337e25e2deadda80ce988290306ffabcd735ccbd
+STARKNET_ID_INDEXER_URL=https://indexer.starknet.id/fetch_tokens_id
+VERIFIER_DECIMAL_CONTRACT_ADDRESS=218957698842707292111176682338308570428481820353543328403027153649547919416
+DISCORD_TYPE=28263441981469284
 ```
+
 ## Roadmap
 
 ### Features

@@ -2,7 +2,7 @@ import { Client } from 'discord.js';
 
 import { fetchDiscordMembers } from './workers/fetchDiscordMembers';
 import { schedule } from './utils';
-import { config } from './config';
+import { config, safePrintConfig } from './config';
 import { initDiscordClient } from './bot';
 import { Firebase, initFirebase } from './firebase';
 import { fetchStarknetIds } from './workers/fetchStartknetIds';
@@ -22,11 +22,7 @@ export function useAppContext() {
 }
 
 const runApp = async () => {
-  console.log('Config:', {
-    env: config.env,
-    projectId: config.firebaseConfig.projectId,
-    discordInviteLink: config.discordInviteLink,
-  });
+  safePrintConfig();
 
   const discordClient = await initDiscordClient(config);
   console.log('Discord client initialized');
