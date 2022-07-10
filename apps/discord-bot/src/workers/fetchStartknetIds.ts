@@ -4,30 +4,6 @@ import { useAppContext } from '..';
 import { DiscordGuildDoc, StarknetIdDoc } from '../firebase';
 import { defaultProvider, stark, uint256 } from 'starknet';
 
-const defaultStarknetIds: { [discordMemberId: string]: StarknetIdDoc } = {
-  // Gabin
-  '244940825572802560': {
-    id: 2,
-    accountAddress:
-      '0x0367c0c4603a29Bc5aCA8E07C6A2776D7C0d325945aBB4f772f448b345Ca4Cf7',
-    discordMemberId: '244940825572802560',
-  },
-  // Laurent
-  '986383996227313725': {
-    id: 3,
-    accountAddress:
-      '0x074d4033D6d80fB7856A46046449F0b3b247E773284a279b293012d21d8F0116',
-    discordMemberId: '986383996227313725',
-  },
-  // JB
-  '946041152082182164': {
-    id: 4,
-    accountAddress:
-      '0x017ed6C1B93d436003BC28f57A6992a8b0481dff686a1B88e8469C6aA6C78abf',
-    discordMemberId: '946041152082182164',
-  },
-};
-
 export async function fetchStarknetIds() {
   const appContext = useAppContext();
   const guilds = await getDocs(appContext.firebase.guilds);
@@ -54,10 +30,6 @@ async function fetchStarknetIdsForGuild(guild: DiscordGuildDoc) {
 }
 
 async function fetchStarknetIdsForMember(discordMemberId: string) {
-  if (Object.keys(defaultStarknetIds).includes(discordMemberId)) {
-    return defaultStarknetIds[discordMemberId];
-  }
-
   try {
     const { data, status } = await axios.get(
       'https://indexer.starknet.id/fetch_tokens_id',
