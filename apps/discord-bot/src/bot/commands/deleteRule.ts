@@ -22,12 +22,12 @@ export const DeleteRule: Command = {
     const { rulesOfGuild } = useAppContext().firebase;
     const rulesSnapshot = await getDocs(rulesOfGuild(interaction.guild.id));
     const ruleOptions = rulesSnapshot.docs.map((doc) => {
-      const { roleId, tokenAddress } = doc.data();
+      const { roleId, tokenAddress, minNFT, maxNFT } = doc.data();
       const role = interaction.guild.roles.cache.get(roleId);
       return {
         label: role.name,
         value: doc.id,
-        description: `Token Address: ${tokenAddress}`,
+        description: `Token Address: ${tokenAddress}, Min NFT: ${minNFT}, Max NFT: ${maxNFT}`,
       };
     });
 
@@ -55,11 +55,11 @@ export async function handleDeleteRule(interaction: SelectMenuInteraction) {
   );
   const ruleSnapshot = await getDoc(ruleDocRef);
   await deleteDoc(ruleDocRef);
-  const { roleId, tokenAddress } = ruleSnapshot.data();
+  const { roleId, tokenAddress, minNFT, maxNFT } = ruleSnapshot.data();
   const role = interaction.guild.roles.cache.get(roleId);
 
   await interaction.reply({
-    content: `Deleted rule: ${formatRule({ role: role.name, tokenAddress })}`,
+    content: `Deleted rule: ${formatRule({ role: role.name, tokenAddress, minNFT, maxNFT })}`,
     ephemeral: true,
   });
 }
