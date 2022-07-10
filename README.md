@@ -9,10 +9,13 @@ Check out the [demo video](https://youtu.be/t6fzjxRs_TA):
  <img src="http://img.youtube.com/vi/t6fzjxRs_TA/hqdefault.jpg" alt="Watch the starkbot demo video" width="375" height="240" border="10" />
 </a>
 
-If you want to try it out live, [go to the Focus Tree's discord](https://discord.gg/XS5F2t34) and add try to associate your NFTs with existing discord roles.
-
+If you want to try it out live, follow those steps:
+1. [Create yourself a starknet id](https://starknet.id/) and verify your discord user id.
+2. [Go to the Focus Tree's discord](https://discord.gg/GSaSNyZs) and add rules to associate a role and an NFT.
 
 ## Bot Setup
+
+### Using our infra
 
 1. [Invite starkbot](https://discord.com/api/oauth2/authorize?client_id=993439991822815292&permissions=0&scope=bot%20applications.commands) to your Discord server
 2. Assign it a role and put this role at the top of your role list (so it can manage the below roles)
@@ -22,6 +25,20 @@ If you want to try it out live, [go to the Focus Tree's discord](https://discord
 /starkbot-add-rule
 ```
 
+### On-premise
+
+You can run the already prepared docker image:
+```
+docker run --env-file .env ghcr.io/gabsn/starkbot-discord-bot:v1
+```
+You need to create a `.env` file with your own discord and firebase credentials:
+```
+ENV=prod
+DISCORD_CLIENT_SECRET=
+DISCORD_CLIENT_ID=
+DISCORD_BOT_TOKEN=
+FIREBASE_CONFIG={...}
+```
 ## Roadmap
 
 ### Features
