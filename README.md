@@ -2,13 +2,15 @@
 
 Assign discord roles based on owned NFTs ✨
 
-## Bot Usage
 
-Check out the [demo video](https://youtu.be/t6fzjxRs_TA) to understand how to use `starkbot`:
+Check out the [demo video](https://youtu.be/t6fzjxRs_TA):
 
 <a href="https://youtu.be/t6fzjxRs_TA" target="_blank">
  <img src="http://img.youtube.com/vi/t6fzjxRs_TA/hqdefault.jpg" alt="Watch the starkbot demo video" width="375" height="240" border="10" />
 </a>
+
+If you want to try it out live, [go to the Focus Tree's discord](https://discord.gg/XS5F2t34) and add try to associate your NFTs with existing discord roles.
+
 
 ## Bot Setup
 
