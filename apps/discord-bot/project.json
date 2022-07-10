@@ -43,14 +43,16 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "docker build --no-cache -f ./apps/discord-bot/Dockerfile -t ghcr.io/gabsn/starkbot-discord-bot:latest ."
+          "docker build --no-cache -f ./apps/discord-bot/Dockerfile -t ghcr.io/gabsn/starkbot-discord-bot:$(git rev-parse --short HEAD) ."
         ]
       }
     },
     "docker:push": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["docker push ghcr.io/gabsn/starkbot-discord-bot:latest"]
+        "commands": [
+          "docker push ghcr.io/gabsn/starkbot-discord-bot:$(git rev-parse --short HEAD)"
+        ]
       }
     },
     "docker:run": {
