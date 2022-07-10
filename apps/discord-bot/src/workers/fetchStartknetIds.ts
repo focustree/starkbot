@@ -60,7 +60,7 @@ async function fetchStarknetIdsForMember(discordMemberId: string) {
 
   try {
     const { data, status } = await axios.get(
-      'https://indexer.starknet.id/fetch_token_id',
+      'https://indexer.starknet.id/fetch_tokens_id',
       {
         params: {
           type: '28263441981469284', // discord

@@ -1,4 +1,5 @@
-FROM ghcr.io/gabsn/starkbot-base:latest AS build
+FROM ghcr.io/gabsn/starkbot-base AS build
+COPY . .
 RUN pnpm nx build discord-bot
 
 FROM node:18-slim

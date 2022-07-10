@@ -43,7 +43,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "docker build -f ./apps/discord-bot/Dockerfile -t ghcr.io/gabsn/starkbot-discord-bot:latest ."
+          "docker build --no-cache -f ./apps/discord-bot/Dockerfile -t ghcr.io/gabsn/starkbot-discord-bot:latest ."
         ]
       }
     },
