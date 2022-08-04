@@ -32,7 +32,7 @@ If you want to try it out live, follow those steps:
 You can run the already prepared docker image:
 
 ```
-docker run --env-file .env ghcr.io/gabsn/starkbot-discord-bot:v1
+docker run -d --restart always --env-file .env ghcr.io/gabsn/starkbot-discord-bot:bb0107b
 ```
 
 You need to create a `.env` file with your own discord and firebase credentials:
