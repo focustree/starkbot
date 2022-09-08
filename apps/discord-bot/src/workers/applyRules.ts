@@ -38,10 +38,7 @@ export async function applyRulesForGuild(g: OAuth2Guild) {
           (balance < rule.minBalance || balance > rule.maxBalance) &&
           member.roles.cache.has(rule.roleId)
         ) {
-          console.log(
-            'Remove  role:',
-            member.roles.cache.get(rule.roleId).name
-          );
+          console.log('Remove  role:', member.roles.cache.get(rule.roleId).name);
           await member.roles.remove(rule.roleId);
         } else if (
           balance >= rule.minBalance &&
