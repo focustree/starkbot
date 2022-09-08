@@ -10,8 +10,6 @@ import { deleteRuleId, handleDeleteRule } from '../commands/deleteRule';
 
 export function onInteractionCreate(client: Client): void {
   client.on('interactionCreate', async interaction => {
-    console.log("LAMA")
-    console.log(typeof interaction)
     if (interaction.isCommand()) {
       await handleCommand(client, interaction);
       return;

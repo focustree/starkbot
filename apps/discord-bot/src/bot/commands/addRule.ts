@@ -15,6 +15,7 @@ export const addRuleRoleId = `${addRuleCommandName}-role`;
 export const addRuleTokenAddressId = `${addRuleCommandName}-token-address`;
 export const addRuleMinBalanceId = `${addRuleCommandName}-min-balance`;
 export const addRuleMaxBalanceId = `${addRuleCommandName}-max-balance`;
+export const addRuleNrOfNfts = `${addRuleCommandName}-number-of-nfts`;
 
 const { ActionRowBuilder, SelectMenuBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const cache = new Map<string, string>();
@@ -44,7 +45,6 @@ export async function handleAddRuleSelectRole(
 ) {
   const [selectedRoleId] = interaction.values;
   const selectedRole = interaction.guild.roles.cache.get(selectedRoleId);
-
   const modal = new ModalBuilder()
     .setCustomId(addRuleCommandName)
     .setTitle(`Add a rule for ${selectedRole.name}`);
@@ -61,14 +61,17 @@ export async function handleAddRuleSelectRole(
         .setCustomId(addRuleMinBalanceId)
         .setLabel('Minimum balance')
         .setStyle(TextInputStyle.Short)
+        .setMaxLength(2)
     ),
     new ActionRowBuilder().addComponents(
       new TextInputBuilder()
         .setCustomId(addRuleMaxBalanceId)
         .setLabel('Maximum balance')
         .setStyle(TextInputStyle.Short)
+        .setMaxLength(2)
     )
   );
+
   cache.set(interaction.member.user.id, selectedRoleId);
   await interaction.showModal(modal);
 }

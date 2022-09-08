@@ -4,21 +4,29 @@ import {
     Client
 } from 'discord.js';
 
-// importing all commands func and names 
+// Importing all commands func and names 
 import { listRulesCommand } from './listRules';
 import { deleteRuleCommandName, deleteRuleCommand } from './deleteRule';
-import { addRuleCommandName, addRuleCommand } from './addRule';
+import { addRuleCommandName, addRuleCommand, addRuleNrOfNfts } from './addRule';
 // import { editRuleCommandName, editRuleCommand } from './editRule';
 
 export interface Command extends ChatInputApplicationCommandData {
     run: (client: Client, interaction: CommandInteraction) => Promise<void>;
 }
 
-
 const AddRule: Command = {
     name: addRuleCommandName,
     description: 'Assign a role based on owned balances',
-    run: addRuleCommand
+    run: addRuleCommand,
+    options: [
+        {
+            name: addRuleNrOfNfts,
+            description: 'Number of NFTs related required',
+            type: 4, // Integer
+            minValue: 1,
+            maxValue: 3
+        }
+    ]
 };
 
 const DeleteRule: Command = {

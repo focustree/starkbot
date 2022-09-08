@@ -33,7 +33,6 @@ const runApp = async () => {
   _appContext = { discordClient, firebase };
 
   await Promise.all([
-    // TODO Best way to do this? each iteration will block the UI for response
     schedule(fetchDiscordMembers, 1),
     schedule(fetchStarknetIds, 1),
     schedule(applyRules, 1),
