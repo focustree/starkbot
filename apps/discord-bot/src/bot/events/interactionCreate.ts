@@ -1,5 +1,5 @@
 import { Client, CommandInteraction, Interaction } from 'discord.js';
-import { Command, commands } from '..';
+import { commandList } from '../commands/commandList';
 import {
   addRuleCommandName,
   handleAddRuleSubmitModal,
@@ -9,7 +9,9 @@ import {
 import { deleteRuleId, handleDeleteRule } from '../commands/deleteRule';
 
 export function onInteractionCreate(client: Client): void {
-  client.on('interactionCreate', async (interaction: Interaction) => {
+  client.on('interactionCreate', async interaction => {
+    console.log("LAMA")
+    console.log(typeof interaction)
     if (interaction.isCommand()) {
       await handleCommand(client, interaction);
       return;
@@ -39,7 +41,8 @@ async function handleCommand(
   client: Client,
   interaction: CommandInteraction
 ): Promise<void> {
-  const command = commands.find((c) => c.name === interaction.command.name);
+
+  const command = commandList.find((c) => c.name === interaction.command.name);
   if (!command) return;
 
   try {

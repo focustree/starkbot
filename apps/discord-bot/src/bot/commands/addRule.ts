@@ -1,18 +1,13 @@
 import { useAppContext } from '@starkbot/discord-bot';
 import {
-  BaseCommandInteraction,
+  CommandInteraction,
   Client,
-  MessageActionRow,
-  MessageSelectMenu,
-  Modal,
-  ModalActionRowComponent,
   ModalSubmitInteraction,
   SelectMenuInteraction,
-  TextInputComponent,
 } from 'discord.js';
+
 import { doc, setDoc } from 'firebase/firestore';
 import { number } from 'starknet';
-import { Command } from '..';
 import { formatRule } from '../../utils';
 
 export const addRuleCommandName = 'starkbot-add-rule';
@@ -21,31 +16,28 @@ export const addRuleTokenAddressId = `${addRuleCommandName}-token-address`;
 export const addRuleMinBalanceId = `${addRuleCommandName}-min-balance`;
 export const addRuleMaxBalanceId = `${addRuleCommandName}-max-balance`;
 
+const { ActionRowBuilder, SelectMenuBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const cache = new Map<string, string>();
 
-export const AddRule: Command = {
-  name: addRuleCommandName,
-  description: 'Assign a role based on owned balances',
-  run: async (client: Client, interaction: BaseCommandInteraction) => {
-    await interaction.deferReply();
-    const roleOptions = interaction.guild.roles.cache.map((role) => ({
-      label: role.name,
-      value: role.id,
-    }));
-    const row = new MessageActionRow().addComponents(
-      new MessageSelectMenu()
-        .setCustomId(addRuleRoleId)
-        .setPlaceholder('Select a role')
-        .addOptions(roleOptions)
-    );
+export async function addRuleCommand(client: Client, interaction: CommandInteraction) {
+  await interaction.deferReply();
+  const roleOptions = interaction.guild.roles.cache.map((role) => ({
+    label: role.name,
+    value: role.id,
+  }));
+  const row = new ActionRowBuilder().addComponents(
+    new SelectMenuBuilder()
+      .setCustomId(addRuleRoleId)
+      .setPlaceholder('Select a role')
+      .addOptions(roleOptions)
+  );
 
-    await interaction.followUp({
-      content: 'Select the role you want to create a rule for:',
-      components: [row],
-    });
-    return;
-  },
-};
+  await interaction.followUp({
+    content: 'Select the role you want to create a rule for:',
+    components: [row],
+  });
+  return;
+}
 
 export async function handleAddRuleSelectRole(
   interaction: SelectMenuInteraction
@@ -53,30 +45,30 @@ export async function handleAddRuleSelectRole(
   const [selectedRoleId] = interaction.values;
   const selectedRole = interaction.guild.roles.cache.get(selectedRoleId);
 
-  const modal = new Modal()
+  const modal = new ModalBuilder()
     .setCustomId(addRuleCommandName)
-    .setTitle(`Add a rule for ${selectedRole.name}`)
-    .addComponents(
-      new MessageActionRow<ModalActionRowComponent>().addComponents(
-        new TextInputComponent()
-          .setCustomId(addRuleTokenAddressId)
-          .setLabel('Token contract address')
-          .setStyle('SHORT')
-      ),
-      new MessageActionRow<ModalActionRowComponent>().addComponents(
-        new TextInputComponent()
-          .setCustomId(addRuleMinBalanceId)
-          .setLabel('Minimum balance')
-          .setStyle('SHORT')
-      ),
-      new MessageActionRow<ModalActionRowComponent>().addComponents(
-        new TextInputComponent()
-          .setCustomId(addRuleMaxBalanceId)
-          .setLabel('Maximum balance')
-          .setStyle('SHORT')
-      )
-    );
+    .setTitle(`Add a rule for ${selectedRole.name}`);
 
+  modal.addComponents(
+    new ActionRowBuilder().addComponents(
+      new TextInputBuilder()
+        .setCustomId(addRuleTokenAddressId)
+        .setLabel('Token contract address')
+        .setStyle(TextInputStyle.Short)
+    ),
+    new ActionRowBuilder().addComponents(
+      new TextInputBuilder()
+        .setCustomId(addRuleMinBalanceId)
+        .setLabel('Minimum balance')
+        .setStyle(TextInputStyle.Short)
+    ),
+    new ActionRowBuilder().addComponents(
+      new TextInputBuilder()
+        .setCustomId(addRuleMaxBalanceId)
+        .setLabel('Maximum balance')
+        .setStyle(TextInputStyle.Short)
+    )
+  );
   cache.set(interaction.member.user.id, selectedRoleId);
   await interaction.showModal(modal);
 }

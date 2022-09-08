@@ -12,7 +12,8 @@ import { Config } from './config';
 export function initFirebase(config: Config) {
   const app = initializeApp(config.firebaseConfig);
   const firestore = getFirestore(app);
-  if (config.env === 'local') {
+
+  if (config.env === 'dev') {
     connectFirestoreEmulator(firestore, 'localhost', 8080);
   }
 
