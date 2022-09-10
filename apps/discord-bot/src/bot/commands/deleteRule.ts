@@ -78,6 +78,7 @@ export async function handleDeleteRule(interaction: ButtonInteraction, shouldRem
   }
   await deleteDoc(ruleDocRef);
   await interaction.reply({
+
     content: `Deleted rule: ${formatRule({
       role: role.name,
       tokenAddress: rule.tokenAddress,
