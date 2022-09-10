@@ -50,6 +50,7 @@ async function fetchStarknetIdsForMember(discordMemberId: string) {
         ...uint256.bnToUint256(data.token_id),
       }),
     });
+    console.log(accountAddress)
     return {
       accountAddress,
       discordMemberId,

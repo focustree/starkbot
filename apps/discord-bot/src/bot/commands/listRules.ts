@@ -14,6 +14,12 @@ export async function listRulesCommand(client: Client, interaction: CommandInter
     return { role: role.name, tokenAddress, minBalance, maxBalance };
   });
 
+  if (rules.length == 0) {
+    await interaction.followUp({
+      content: `You have no active rules`
+    });
+    return;
+  }
   await interaction.followUp({
     content: `You have ${rules.length} active rules: \n${rules
       .map((rule) => formatRule(rule))

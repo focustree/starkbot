@@ -1,12 +1,9 @@
-import { Client, CommandInteraction, Interaction } from 'discord.js';
-import { commandList } from '../commands/commandList';
-import {
-  addRuleCommandName,
-  handleAddRuleSubmitModal,
-  handleAddRuleSelectRole,
-  addRuleRoleId,
-} from '../commands/addRule';
-import { deleteRuleId, handleDeleteRule } from '../commands/deleteRule';
+import { Client } from 'discord.js';
+import { handleButton } from './handlers/buttonHandler';
+import { handleCommand } from './handlers/handleCommand';
+import { handleModalSubmit } from './handlers/modalHandler';
+import { handleSelectMenu } from './handlers/selectMenuHandler';
+
 
 export function onInteractionCreate(client: Client): void {
   client.on('interactionCreate', async interaction => {
@@ -14,42 +11,18 @@ export function onInteractionCreate(client: Client): void {
       await handleCommand(client, interaction);
       return;
     }
-
     if (interaction.isSelectMenu()) {
-      if (interaction.customId === addRuleRoleId) {
-        await handleAddRuleSelectRole(interaction);
-        return;
-      }
-      if (interaction.customId === deleteRuleId) {
-        await handleDeleteRule(interaction);
-        return;
-      }
+      await handleSelectMenu(interaction)
+      return
     }
+    if (interaction.isButton()) {
+      await handleButton(interaction)
+      return
 
+    }
     if (interaction.isModalSubmit()) {
-      if (interaction.customId === addRuleCommandName) {
-        await handleAddRuleSubmitModal(interaction);
-        return;
-      }
+      await handleModalSubmit(interaction)
+      return;
     }
   });
-}
-
-async function handleCommand(
-  client: Client,
-  interaction: CommandInteraction
-): Promise<void> {
-
-  const command = commandList.find((c) => c.name === interaction.command.name);
-  if (!command) return;
-
-  try {
-    console.log(`Running command: ${command.name}`);
-    await command.run(client, interaction);
-  } catch (error) {
-    console.error(error);
-    interaction.followUp({
-      content: 'An error has occurred',
-    });
-  }
 }

@@ -33,9 +33,9 @@ const runApp = async () => {
   _appContext = { discordClient, firebase };
 
   await Promise.all([
-    schedule(fetchDiscordMembers, 1),
-    schedule(fetchStarknetIds, 1),
-    schedule(applyRules, 1),
+    schedule(fetchDiscordMembers, 10),
+    schedule(fetchStarknetIds, 10),
+    schedule(applyRules, 10),
   ]);
 };
 

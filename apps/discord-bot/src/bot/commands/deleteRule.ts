@@ -3,6 +3,8 @@ import {
   CommandInteraction,
   Client,
   SelectMenuInteraction,
+  ButtonBuilder,
+  ButtonStyle,
 } from 'discord.js';
 const { ActionRowBuilder, SelectMenuBuilder } = require('discord.js');
 
@@ -11,6 +13,8 @@ import { formatRule, formatShortTokenAddress } from '../../utils';
 
 export const deleteRuleCommandName = 'starkbot-delete-rule';
 export const deleteRuleId = `${deleteRuleCommandName}-role`;
+export const removeRoleFromUserButtonId = `${deleteRuleCommandName}-role-delete`;
+export const keepRoleFromUserButtonId = `${deleteRuleCommandName}-role-keep`;
 
 export async function deleteRuleCommand(client: Client, interaction: CommandInteraction) {
   await interaction.deferReply();
@@ -47,6 +51,22 @@ export async function deleteRuleCommand(client: Client, interaction: CommandInte
     components: [row],
   });
   return;
+}
+
+export async function askKeepOrRemoveRole(interaction: SelectMenuInteraction) {
+  const row = new ActionRowBuilder()
+    .addComponents(
+      new ButtonBuilder()
+        .setCustomId(keepRoleFromUserButtonId)
+        .setLabel('Remove role to user')
+        .setStyle(ButtonStyle.Danger),
+      new ButtonBuilder()
+        .setCustomId(removeRoleFromUserButtonId)
+        .setLabel('Keep assigned role')
+        .setStyle(ButtonStyle.Success),
+    );
+
+  await interaction.reply({ content: 'Should I remove the role assigned to each user?', components: [row] });
 }
 
 export async function handleDeleteRule(interaction: SelectMenuInteraction) {

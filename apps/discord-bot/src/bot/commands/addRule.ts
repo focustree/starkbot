@@ -59,19 +59,18 @@ export async function handleAddRuleSelectRole(
     new ActionRowBuilder().addComponents(
       new TextInputBuilder()
         .setCustomId(addRuleMinBalanceId)
-        .setLabel('Minimum balance')
+        .setLabel('Minimum balance (default 0)')
         .setStyle(TextInputStyle.Short)
-        .setMaxLength(2)
+        .setRequired(false)
     ),
     new ActionRowBuilder().addComponents(
       new TextInputBuilder()
         .setCustomId(addRuleMaxBalanceId)
-        .setLabel('Maximum balance')
+        .setLabel(`Maximum balance (default ${Number.MAX_SAFE_INTEGER})`)
         .setStyle(TextInputStyle.Short)
-        .setMaxLength(2)
+        .setRequired(false)
     )
   );
-
   cache.set(interaction.member.user.id, selectedRoleId);
   await interaction.showModal(modal);
 }
@@ -117,13 +116,10 @@ export async function handleAddRuleSubmitModal(
 
   let minBalanceInput =
     interaction.fields.getTextInputValue(addRuleMinBalanceId);
-  if (minBalanceInput == '') {
-    console.error('Please provide a minimum balance');
-    await interaction.reply({
-      content: '⚠️ Please provide a minimum balance',
-    });
-    return;
+  if (!minBalanceInput) {
+    minBalanceInput = "0";
   }
+
   const minBalance = parseInt(minBalanceInput);
   if (isNaN(minBalance) || minBalance < 0) {
     console.error(
@@ -137,7 +133,7 @@ export async function handleAddRuleSubmitModal(
 
   let maxBalanceInput =
     interaction.fields.getTextInputValue(addRuleMaxBalanceId);
-  if (maxBalanceInput == '') {
+  if (!maxBalanceInput) {
     maxBalanceInput = `${Number.MAX_SAFE_INTEGER}`;
   }
   const maxBalance = parseInt(maxBalanceInput);
