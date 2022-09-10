@@ -50,14 +50,15 @@ async function fetchStarknetIdsForMember(discordMemberId: string) {
         ...uint256.bnToUint256(data.token_id),
       }),
     });
-    console.log(accountAddress)
     return {
       accountAddress,
       discordMemberId,
       id: data.token_id,
     };
   } catch (error) {
-    console.error(error);
+    // TODO
+    // THERE IS AN ERROR HERE ATM
+    // console.error(error);
     return null;
   }
 }

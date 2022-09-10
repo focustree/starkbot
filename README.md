@@ -20,7 +20,8 @@ If you want to try it out live, follow those steps:
 ### Using our infra
 
 1. [Invite starkbot](https://discord.com/api/oauth2/authorize?client_id=993439991822815292&permissions=0&scope=bot%20applications.commands) to your Discord server
-2. Assign it a role and put this role at the top of your role list (so it can manage the below roles)
+2. Assign it a role and put this role at the top of your role list (so it can manage the below roles).  
+Give it a role that has the enough permissions!
 3. Create your first rule
 
 ```

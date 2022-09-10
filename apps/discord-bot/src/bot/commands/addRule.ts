@@ -10,6 +10,8 @@ import { doc, setDoc } from 'firebase/firestore';
 import { number } from 'starknet';
 import { formatRule } from './utils';
 
+const DEFAULT_MIN_VALUE = 1;
+
 export const addRuleCommandName = 'starkbot-add-rule';
 export const addRuleRoleId = `${addRuleCommandName}-role`;
 export const addRuleTokenAddressId = `${addRuleCommandName}-token-address`;
@@ -59,7 +61,7 @@ export async function handleAddRuleSelectRole(
     new ActionRowBuilder().addComponents(
       new TextInputBuilder()
         .setCustomId(addRuleMinBalanceId)
-        .setLabel('Minimum balance (default 0)')
+        .setLabel(`Minimum balance (default ${DEFAULT_MIN_VALUE})`)
         .setStyle(TextInputStyle.Short)
         .setRequired(false)
     ),
@@ -117,11 +119,11 @@ export async function handleAddRuleSubmitModal(
   let minBalanceInput =
     interaction.fields.getTextInputValue(addRuleMinBalanceId);
   if (!minBalanceInput) {
-    minBalanceInput = "0";
+    minBalanceInput = `${DEFAULT_MIN_VALUE}`;
   }
 
   const minBalance = parseInt(minBalanceInput);
-  if (isNaN(minBalance) || minBalance < 0) {
+  if (isNaN(minBalance) || minBalance < 1) {
     console.error(
       'Wrong value for minimum balance, positive integer is required'
     );

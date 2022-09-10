@@ -6,11 +6,16 @@ import {
   ButtonBuilder,
   ButtonStyle,
   Role,
+  ButtonInteraction,
 } from 'discord.js';
 const { ActionRowBuilder, SelectMenuBuilder } = require('discord.js');
 
 import { deleteDoc, doc, getDoc, getDocs } from 'firebase/firestore';
 import { formatRule, formatShortTokenAddress } from './utils';
+
+const ROLE_TO_DELETE_CACHE_ID = 'role-to-dete-cache-id';
+
+let currentRuleIdToDelete: string;
 
 export const deleteRuleCommandName = 'starkbot-delete-rule';
 export const deleteRuleId = `${deleteRuleCommandName}-role`;
@@ -46,30 +51,49 @@ export async function askKeepOrRemoveRole(interaction: SelectMenuInteraction) {
   const row = new ActionRowBuilder()
     .addComponents(
       new ButtonBuilder()
-        .setCustomId(keepRoleFromUserButtonId)
+        .setCustomId(removeRoleFromUserButtonId)
         .setLabel('Remove role to user')
         .setStyle(ButtonStyle.Danger),
       new ButtonBuilder()
-        .setCustomId(removeRoleFromUserButtonId)
+        .setCustomId(keepRoleFromUserButtonId)
         .setLabel('Keep assigned role')
         .setStyle(ButtonStyle.Success),
     );
-  const { role } = await getRoleInfo(interaction)
-  const numberOfUsers = await numberOfUserWithRole(interaction, role)
+  const { ruleId, role, numberOfUsers } = await getRuleInfo(interaction)
+  currentRuleIdToDelete = ruleId;
   await interaction.reply({ content: `Should I remove the role "${role.name}" assigned to ${numberOfUsers} user?`, components: [row] });
 }
 
-export async function handleDeleteRule(interaction: SelectMenuInteraction) {
-  const { role, tokenAddress, minBalance, maxBalance } = await getRoleInfo(interaction)
+export async function handleDeleteRule(interaction: ButtonInteraction, shouldRemoveRole: boolean) {
+  const ruleDocRef = doc(
+    useAppContext().firebase.rulesOfGuild(interaction.guild.id),
+    currentRuleIdToDelete
+  );
+  const ruleSnapshot = await getDoc(ruleDocRef);
+  const rule = ruleSnapshot.data();
+  const role = interaction.guild.roles.cache.get(ruleSnapshot.data().roleId);
+
+  if (shouldRemoveRole) {
+    console.log("1shouldRemoveRole")
+    await removeRoleToUsers(interaction, role)
+  }
+  await deleteDoc(ruleDocRef);
 
   await interaction.reply({
     content: `Deleted rule: ${formatRule({
       role: role.name,
-      tokenAddress,
-      minBalance,
-      maxBalance,
+      tokenAddress: rule.tokenAddress,
+      minBalance: rule.minBalance,
+      maxBalance: rule.maxBalance,
     })}`,
   });
+}
+
+// We can not simply delete the role as a role can be assign to a user for other reason
+// But we can remove it to the user.
+// If the user should still have due to another rule, itshould be applied by the loop that check rules 
+async function removeRoleToUsers(interaction: ButtonInteraction, role: Role) {
+  (await interaction.guild.members.cache.forEach(member => member.roles.remove(role)))
 }
 
 async function getAllRules(interaction: CommandInteraction) {
@@ -89,17 +113,16 @@ async function getAllRules(interaction: CommandInteraction) {
   return ruleOptions
 }
 
-async function getRoleInfo(interaction: SelectMenuInteraction) {
+async function getRuleInfo(interaction: SelectMenuInteraction) {
   const [selectedRuleId] = interaction.values;
   const ruleDocRef = doc(
     useAppContext().firebase.rulesOfGuild(interaction.guild.id),
     selectedRuleId
-  );
+  )
   const ruleSnapshot = await getDoc(ruleDocRef);
-  await deleteDoc(ruleDocRef);
-  const { roleId, tokenAddress, minBalance, maxBalance } = ruleSnapshot.data();
-  const role = interaction.guild.roles.cache.get(roleId);
-  return { role, tokenAddress, minBalance, maxBalance }
+  const role = interaction.guild.roles.cache.get(ruleSnapshot.data().roleId);
+  let usersWithRoleSize = await numberOfUserWithRole(interaction, role);
+  return { ruleId: selectedRuleId, role, numberOfUsers: usersWithRoleSize }
 }
 
 async function numberOfUserWithRole(interaction: SelectMenuInteraction, role: Role) {

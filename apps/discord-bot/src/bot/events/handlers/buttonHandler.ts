@@ -1,14 +1,13 @@
 import { ButtonInteraction } from "discord.js";
-import { deleteRuleId, keepRoleFromUserButtonId, removeRoleFromUserButtonId } from "../../commands/deleteRule";
+import { handleDeleteRule, keepRoleFromUserButtonId, removeRoleFromUserButtonId } from "../../commands/deleteRule";
 
 export async function handleButton(interaction: ButtonInteraction) {
     switch (interaction.customId) {
         case keepRoleFromUserButtonId:
-            // TODO 
-            // await askKeepOrRemoveRole(interaction);
+            await handleDeleteRule(interaction, false);
             return;
         case removeRoleFromUserButtonId:
-            // await askKeepOrRemoveRole(interaction);
+            await handleDeleteRule(interaction, true);
             return;
         default:
             console.log(`Button for "${interaction.customId}" isn't supported yet`)
