@@ -8,7 +8,6 @@ import {
 import { listRulesCommand } from './listRules';
 import { deleteRuleCommandName, deleteRuleCommand } from './deleteRule';
 import { addRuleCommandName, addRuleCommand, addRuleNrOfNfts } from './addRule';
-// import { editRuleCommandName, editRuleCommand } from './editRule';
 
 export interface Command extends ChatInputApplicationCommandData {
     run: (client: Client, interaction: CommandInteraction) => Promise<void>;
@@ -22,7 +21,7 @@ const AddRule: Command = {
         {
             name: addRuleNrOfNfts,
             description: 'Number of NFTs related required',
-            type: 4, // Integer
+            type: 4, // Integer, there is probably a better way to retrieve it using some glob var
             minValue: 1,
             maxValue: 3
         }
@@ -40,14 +39,6 @@ const ListRules: Command = {
     description: 'List all starkbot rules',
     run: listRulesCommand
 };
-
-// const EditRule: Command = {
-//     name: editRuleCommandName,
-//     description: 'Edit a starkbot rule',
-//     run: editRuleCommand
-// };
-
-
 
 // Exporting all commands 
 export const commandList = [AddRule, DeleteRule, ListRules];

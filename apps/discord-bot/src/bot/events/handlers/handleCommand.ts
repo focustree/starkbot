@@ -1,13 +1,12 @@
 import { Client, CommandInteraction } from "discord.js";
 import { commandList } from "../../commands/commandList";
 
-export async function handleCommand(
-    client: Client,
-    interaction: CommandInteraction
-): Promise<void> {
-
+export async function handleCommand(client: Client, interaction: CommandInteraction): Promise<void> {
     const command = commandList.find((c) => c.name === interaction.command.name);
-    if (!command) return;
+    if (!command) {
+        console.log(`Nom command found for "${command.name}"`);
+        return;
+    };
 
     try {
         console.log(`Running command: ${command.name}`);

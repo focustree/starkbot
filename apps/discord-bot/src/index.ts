@@ -4,9 +4,9 @@ import { fetchDiscordMembers } from './workers/fetchDiscordMembers';
 import { schedule } from './utils';
 import { config, safePrintConfig } from './config';
 import { initDiscordClient } from './bot';
-import { Firebase, initFirebase } from './firebase';
 import { fetchStarknetIds } from './workers/fetchStartknetIds';
 import { applyRules } from './workers/applyRules';
+import { Firebase, initFirebase } from './firebase';
 
 export interface AppContext {
   discordClient: Client;

@@ -1,7 +1,7 @@
 import { useAppContext } from '@starkbot/discord-bot';
 import { CommandInteraction, Client } from 'discord.js';
 import { getDocs } from 'firebase/firestore';
-import { formatRule } from '../../utils';
+import { formatRule } from './utils';
 
 export async function listRulesCommand(client: Client, interaction: CommandInteraction) {
   await interaction.deferReply();

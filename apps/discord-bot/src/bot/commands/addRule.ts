@@ -8,7 +8,7 @@ import {
 
 import { doc, setDoc } from 'firebase/firestore';
 import { number } from 'starknet';
-import { formatRule } from '../../utils';
+import { formatRule } from './utils';
 
 export const addRuleCommandName = 'starkbot-add-rule';
 export const addRuleRoleId = `${addRuleCommandName}-role`;
