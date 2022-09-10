@@ -71,14 +71,12 @@ export async function handleDeleteRule(interaction: ButtonInteraction, shouldRem
   );
   const ruleSnapshot = await getDoc(ruleDocRef);
   const rule = ruleSnapshot.data();
-  const role = interaction.guild.roles.cache.get(ruleSnapshot.data().roleId);
+  const role = interaction.guild.roles.cache.get(rule.roleId);
 
   if (shouldRemoveRole) {
-    console.log("1shouldRemoveRole")
     await removeRoleToUsers(interaction, role)
   }
   await deleteDoc(ruleDocRef);
-
   await interaction.reply({
     content: `Deleted rule: ${formatRule({
       role: role.name,
@@ -93,7 +91,7 @@ export async function handleDeleteRule(interaction: ButtonInteraction, shouldRem
 // But we can remove it to the user.
 // If the user should still have due to another rule, itshould be applied by the loop that check rules 
 async function removeRoleToUsers(interaction: ButtonInteraction, role: Role) {
-  (await interaction.guild.members.cache.forEach(member => member.roles.remove(role)))
+  interaction.guild.members.cache.forEach(member => member.roles.remove(role))
 }
 
 async function getAllRules(interaction: CommandInteraction) {

@@ -40,7 +40,6 @@ You need to create a `.env` file with your own discord and firebase credentials:
 
 ```
 ENV=prod
-DISCORD_CLIENT_SECRET=
 DISCORD_CLIENT_ID=
 DISCORD_BOT_TOKEN=
 FIREBASE_CONFIG={"projectId": "<Your Project ID>"}
