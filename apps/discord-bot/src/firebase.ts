@@ -1,10 +1,14 @@
 import { initializeApp } from 'firebase/app';
-import { collection, CollectionReference, connectFirestoreEmulator, DocumentData, Firestore, getFirestore, } from 'firebase/firestore';
+import {
+    collection,
+    CollectionReference,
+    connectFirestoreEmulator,
+    DocumentData,
+    Firestore,
+    getFirestore,
+} from 'firebase/firestore';
 import { Config } from './config';
-import { DiscordGuildDoc, DiscordMemberDoc, DiscordRoleDoc } from './models/discordModel';
-import { RuleDoc } from './models/ruleModel';
-import { StarknetAccountDoc, StarknetIdDoc } from './models/starknetModel';
-import { TokenDoc } from './models/tokenModel';
+
 export function initFirebase(config: Config) {
     const app = initializeApp(config.firebaseConfig);
     const firestore = getFirestore(app);
@@ -51,6 +55,44 @@ export function initFirebase(config: Config) {
 }
 
 export type Firebase = ReturnType<typeof initFirebase>;
+
+export interface DiscordGuildDoc {
+    id: string;
+    name: string;
+}
+
+export interface DiscordMemberDoc {
+    id: string;
+    username: string;
+    roleIds: Array<string>;
+}
+
+export interface DiscordRoleDoc {
+    id: string;
+    name: string;
+}
+
+export interface RuleDoc {
+    roleId: string;
+    tokenAddress: string;
+    minBalance: number;
+    maxBalance: number;
+}
+
+export interface StarknetIdDoc {
+    id: number;
+    accountAddress: string;
+    discordMemberId: string;
+}
+
+export interface StarknetAccountDoc {
+    address: string;
+}
+
+export interface TokenDoc {
+    address: string;
+    balance: number;
+}
 
 // This is just a helper to add the type to the db responses
 const createCollection = <T = DocumentData>(

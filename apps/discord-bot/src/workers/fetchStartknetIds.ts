@@ -31,7 +31,7 @@ async function fetchStarknetIdsForGuild(guild: DiscordGuildDoc) {
 
 async function fetchStarknetIdsForMember(discordMemberId: string) {
   try {
-    const { data, status } = await axios.get(config.starknetIdIndexerUrl, {
+    const { data } = await axios.get(config.starknetIdIndexerUrl, {
       params: {
         type: config.discordType,
         verifier: config.verifierDecimalContractAddress,
