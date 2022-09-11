@@ -1,82 +1,78 @@
 import { useAppContext } from '@starkbot/discord-bot';
 import {
-  BaseCommandInteraction,
+  CommandInteraction,
   Client,
-  MessageActionRow,
-  MessageSelectMenu,
-  Modal,
-  ModalActionRowComponent,
   ModalSubmitInteraction,
   SelectMenuInteraction,
-  TextInputComponent,
 } from 'discord.js';
+
 import { doc, setDoc } from 'firebase/firestore';
 import { number } from 'starknet';
-import { Command } from '..';
-import { formatRule } from '../../utils';
+import { formatRule } from './utils';
+
+const DEFAULT_MIN_VALUE = 1;
 
 export const addRuleCommandName = 'starkbot-add-rule';
 export const addRuleRoleId = `${addRuleCommandName}-role`;
 export const addRuleTokenAddressId = `${addRuleCommandName}-token-address`;
 export const addRuleMinBalanceId = `${addRuleCommandName}-min-balance`;
 export const addRuleMaxBalanceId = `${addRuleCommandName}-max-balance`;
+export const addRuleNrOfNfts = `${addRuleCommandName}-number-of-nfts`;
 
+const { ActionRowBuilder, SelectMenuBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const cache = new Map<string, string>();
 
-export const AddRule: Command = {
-  name: addRuleCommandName,
-  description: 'Assign a role based on owned balances',
-  run: async (client: Client, interaction: BaseCommandInteraction) => {
-    await interaction.deferReply();
-    const roleOptions = interaction.guild.roles.cache.map((role) => ({
-      label: role.name,
-      value: role.id,
-    }));
-    const row = new MessageActionRow().addComponents(
-      new MessageSelectMenu()
-        .setCustomId(addRuleRoleId)
-        .setPlaceholder('Select a role')
-        .addOptions(roleOptions)
-    );
+export async function addRuleCommand(client: Client, interaction: CommandInteraction) {
+  await interaction.deferReply();
+  const roleOptions = interaction.guild.roles.cache.map((role) => ({
+    label: role.name,
+    value: role.id,
+  }));
+  const row = new ActionRowBuilder().addComponents(
+    new SelectMenuBuilder()
+      .setCustomId(addRuleRoleId)
+      .setPlaceholder('Select a role')
+      .addOptions(roleOptions)
+  );
 
-    await interaction.followUp({
-      content: 'Select the role you want to create a rule for:',
-      components: [row],
-    });
-    return;
-  },
-};
+  await interaction.followUp({
+    content: 'Select the role you want to create a rule for:',
+    components: [row],
+  });
+  return;
+}
 
 export async function handleAddRuleSelectRole(
   interaction: SelectMenuInteraction
 ) {
   const [selectedRoleId] = interaction.values;
   const selectedRole = interaction.guild.roles.cache.get(selectedRoleId);
-
-  const modal = new Modal()
+  const modal = new ModalBuilder()
     .setCustomId(addRuleCommandName)
-    .setTitle(`Add a rule for ${selectedRole.name}`)
-    .addComponents(
-      new MessageActionRow<ModalActionRowComponent>().addComponents(
-        new TextInputComponent()
-          .setCustomId(addRuleTokenAddressId)
-          .setLabel('Token contract address')
-          .setStyle('SHORT')
-      ),
-      new MessageActionRow<ModalActionRowComponent>().addComponents(
-        new TextInputComponent()
-          .setCustomId(addRuleMinBalanceId)
-          .setLabel('Minimum balance')
-          .setStyle('SHORT')
-      ),
-      new MessageActionRow<ModalActionRowComponent>().addComponents(
-        new TextInputComponent()
-          .setCustomId(addRuleMaxBalanceId)
-          .setLabel('Maximum balance')
-          .setStyle('SHORT')
-      )
-    );
+    .setTitle(`Add a rule for ${selectedRole.name}`);
 
+  modal.addComponents(
+    new ActionRowBuilder().addComponents(
+      new TextInputBuilder()
+        .setCustomId(addRuleTokenAddressId)
+        .setLabel('Token contract address')
+        .setStyle(TextInputStyle.Short)
+    ),
+    new ActionRowBuilder().addComponents(
+      new TextInputBuilder()
+        .setCustomId(addRuleMinBalanceId)
+        .setLabel(`Minimum balance (default ${DEFAULT_MIN_VALUE})`)
+        .setStyle(TextInputStyle.Short)
+        .setRequired(false)
+    ),
+    new ActionRowBuilder().addComponents(
+      new TextInputBuilder()
+        .setCustomId(addRuleMaxBalanceId)
+        .setLabel(`Maximum balance (default ${Number.MAX_SAFE_INTEGER})`)
+        .setStyle(TextInputStyle.Short)
+        .setRequired(false)
+    )
+  );
   cache.set(interaction.member.user.id, selectedRoleId);
   await interaction.showModal(modal);
 }
@@ -122,15 +118,12 @@ export async function handleAddRuleSubmitModal(
 
   let minBalanceInput =
     interaction.fields.getTextInputValue(addRuleMinBalanceId);
-  if (minBalanceInput == '') {
-    console.error('Please provide a minimum balance');
-    await interaction.reply({
-      content: '⚠️ Please provide a minimum balance',
-    });
-    return;
+  if (!minBalanceInput) {
+    minBalanceInput = `${DEFAULT_MIN_VALUE}`;
   }
+
   const minBalance = parseInt(minBalanceInput);
-  if (isNaN(minBalance) || minBalance < 0) {
+  if (isNaN(minBalance) || minBalance < 1) {
     console.error(
       'Wrong value for minimum balance, positive integer is required'
     );
@@ -142,7 +135,7 @@ export async function handleAddRuleSubmitModal(
 
   let maxBalanceInput =
     interaction.fields.getTextInputValue(addRuleMaxBalanceId);
-  if (maxBalanceInput == '') {
+  if (!maxBalanceInput) {
     maxBalanceInput = `${Number.MAX_SAFE_INTEGER}`;
   }
   const maxBalance = parseInt(maxBalanceInput);

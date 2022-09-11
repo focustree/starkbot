@@ -31,7 +31,7 @@ async function fetchStarknetIdsForGuild(guild: DiscordGuildDoc) {
 
 async function fetchStarknetIdsForMember(discordMemberId: string) {
   try {
-    const { data, status } = await axios.get(config.starknetIdIndexerUrl, {
+    const { data } = await axios.get(config.starknetIdIndexerUrl, {
       params: {
         type: config.discordType,
         verifier: config.verifierDecimalContractAddress,
@@ -56,7 +56,9 @@ async function fetchStarknetIdsForMember(discordMemberId: string) {
       id: data.token_id,
     };
   } catch (error) {
-    console.error(error);
+    // TODO
+    // THERE IS AN ERROR HERE ATM
+    // console.error(error);
     return null;
   }
 }
