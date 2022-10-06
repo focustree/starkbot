@@ -34,6 +34,7 @@ export async function applyRulesForGuild(g: OAuth2Guild) {
           calldata: stark.compileCalldata({ owner: accountAddress }),
         });
         const balance = parseInt(number.hexToDecimalString(balanceHex));
+        console.log(balance);
         if (
           (balance < rule.minBalance || balance > rule.maxBalance) &&
           member.roles.cache.has(rule.roleId)
@@ -49,7 +50,14 @@ export async function applyRulesForGuild(g: OAuth2Guild) {
           !member.roles.cache.has(rule.roleId)
         ) {
           console.log('Add role:', rule.roleId);
-          await member.roles.add(rule.roleId);
+          const theRole = guild.roles.cache.get(rule.roleId);
+          if (theRole.position >= guild.me.roles.highest.position) {
+            console.log("I can't give that role !");
+            console.log("Role position : ", theRole.position);
+            console.log("My highest role : ", guild.me.roles.highest.position);
+          } else {
+            await member.roles.add(rule.roleId);
+          }
         }
       }
     } catch (error) {
