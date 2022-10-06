@@ -33,27 +33,27 @@ async function fetchStarknetIdsForMember(discordMemberId: string) {
   try {
     const { data, status } = await axios.get(config.starknetIdIndexerUrl, {
       params: {
-        type: config.discordType,
+        field: config.discordType,
         verifier: config.verifierDecimalContractAddress,
         data: discordMemberId,
       },
     });
-    if (!data.token_id) {
+    if (!data.id) {
       return null;
     }
     const {
       result: [accountAddress],
     } = await defaultProvider.callContract({
       contractAddress: config.starknetIdContractAddress,
-      entrypoint: 'owner_of',
+      entrypoint: 'ownerOf',
       calldata: stark.compileCalldata({
-        ...uint256.bnToUint256(data.token_id),
+        ...uint256.bnToUint256(data.id),
       }),
     });
     return {
       accountAddress,
       discordMemberId,
-      id: data.token_id,
+      id: data.id,
     };
   } catch (error) {
     console.error(error);

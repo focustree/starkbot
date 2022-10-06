@@ -16,13 +16,13 @@ export class EksSampleStack extends Stack {
       ],
     });*/
 
-    const repository = new ecr.Repository(this, 'starkbot-ecr', {
+    /*const repository = new ecr.Repository(this, 'starkbot-ecr', {
       repositoryName: "starkbot-repository"
-    });
-
-    /*const cluster = new eks.Cluster(this, 'sample-eks', {
-      version: eks.KubernetesVersion.V1_21,
     });*/
+
+    const cluster = new eks.Cluster(this, 'sample-eks', {
+      version: eks.KubernetesVersion.V1_21,
+    });
 
   }
 }
