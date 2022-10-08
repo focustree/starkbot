@@ -1,24 +1,20 @@
 import { FirebaseOptions } from 'firebase/app';
-import { getConfig } from './utils';
-
-const discordClientId = getConfig('DISCORD_CLIENT_ID');
+require("dotenv").config()
 
 export const config = {
-  env: getConfig('ENV'),
+  env: process.env.ENV,
   // Discord
-  discordToken: getConfig('DISCORD_BOT_TOKEN'),
-  discordClientId,
-  discordInviteLink: `https://discord.com/api/oauth2/authorize?client_id=${discordClientId}&permissions=0&scope=bot%20applications.commands`,
+  discordToken: process.env.DISCORD_BOT_TOKEN,
+  discordClientId: process.env.DISCORD_CLIENT_ID,
+  discordInviteLink: `https://discord.com/api/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&permissions=0&scope=bot%20applications.commands`,
   // Firebase
-  firebaseConfig: JSON.parse(getConfig('FIREBASE_CONFIG')) as FirebaseOptions,
-  useLocalFirebase: process.env['USE_LOCAL_FIREBASE'] === 'true',
+  firebaseConfig: JSON.parse(process.env.FIREBASE_CONFIG) as FirebaseOptions,
+  useLocalFirebase: process.env.USE_LOCAL_FIREBASE === 'true',
   // Starknet ID
-  starknetIdContractAddress: getConfig('STARKNET_ID_CONTRACT_ADDRESS'),
-  starknetIdIndexerUrl: getConfig('STARKNET_ID_INDEXER_URL'),
-  verifierDecimalContractAddress: getConfig(
-    'VERIFIER_DECIMAL_CONTRACT_ADDRESS'
-  ),
-  discordType: getConfig('DISCORD_TYPE'),
+  starknetIdContractAddress: process.env.STARKNET_ID_CONTRACT_ADDRESS,
+  starknetIdIndexerUrl: process.env.STARKNET_ID_INDEXER_URL,
+  verifierDecimalContractAddress: process.env.VERIFIER_DECIMAL_CONTRACT_ADDRESS,
+  discordType: process.env.DISCORD_TYPE,
 };
 
 export type Config = typeof config;
