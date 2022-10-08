@@ -33,7 +33,7 @@ async function fetchStarknetIdsForMember(discordMemberId: string) {
   try {
     const { data } = await axios.get(config.starknetIdIndexerUrl, {
       params: {
-        type: config.discordType,
+        field: config.discordType,
         verifier: config.verifierDecimalContractAddress,
         data: discordMemberId,
       },
