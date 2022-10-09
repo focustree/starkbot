@@ -3,12 +3,10 @@ import {
   CommandInteraction,
   Client,
   SelectMenuInteraction,
-  ButtonBuilder,
-  ButtonStyle,
   Role,
   ButtonInteraction,
 } from 'discord.js';
-const { ActionRowBuilder, SelectMenuBuilder } = require('discord.js');
+const { ActionRowBuilder, SelectMenuBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
 import { deleteDoc, doc, getDoc, getDocs } from 'firebase/firestore';
 import { formatRule, formatShortTokenAddress } from './utils';

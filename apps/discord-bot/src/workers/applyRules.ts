@@ -1,4 +1,4 @@
-import { OAuth2Guild } from 'discord.js';
+import { GuildMemberManager, OAuth2Guild } from 'discord.js';
 import { getDocs, query, where } from 'firebase/firestore';
 import { defaultProvider, number, stark } from 'starknet';
 import { useAppContext } from '..';
@@ -48,10 +48,10 @@ export async function applyRulesForGuild(g: OAuth2Guild) {
         ) {
           console.log('Add role:', rule.roleId);
           const theRole = guild.roles.cache.get(rule.roleId);
-          if (theRole.position >= guild.me.roles.highest.position) {
+          if (theRole.position >= guild.members.me.roles.highest.position) {
             console.log("I can't give that role !");
             console.log("Role position : ", theRole.position);
-            console.log("My highest role : ", guild.me.roles.highest.position);
+            console.log("My highest role : ", guild.members.me.roles.highest.position);
           } else {
             await member.roles.add(rule.roleId);
           }

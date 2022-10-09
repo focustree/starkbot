@@ -1,14 +1,17 @@
-const { Client, GatewayIntentBits } = require('discord.js');
-
 import { Config } from '../config';
 import { commandList } from './commands/commandList';
 import { onInteractionCreate } from './events/interactionCreate';
 import { onReady } from './events/ready';
 
+const { Client, GatewayIntentBits } = require('discord.js');
+
 
 export async function initDiscordClient(config: Config) {
   const client = new Client({
-    intents: [GatewayIntentBits.GuildMembers],
+    intents: [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMembers,
+    ],
   });
 
   onReady(client);
