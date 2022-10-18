@@ -4,10 +4,14 @@ import {
   Client,
   ModalSubmitInteraction,
   SelectMenuInteraction,
+  Role,
 } from 'discord.js';
 
 import { doc, setDoc } from 'firebase/firestore';
 import { number } from 'starknet';
+import { logger } from '../../configuration/logger';
+import { IllegalArgumentException } from '../../errors/illegalArgumentError';
+import { createRuleForGuild } from '../../models/rule';
 import { formatRule } from './utils';
 
 const DEFAULT_MIN_VALUE = 1;
@@ -77,93 +81,20 @@ export async function handleAddRuleSelectRole(
   await interaction.showModal(modal);
 }
 
-export async function handleAddRuleSubmitModal(
-  interaction: ModalSubmitInteraction
-) {
-  const selectedRoleId = cache.get(interaction.member.user.id);
-  if (!selectedRoleId) {
-    console.error('No role selected');
-    await interaction.reply({
-      content: 'No role selected',
-    });
-    return;
-  }
-  cache.delete(selectedRoleId);
-  const selectedRole = interaction.guild.roles.cache.get(selectedRoleId);
-  if (!selectedRole) {
-    console.error('Role not found');
-    await interaction.reply({
-      content: 'Role not found',
-    });
-    return;
-  }
+export async function handleAddRuleSubmitModal(interaction: ModalSubmitInteraction) {
 
-  const tokenAddress = interaction.fields.getTextInputValue(
-    addRuleTokenAddressId
-  );
-  if (tokenAddress == '') {
-    console.error('No token address provided');
-    await interaction.reply({
-      content: '⚠️ No token address provided',
-    });
-    return;
-  }
-  if (!number.isHex(tokenAddress)) {
-    console.error('Token adress is not a valid hex string');
-    await interaction.reply({
-      content: '⚠️ Token address is not a valid hex string',
-    });
-    return;
-  }
-
-  let minBalanceInput =
-    interaction.fields.getTextInputValue(addRuleMinBalanceId);
-  if (!minBalanceInput) {
-    minBalanceInput = `${DEFAULT_MIN_VALUE}`;
-  }
-
-  const minBalance = parseInt(minBalanceInput);
-  if (isNaN(minBalance) || minBalance < 1) {
-    console.error(
-      'Wrong value for minimum balance, positive integer is required'
-    );
-    await interaction.reply({
-      content: 'Wrong value for minBalance',
-    });
-    return;
-  }
-
-  let maxBalanceInput =
-    interaction.fields.getTextInputValue(addRuleMaxBalanceId);
-  if (!maxBalanceInput) {
-    maxBalanceInput = `${Number.MAX_SAFE_INTEGER}`;
-  }
-  const maxBalance = parseInt(maxBalanceInput);
-  if (isNaN(maxBalance) || maxBalance < 0) {
-    console.error(
-      'Wrong value for maximum balance, positive integer is required'
-    );
-    await interaction.reply({
-      content: 'Wrong value for maxBalance',
-    });
-    return;
-  }
+  const selectedRoleId = getSelectedRoleId(interaction);
+  const selectedRole = getSelectedRole(interaction, selectedRoleId);
+  const tokenAddress = getTokenAdress(interaction);
+  const minBalance = getMinBalance(interaction);
+  const maxBalance = getMaxBalance(interaction);
 
   if (maxBalance < minBalance) {
-    console.error('Maximum must be bigger than minimum');
-    await interaction.reply({
-      content: 'Min bigger than max',
-    });
-    return;
+    throw new IllegalArgumentException('Maximum must be bigger than minimum')
   }
+  cache.delete(selectedRoleId);
 
-  const { rulesOfGuild } = useAppContext().firebase;
-  await setDoc(doc(rulesOfGuild(interaction.guild.id)), {
-    roleId: selectedRoleId,
-    tokenAddress,
-    minBalance,
-    maxBalance,
-  });
+  await createRuleForGuild(interaction.guild, selectedRoleId, tokenAddress, minBalance, maxBalance);
 
   await interaction.reply({
     content: `Created new rule: ${formatRule({
@@ -173,4 +104,59 @@ export async function handleAddRuleSubmitModal(
       maxBalance,
     })}`,
   });
+}
+
+
+function getSelectedRoleId(interaction: ModalSubmitInteraction): string {
+  const selectedRoleId = cache.get(interaction.member.user.id);
+  if (!selectedRoleId) {
+    throw new IllegalArgumentException('No role selected');
+  }
+  return selectedRoleId;
+}
+
+function getSelectedRole(interaction: ModalSubmitInteraction, roleId: string): Role {
+  const selectedRole = interaction.guild.roles.cache.get(roleId);
+  if (!selectedRole) {
+    throw new IllegalArgumentException('Role not found');
+  }
+  return selectedRole;
+}
+
+
+function getTokenAdress(interaction: ModalSubmitInteraction): string {
+  const tokenAddress = interaction.fields.getTextInputValue(addRuleTokenAddressId);
+  if (tokenAddress == '') {
+    throw new IllegalArgumentException('⚠️ No token address provided');
+  }
+  if (!number.isHex(tokenAddress)) {
+    throw new IllegalArgumentException('⚠️ Token address is not a valid hex string');
+  }
+  return tokenAddress;
+}
+
+function getMinBalance(interaction: ModalSubmitInteraction): number {
+  let minBalanceInput =
+    interaction.fields.getTextInputValue(addRuleMinBalanceId);
+  if (!minBalanceInput) {
+    minBalanceInput = `${DEFAULT_MIN_VALUE}`;
+  }
+  const minBalance = parseInt(minBalanceInput);
+  if (isNaN(minBalance) || minBalance < 1) {
+    throw new IllegalArgumentException('Wrong value for minimum balance, positive integer is required');
+  }
+  return minBalance;
+}
+
+function getMaxBalance(interaction: ModalSubmitInteraction): number {
+  let maxBalanceInput =
+    interaction.fields.getTextInputValue(addRuleMaxBalanceId);
+  if (!maxBalanceInput) {
+    maxBalanceInput = `${Number.MAX_SAFE_INTEGER}`;
+  }
+  const maxBalance = parseInt(maxBalanceInput);
+  if (isNaN(maxBalance) || maxBalance < 0) {
+    throw new IllegalArgumentException('Wrong value for maximum balance, positive integer is required');
+  }
+  return maxBalance;
 }

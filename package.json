@@ -21,7 +21,8 @@
     "discord.js": "^14.3.0",
     "dotenv": "^16.0.2",
     "firebase": "^9.8.4",
-    "starknet": "^3.16.1"
+    "starknet": "^3.16.1",
+    "winston": "^3.8.2"
   },
   "devDependencies": {
     "@nrwl/cli": "14.4.0",

@@ -1,3 +1,4 @@
+import { logger } from "apps/discord-bot/src/configuration/logger";
 import { SelectMenuInteraction } from "discord.js";
 import { addRuleRoleId, handleAddRuleSelectRole } from "../../commands/addRule";
 import { askKeepOrRemoveRole, deleteRuleId } from "../../commands/deleteRule";
@@ -12,6 +13,6 @@ export async function handleSelectMenu(interaction: SelectMenuInteraction) {
             await handleAddRuleSelectRole(interaction);
             return;
         default:
-            console.log(`Select for "${interaction.customId}" isn't supported yet`)
+            logger.warn(`Select for "${interaction.customId}" isn't supported yet`)
     }
 }

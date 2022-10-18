@@ -1,4 +1,5 @@
 import { FirebaseOptions } from 'firebase/app';
+import { logger } from './logger';
 require("dotenv").config()
 
 export const config = {
@@ -24,5 +25,5 @@ export function safePrintConfig() {
   delete safeConfig.firebaseConfig;
   delete safeConfig.discordToken;
   safeConfig['firebaseProjectId'] = config.firebaseConfig.projectId;
-  console.log('Config:', safeConfig);
+  logger.info('Config:', safeConfig);
 }

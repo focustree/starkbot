@@ -1,6 +1,11 @@
-import { Config } from '../config';
+
+const { Client, GatewayIntentBits } = require('discord.js');
+
+import { Config } from '../configuration/config';
+import { logger } from '../configuration/logger';
+
 import { commandList } from './commands/commandList';
-import { onInteractionCreate } from './events/interactionCreate';
+import { onInteractionCreate } from './events/interactionCreateHandler';
 import { onReady } from './events/ready';
 
 const { Client, GatewayIntentBits } = require('discord.js');
@@ -19,6 +24,7 @@ export async function initDiscordClient(config: Config) {
   await client.login(config.discordToken);
   await client.application.commands.set(commandList);
 
+  logger.info('Discord client initialized');
   return client;
 }
 

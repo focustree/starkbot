@@ -1,3 +1,4 @@
+import { logger } from "apps/discord-bot/src/configuration/logger";
 import { ButtonInteraction } from "discord.js";
 import { handleDeleteRule, keepRoleFromUserButtonId, removeRoleFromUserButtonId } from "../../commands/deleteRule";
 
@@ -10,6 +11,6 @@ export async function handleButton(interaction: ButtonInteraction) {
             await handleDeleteRule(interaction, true);
             return;
         default:
-            console.log(`Button for "${interaction.customId}" isn't supported yet`)
+            logger.warn(`Button for "${interaction.customId}" isn't supported yet`)
     }
 }

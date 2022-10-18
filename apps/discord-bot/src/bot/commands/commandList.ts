@@ -1,7 +1,6 @@
 import {
-    ChatInputApplicationCommandData,
-    CommandInteraction,
-    Client
+    ChatInputApplicationCommandData, CommandInteraction, Client, PermissionFlagsBits,
+    // ApplicationCommandOptionType
 } from 'discord.js';
 
 // Importing all commands func and names 
@@ -17,21 +16,23 @@ const AddRule: Command = {
     name: addRuleCommandName,
     description: 'Assign a role based on owned balances',
     run: addRuleCommand,
-    options: [
-        {
-            name: addRuleNrOfNfts,
-            description: 'Number of NFTs related required',
-            type: 4, // Integer, there is probably a better way to retrieve it using some glob var
-            minValue: 1,
-            maxValue: 3
-        }
-    ]
+    // options: [
+    //     {
+    //         name: addRuleNrOfNfts,
+    //         description: 'Number of NFTs related required',
+    //         type: ApplicationCommandOptionType.Integer,
+    //         minValue: 1,
+    //         maxValue: 3
+    //     }
+    // ],
+    defaultMemberPermissions: PermissionFlagsBits.Administrator
 };
 
 const DeleteRule: Command = {
     name: deleteRuleCommandName,
     description: 'Delete a starkbot rule',
-    run: deleteRuleCommand
+    run: deleteRuleCommand,
+    defaultMemberPermissions: PermissionFlagsBits.Administrator
 };
 
 const ListRules: Command = {

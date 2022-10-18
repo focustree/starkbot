@@ -1,6 +1,6 @@
 import { Client } from 'discord.js';
 import { handleButton } from './handlers/buttonHandler';
-import { handleCommand } from './handlers/handleCommand';
+import { handleCommand } from './handlers/commandHandler';
 import { handleModalSubmit } from './handlers/modalHandler';
 import { handleSelectMenu } from './handlers/selectMenuHandler';
 
