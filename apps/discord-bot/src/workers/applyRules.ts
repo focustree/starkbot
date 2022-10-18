@@ -1,4 +1,6 @@
+
 import { GuildMember, OAuth2Guild } from 'discord.js';
+
 import { getDocs, query, where } from 'firebase/firestore';
 import { defaultProvider, number, stark } from 'starknet';
 import { useAppContext } from '..';
@@ -19,6 +21,7 @@ async function applyRulesForGuild(g: OAuth2Guild) {
 
   const guildMembers = await guild.members.fetch();
   for (const [id, member] of guildMembers) {
+
     await applyRulesForMember(id, member, rules)
   }
 }
@@ -49,6 +52,7 @@ async function applyRulesForMember(id: string, member: GuildMember, rules: RuleD
       ) {
         logger.info(`Add role: ${rule.roleId}`);
         await member.roles.add(rule.roleId);
+
       }
     }
   } catch (error) {

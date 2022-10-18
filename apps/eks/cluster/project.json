@@ -1,0 +1,20 @@
+{
+    "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "apps/eks/cluster",
+    "projectType": "application",
+    "targets": {
+      "deploy": {
+        "executor": "nx:run-commands",
+        "options": {
+            "cwd": "./apps/eks/cluster",
+            "commands": [
+                "echo $PWD",
+                "npm run build",
+                "cdk deploy"
+            ]
+        }
+      }
+    },
+    "tags": []
+  }
+  

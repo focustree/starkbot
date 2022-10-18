@@ -1,6 +1,13 @@
 import { useAppContext } from '@starkbot/discord-bot';
-import { CommandInteraction, Client, SelectMenuInteraction, ButtonBuilder, ButtonStyle, Role, ButtonInteraction, BaseInteraction, } from 'discord.js';
-const { ActionRowBuilder, SelectMenuBuilder } = require('discord.js');
+
+import {
+  CommandInteraction,
+  Client,
+  SelectMenuInteraction,
+  Role,
+  ButtonInteraction,
+} from 'discord.js';
+const { ActionRowBuilder, SelectMenuBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
 import { deleteRuleForGuild, getRuleForGuild, getRulesForGuild } from '../../models/rule';
 import { formatRule, formatShortTokenAddress, numberOfUserWithRole } from './utils';

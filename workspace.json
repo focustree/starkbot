@@ -4,6 +4,7 @@
   "projects": {
     "discord-bot": "apps/discord-bot",
     "starknet": "apps/starknet",
-    "firebase": "apps/firebase"
+    "firebase": "apps/firebase",
+    "eks" : "apps/eks/cluster"
   }
 }
