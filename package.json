@@ -8,8 +8,8 @@
     "pnpm": "7"
   },
   "scripts": {
-    "dev": "nx run-many --target start --all --parallel --output-style stream",
-    "dev:infra": "nx run-many --target start --projects starknet,firebase --parallel --output-style stream",
+    "dev": "nx run-many --target start --projects firebase,discord-bot --parallel --output-style stream",
+    "dev:infra": "nx run-many --target start --projects firebase --parallel --output-style stream",
     "dev:bot": "nx start discord-bot",
     "docker:build:base": "docker build -f base.dockerfile -t ghcr.io/gabsn/starkbot-base:$(git rev-parse --short HEAD) . ",
     "docker:tag:base": "docker tag ghcr.io/gabsn/starkbot-base ghcr.io/gabsn/starkbot-base:$(git rev-parse --short HEAD)",

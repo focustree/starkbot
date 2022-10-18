@@ -8,8 +8,6 @@ import { commandList } from './commands/commandList';
 import { onInteractionCreate } from './events/interactionCreateHandler';
 import { onReady } from './events/ready';
 
-const { Client, GatewayIntentBits } = require('discord.js');
-
 
 export async function initDiscordClient(config: Config) {
   const client = new Client({

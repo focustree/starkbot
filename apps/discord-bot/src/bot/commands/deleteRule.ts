@@ -6,6 +6,7 @@ import {
   SelectMenuInteraction,
   Role,
   ButtonInteraction,
+  BaseInteraction,
 } from 'discord.js';
 const { ActionRowBuilder, SelectMenuBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
