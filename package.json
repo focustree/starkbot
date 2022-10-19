@@ -8,8 +8,8 @@
     "pnpm": "7"
   },
   "scripts": {
-    "dev": "nx run-many --target start --all --parallel --output-style stream",
-    "dev:infra": "nx run-many --target start --projects starknet,firebase --parallel --output-style stream",
+    "dev": "nx run-many --target start --projects firebase,discord-bot --parallel --output-style stream",
+    "dev:infra": "nx run-many --target start --projects firebase --parallel --output-style stream",
     "dev:bot": "nx start discord-bot",
     "docker:build:base": "docker build -f base.dockerfile -t ghcr.io/gabsn/starkbot-base:$(git rev-parse --short HEAD) . ",
     "docker:tag:base": "docker tag ghcr.io/gabsn/starkbot-base ghcr.io/gabsn/starkbot-base:$(git rev-parse --short HEAD)",
@@ -18,9 +18,11 @@
   "dependencies": {
     "async-mutex": "^0.3.2",
     "axios": "^0.27.2",
-    "discord.js": "^13.8.1",
+    "discord.js": "^14.3.0",
+    "dotenv": "^16.0.2",
     "firebase": "^9.8.4",
-    "starknet": "^3.16.1"
+    "starknet": "^3.16.1",
+    "winston": "^3.8.2"
   },
   "devDependencies": {
     "@nrwl/cli": "14.4.0",

@@ -1,6 +1,7 @@
 import { OAuth2Guild } from 'discord.js';
 import { doc, setDoc } from 'firebase/firestore';
 import { useAppContext } from '..';
+import { logger } from '../configuration/logger';
 
 export async function fetchDiscordMembers() {
   const guilds = await useAppContext().discordClient.guilds.fetch();
@@ -16,7 +17,7 @@ async function fetchDiscordMembersForGuild(g: OAuth2Guild) {
     id: guild.id,
     name: guild.name,
   });
-  console.log('Fetching members for guild:', guild.name);
+  logger.info(`Fetching members for guild: ${guild.name}`);
   const guildMembers = await guild.members.fetch();
   for (const [_, member] of guildMembers) {
     for (const [_, role] of member.roles.cache) {

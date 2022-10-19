@@ -1,7 +1,8 @@
 import { Client } from 'discord.js';
+import { logger } from '../../configuration/logger';
 
 export function onReady(client: Client): void {
-  client.on('ready', async () => {
-    console.log(`${client.user.username} is online`);
+  client.once('ready', () => {
+    logger.info(`${client.user.username} is online`);
   });
 }

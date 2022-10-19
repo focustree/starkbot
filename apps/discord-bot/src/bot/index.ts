@@ -1,32 +1,28 @@
-import {
-  BaseCommandInteraction,
-  ChatInputApplicationCommandData,
-  Client,
-  Intents,
-} from 'discord.js';
-import { Config } from '../config';
-import { AddRule } from './commands/addRule';
-import { DeleteRule } from './commands/deleteRule';
-import { ListRules } from './commands/listRules';
-import { onInteractionCreate } from './events/interactionCreate';
+
+const { Client, GatewayIntentBits } = require('discord.js');
+
+import { Config } from '../configuration/config';
+import { logger } from '../configuration/logger';
+
+import { commandList } from './commands/commandList';
+import { onInteractionCreate } from './events/interactionCreateHandler';
 import { onReady } from './events/ready';
 
-export const commands = [AddRule, ListRules, DeleteRule];
 
 export async function initDiscordClient(config: Config) {
   const client = new Client({
-    intents: [Intents.FLAGS.GUILD_MEMBERS],
+    intents: [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMembers,
+    ],
   });
 
   onReady(client);
   onInteractionCreate(client);
-
   await client.login(config.discordToken);
-  await client.application.commands.set(commands);
+  await client.application.commands.set(commandList);
 
+  logger.info('Discord client initialized');
   return client;
 }
 
-export interface Command extends ChatInputApplicationCommandData {
-  run: (client: Client, interaction: BaseCommandInteraction) => Promise<void>;
-}

@@ -19,8 +19,9 @@ If you want to try it out live, follow those steps:
 
 ### Using our infra
 
-1. [Invite starkbot](https://discord.com/api/oauth2/authorize?client_id=993439991822815292&permissions=0&scope=bot%20applications.commands) to your Discord server
-2. Assign it a role and put this role at the top of your role list (so it can manage the below roles)
+1. [Invite starkbot](https://discord.com/api/oauth2/authorize?client_id=993439991822815292&permissions=268435456&scope=bot%20applications.commands) to your Discord server
+2. Assign it a role and put this role at the top of your role list (so it can manage the below roles).  
+Give it a role that has the enough permissions!
 3. Create your first rule
 
 ```
@@ -38,9 +39,9 @@ docker run -d --restart always --env-file .env ghcr.io/gabsn/starkbot-discord-bo
 You need to create a `.env` file with your own discord and firebase credentials:
 
 ```
-ENV=prod
-DISCORD_CLIENT_SECRET=
+ENV=dev
 DISCORD_CLIENT_ID=
+DISCORD_CLIENT_SECRET=
 DISCORD_BOT_TOKEN=
 FIREBASE_CONFIG={"projectId": "<Your Project ID>"}
 FIRESTORE_EMULATOR_HOST=localhost:8081
@@ -50,13 +51,15 @@ VERIFIER_DECIMAL_CONTRACT_ADDRESS=2858829565965467824506234522366406559425492229
 DISCORD_TYPE=28263441981469284
 ```
 
+Fill the 3 missing DISCORD variables with your bot application credentials and the firebase config with your firebase project ID.
+
 ## Roadmap
 
 ### Features
 
 - [x] Create / Delete / List rules
 - [x] Automatically assign roles based on having or not an NFT
-- [ ] Specify `min` and `max` balance value in rules to make the difference between whales and small holders.
+- [x] Specify `min` and `max` balance value in rules to make the difference between whales and small holders.
 - [ ] Support rules on NFT attributes to create different roles inside the same NFT collection
 - [ ] Support templating engine to create dynamic roles (ex: `LVL: <player_level>`)
 
