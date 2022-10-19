@@ -97,3 +97,5 @@ pnpm dev
 ```
 pnpm nx start discord-bot
 ```
+
+test
