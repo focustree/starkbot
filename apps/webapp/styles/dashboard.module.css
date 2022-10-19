@@ -1,0 +1,33 @@
+.bots {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.hovertext {
+    visibility: hidden;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -60px;
+    background-color: grey;
+    color: #fff;
+    text-align: center;
+    padding: 5px;
+    border-radius: 6px;
+    font-size: 1rem;
+   
+    position: absolute;
+    z-index: 1;
+}
+
+.tooltip:hover .hovertext {
+    visibility: visible;
+}

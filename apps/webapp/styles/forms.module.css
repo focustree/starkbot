@@ -1,0 +1,23 @@
+.links {
+    max-width: 80vw;
+    width: 36rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.checkbox {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.checkbox label {
+    width: fit-content;
+    margin: 1rem;
+}
+
+.checkbox input {
+    width: min-content;
+    margin: 1rem;
+}
