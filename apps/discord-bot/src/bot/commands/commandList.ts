@@ -5,8 +5,9 @@ import {
 
 // Importing all commands func and names 
 import { listRulesCommand } from './listRules';
+import { listRuleForRoleCommandName, listRulesForRoleCommand } from './listRulesForRole';
 import { deleteRuleCommandName, deleteRuleCommand } from './deleteRule';
-import { addRuleCommandName, addRuleCommand, addRuleNrOfNfts } from './addRule';
+import { addRuleCommandName, addRuleCommand } from './addRule';
 
 export interface Command extends ChatInputApplicationCommandData {
     run: (client: Client, interaction: CommandInteraction) => Promise<void>;
@@ -41,5 +42,11 @@ const ListRules: Command = {
     run: listRulesCommand
 };
 
+const ListRulesForRole: Command = {
+    name: listRuleForRoleCommandName,
+    description: 'List all starkbot rules for a specific role',
+    run: listRulesForRoleCommand
+};
+
 // Exporting all commands 
-export const commandList = [AddRule, DeleteRule, ListRules];
+export const commandList = [AddRule, DeleteRule, ListRules, ListRulesForRole];
