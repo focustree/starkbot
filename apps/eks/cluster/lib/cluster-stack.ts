@@ -17,10 +17,10 @@ export class EksSampleStack extends Stack {
       assumedBy: new iam.AccountPrincipal(this.account),
     });*/
 
-    /*const repository = new ecr.Repository(this, 'starkbot-ecr', {
+    const repository = new ecr.Repository(this, 'starkbot-ecr', {
       repositoryName: "starkbot-repository"
-    });*/
-
+    });
+    
     const cluster = new eks.Cluster(this, id='starkbot-cluster', {
       clusterName: "starkbot-cluster",
       defaultCapacityInstance: new ec2.InstanceType("t3.medium"),
