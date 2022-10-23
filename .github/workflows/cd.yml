@@ -88,5 +88,5 @@ jobs:
           ECR_REPOSITORY: starkbot-repository
           IMAGE_TAG: nodejs_demo_image
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./apps/discord-bot/
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
