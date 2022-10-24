@@ -6,4 +6,6 @@ WORKDIR /starkbot
 COPY pnpm-lock.yaml .
 RUN pnpm fetch
 COPY package.json .
+COPY nx.json .
+COPY workspace.json .
 RUN pnpm install --offline
