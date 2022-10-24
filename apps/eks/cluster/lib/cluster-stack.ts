@@ -17,8 +17,12 @@ export class EksSampleStack extends Stack {
       assumedBy: new iam.AccountPrincipal(this.account),
     });*/
 
-    const repository = new ecr.Repository(this, 'starkbot-ecr', {
+    const worker_repository = new ecr.Repository(this, 'starkbot-ecr', {
       repositoryName: "starkbot-repository"
+    });
+
+    const base_repository = new ecr.Repository(this, 'starkbot-base-ecr', {
+      repositoryName: "starkbot-base-repository"
     });
     
     const cluster = new eks.Cluster(this, id='starkbot-cluster', {
@@ -34,12 +38,6 @@ export class EksSampleStack extends Stack {
       minSize: 1,
       maxSize: 10,
     });
-
-    /*cluster.addAutoScalingGroupCapacity('scaling-group', {
-      instanceType: new ec2.InstanceType('t3.medium'),
-      spotPrice: '0.2',
-      maxCapacity: 5,
-    })*/
 
     AutoScaler.enableAutoscaling(this, cluster, nodegroup);
 

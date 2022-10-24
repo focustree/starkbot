@@ -11,9 +11,10 @@
     "dev": "nx run-many --target start --projects firebase,discord-bot --parallel --output-style stream",
     "dev:infra": "nx run-many --target start --projects firebase --parallel --output-style stream",
     "dev:bot": "nx start discord-bot",
-    "docker:build:base": "docker build -f base.dockerfile -t ghcr.io/gabsn/starkbot-base:$(git rev-parse --short HEAD) . ",
-    "docker:tag:base": "docker tag ghcr.io/gabsn/starkbot-base ghcr.io/gabsn/starkbot-base:$(git rev-parse --short HEAD)",
-    "docker:push:base": "docker push ghcr.io/gabsn/starkbot-base:$(git rev-parse --short HEAD)"
+    "docker:build:base": "docker build -f base.dockerfile -t 071785475400.dkr.ecr.eu-west-3.amazonaws.com/starkbot-base-repository:$(git rev-parse --short HEAD) . ",
+    "docker:tag:base": "docker tag 071785475400.dkr.ecr.eu-west-3.amazonaws.com/starkbot-base-repository 071785475400.dkr.ecr.eu-west-3.amazonaws.com/starkbot-base-repository:$(git rev-parse --short HEAD)",
+    "docker:login:base": "aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin 071785475400.dkr.ecr.eu-west-3.amazonaws.com",
+    "docker:push:base": "docker push 071785475400.dkr.ecr.eu-west-3.amazonaws.com/starkbot-base-repository:$(git rev-parse --short HEAD)"
   },
   "dependencies": {
     "async-mutex": "^0.3.2",

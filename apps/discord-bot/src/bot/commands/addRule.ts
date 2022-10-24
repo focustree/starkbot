@@ -120,7 +120,7 @@ function getSelectedRole(interaction: ModalSubmitInteraction, roleId: string): R
 
 
 function getTokenAdress(interaction: ModalSubmitInteraction): string {
-  const tokenAddress = interaction.fields.getTextInputValue(addRuleTokenAddressId);
+  const tokenAddress = interaction.fields.getTextInputValue(addRuleTokenAddressId).toLowerCase();
   if (tokenAddress == '') {
     throw new IllegalArgumentException('⚠️ No token address provided');
   }
