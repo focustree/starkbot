@@ -7,8 +7,8 @@ on:
     branches: [ "main" ]
 
   # Triggers the workflow every day at midnight
-  schedule:
-    - cron: "0 0 * * 0"
+  #schedule:
+  #  - cron: "0 0 * * 0"
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -46,6 +46,11 @@ jobs:
         env:
           STRATEGY_CONTEXT: ${{ toJson(strategy) }}
         run: echo "$STRATEGY_CONTEXT"
+
+      - name: Dump HEAD ref
+        env:
+          HEAD_REF: ${{ toJson(github.head_ref) }}
+        run: echo "$HEAD_REF"
 
       - name: Dump matrix context
         env:
@@ -86,7 +91,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: starkbot-repository
-          IMAGE_TAG: nodejs_demo_image
+          IMAGE_TAG: $HEAD_REF
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./apps/discord-bot/
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG

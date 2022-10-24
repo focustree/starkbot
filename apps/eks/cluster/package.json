@@ -12,6 +12,8 @@
     "cdk": "cdk"
   },
   "devDependencies": {
-    "@types/node": "^18.11.4"
+    "@types/node": "^18.11.4",
+    "@types/jest": "^27.5.2",
+    "@types/prettier": "2.6.0"
   }
 }

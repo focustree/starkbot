@@ -10,9 +10,12 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "dev": "nx run-many --target start --projects firebase,discord-bot --parallel --output-style stream",
-    "dev:infra": "nx run-many --target start --projects firebase --parallel --output-style stream",
+    "infra": "nx run-many --target start --projects stack,kube --parallel --output-style stream",
     "dev:bot": "nx start discord-bot",
+    "dev:firebase": "nx start firebase",
     "infra:deploy": "nx start stack",
+    "kube:deploy": "nx start kube",
+    "kube:clean": "nx delete kube",
     "docker:build:base": "docker build -f base.dockerfile -t 071785475400.dkr.ecr.eu-west-3.amazonaws.com/starkbot-base-repository:$(git rev-parse --short HEAD) . ",
     "docker:tag:base": "docker tag 071785475400.dkr.ecr.eu-west-3.amazonaws.com/starkbot-base-repository 071785475400.dkr.ecr.eu-west-3.amazonaws.com/starkbot-base-repository:$(git rev-parse --short HEAD)",
     "docker:login:base": "aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin 071785475400.dkr.ecr.eu-west-3.amazonaws.com",
@@ -27,8 +30,10 @@
     "starknet": "^3.16.1",
     "winston": "^3.8.2",
     "aws-cdk-lib": "2.39.1",
-    "constructs": "^10.0.0",
-    "source-map-support": "^0.5.21"
+    "source-map-support": "^0.5.21",
+    "cdk8s": "^2.5.18",
+    "cdk8s-plus-22": "^2.0.0-rc.152",
+    "constructs": "^10.1.131"
   },
   "devDependencies": {
     "@nrwl/cli": "14.4.0",
@@ -46,12 +51,11 @@
     "nx": "14.4.0",
     "prettier": "^2.6.2",
     "tslib": "^2.4.0",
-    "typescript": "~4.7.2",
-    "@types/jest": "^27.5.2",
-    "@types/prettier": "2.6.0",
     "jest": "^27.5.1",
     "ts-jest": "^27.1.4",
     "aws-cdk": "2.39.1",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "cdk8s-cli": "^2.1.21",
+    "typescript": "^4.8.4"
   }
 }
