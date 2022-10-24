@@ -8,10 +8,15 @@
         "options": {
             "cwd": "./apps/eks/cluster",
             "commands": [
-                "echo $PWD",
                 "npm run build",
-                "cdk deploy"
+                "cdk deploy --profile $AWS_PROFILE --require-approval never"
             ]
+        }
+      },
+      "start": {
+        "executor": "@nrwl/node:node",
+        "options": {
+          "buildTarget": "stack:deploy"
         }
       }
     },
