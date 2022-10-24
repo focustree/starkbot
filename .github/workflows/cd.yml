@@ -49,8 +49,8 @@ jobs:
 
       - name: Dump HEAD ref
         env:
-          HEAD_REF: ${{ github.ref }}
-        run: echo "$HEAD_REF"
+          RUN_ID: ${{ github.run_id }}
+        run: echo "$RUN_ID"
 
       - name: Dump matrix context
         env:
@@ -91,7 +91,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: starkbot-repository
-          IMAGE_TAG: $HEAD_REF
+          IMAGE_TAG: $RUN_ID
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./apps/discord-bot/
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
