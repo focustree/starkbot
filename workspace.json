@@ -6,6 +6,7 @@
     "starknet": "apps/starknet",
     "firebase": "apps/firebase",
     "stack": "apps/eks/cluster",
-    "kube": "apps/eks/kube"
+    "kube": "apps/eks/kube",
+    "website": "apps/webapp"
   }
 }
