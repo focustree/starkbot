@@ -17,6 +17,7 @@
     "infra:deploy": "nx start stack",
     "kube:deploy": "nx start kube",
     "kube:clean": "nx delete kube",
+    "web:launch": "nx start website",
     "docker:build:base": "pnpm fetch-ecr && docker build -f base.dockerfile -t ${npm_package_ecr} . ",
     "docker:push:base:latest": "docker push ${npm_package_ecr}",
     "docker:tag:base": "docker tag ${npm_package_ecr} ${npm_package_ecr}:$(git rev-parse --short HEAD)",
@@ -35,7 +36,18 @@
     "source-map-support": "^0.5.21",
     "cdk8s": "^2.5.18",
     "cdk8s-plus-22": "^2.0.0-rc.152",
-    "constructs": "^10.1.131"
+    "constructs": "^10.1.131",
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.20.0",
+    "fs": "^0.0.1-security",
+    "js-cookie": "^3.0.1",
+    "jsonwebtoken": "^8.5.1",
+    "next": "^12.3.1",
+    "next-session": "^4.0.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "router": "^1.3.7",
+    "swr": "^1.3.0"
   },
   "devDependencies": {
     "@nrwl/cli": "14.4.0",

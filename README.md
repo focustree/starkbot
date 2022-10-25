@@ -50,6 +50,9 @@ STARKNET_ID_INDEXER_URL=https://goerli.indexer.starknet.id/field_data_to_id
 VERIFIER_DECIMAL_CONTRACT_ADDRESS=2858829565965467824506234522366406559425492229537050207406969294731822669741
 DISCORD_TYPE=28263441981469284
 AWS_PROFILE=
+JWT_KEY =
+RST_KEY = 
+API_URL = "http://localhost:3000/api"
 ```
 
 Fill the 3 missing DISCORD variables with your bot application credentials and the firebase config with your firebase project ID.

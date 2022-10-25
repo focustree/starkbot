@@ -1,0 +1,25 @@
+{
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "apps/webapp",
+    "projectType": "application",
+    "targets": {
+      "dev": {
+        "executor": "nx:run-commands",
+        "options": {
+            "cwd": "./apps/webapp",
+            "commands": [
+                "npm run dev"
+            ]
+        }
+      },
+      "start": {
+        "executor": "nx:run-commands",
+        "options": {
+          "commands": [
+            "nx run website:dev"
+          ]
+        }
+      }
+    },
+    "tags": []
+}
