@@ -7,8 +7,8 @@ on:
     branches: [ "main" ]
 
   # Triggers the workflow every day at midnight
-  schedule:
-    - cron: "0 0 * * 0"
+  #schedule:
+  #  - cron: "0 0 * * 0"
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -52,7 +52,7 @@ jobs:
           MATRIX_CONTEXT: ${{ toJson(matrix) }}
         run: echo "$MATRIX_CONTEXT"
 
-      - name: Show default environment variables
+      - name: Show default environment variables 
         run: |
           echo "The job_id is: $GITHUB_JOB"   # reference the default environment variables
           echo "The id of this action is: $GITHUB_ACTION"   # reference the default environment variables
@@ -76,7 +76,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-2
+          aws-region: eu-west-3
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -86,7 +86,9 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: starkbot-repository
-          IMAGE_TAG: nodejs_demo_image
+          IMAGE_TAG: ${{ github.run_id }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY ./apps/discord-bot/
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG

@@ -1,23 +1,35 @@
 {
     "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-    "sourceRoot": "apps/eks/cluster",
+    "sourceRoot": "apps/eks/kube",
     "projectType": "application",
     "targets": {
       "compile": {
         "executor": "nx:run-commands",
         "options": {
-            "cwd": "./apps/eks/cluster",
+            "cwd": "./apps/eks/kube",
             "commands": [
+                "npm run build",
+                "npm run test -- -u",
                 "npm run build"
-            ]
+            ],
+            "parallel": false
         }
       },
       "deploy": {
         "executor": "nx:run-commands",
         "options": {
-            "cwd": "./apps/eks/cluster",
+            "cwd": "./apps/eks/kube",
             "commands": [
-                "cdk deploy --profile $AWS_PROFILE --require-approval never"
+                "kubectl apply -f dist/kube.k8s.yaml"
+            ]
+        }
+      },
+      "delete": {
+        "executor": "nx:run-commands",
+        "options": {
+            "cwd": "./apps/eks/kube",
+            "commands": [
+                "kubectl delete -f dist/kube.k8s.yaml"
             ]
         }
       },
@@ -25,8 +37,8 @@
         "executor": "nx:run-commands",
         "options": {
           "commands": [
-            "nx run stack:compile",
-            "nx run stack:deploy"
+            "nx run kube:compile",
+            "nx run kube:deploy"
           ],
           "parallel": false
         }
@@ -34,4 +46,3 @@
     },
     "tags": []
 }
-  

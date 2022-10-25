@@ -1,4 +1,3 @@
-import { useAppContext } from '@starkbot/discord-bot';
 import {
   CommandInteraction,
   Client,
@@ -7,9 +6,7 @@ import {
   Role,
 } from 'discord.js';
 
-import { doc, setDoc } from 'firebase/firestore';
 import { number } from 'starknet';
-import { logger } from '../../configuration/logger';
 import { IllegalArgumentException } from '../../errors/illegalArgumentError';
 import { createRuleForGuild } from '../../models/rule';
 import { formatRule } from './utils';
@@ -46,9 +43,7 @@ export async function addRuleCommand(client: Client, interaction: CommandInterac
   return;
 }
 
-export async function handleAddRuleSelectRole(
-  interaction: SelectMenuInteraction
-) {
+export async function handleAddRuleSelectRole(interaction: SelectMenuInteraction) {
   const [selectedRoleId] = interaction.values;
   const selectedRole = interaction.guild.roles.cache.get(selectedRoleId);
   const modal = new ModalBuilder()
@@ -125,7 +120,7 @@ function getSelectedRole(interaction: ModalSubmitInteraction, roleId: string): R
 
 
 function getTokenAdress(interaction: ModalSubmitInteraction): string {
-  const tokenAddress = interaction.fields.getTextInputValue(addRuleTokenAddressId);
+  const tokenAddress = interaction.fields.getTextInputValue(addRuleTokenAddressId).toLowerCase();
   if (tokenAddress == '') {
     throw new IllegalArgumentException('⚠️ No token address provided');
   }
