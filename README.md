@@ -74,6 +74,22 @@ Fill the 3 missing DISCORD variables with your bot application credentials and t
 - [ ] Breakdown the different async functions in independent services to increase the scalability
 - [ ] Create a Github workflow to automatically deploy the `starkbot` in production
 
+### Starkbot website
+
+You need to create two different secrets `JWT_KEY` and `RST_KEY` for the website. You have to include them in the global *.env* file
+
+You can use the following command to generate random secrets:
+```
+openssl rand -hex 32 
+```
+
+Run the website from the root with 
+```
+pnpm web:launch
+```
+
+You can then reach the website at `http://localhost:3000`
+
 ## Contribution guide
 
 ### Dev Setup
