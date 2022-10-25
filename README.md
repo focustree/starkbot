@@ -90,7 +90,7 @@ pnpm firebase login
 
 ### Getting Started
 
-- Run all apps in dev mode
+- Run all apps in dev mode :
 
 ```
 pnpm dev
