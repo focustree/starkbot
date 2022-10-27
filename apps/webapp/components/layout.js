@@ -3,13 +3,12 @@ import Image from "next/image"
 import Link from "next/link"
 import styles from "../styles/layout.module.css"
 import utilStyles from "../styles/utils.module.css"
+import { createHash } from "crypto"
 
 export const maxBotNumber = 3;     // The maximal amount of bots allowed per user
 
 export function getAvatar(id) {
-    //  TODO
-    //  A function to return a random avatar. May be the 2 first char of the id or email ?
-    return id;
+    return createHash('sha256').update(id).digest('hex').substring(0,2);
 }
 
 // The default layout for the applicaiton
@@ -47,8 +46,8 @@ export default function Layout({ children, empty, title, token}) {
                     <>
                     <Link href={`/profile`}>
                         <a className={utilStyles.centeredBlock}>
-                        <Image className={utilStyles.borderCircle}
-                            src={`/images/${getAvatar(token.id)}.jpg`}
+                        <Image
+                            src={`/images/icons/icon-${getAvatar(token.id)}.png`}
                             height={60}
                             width={60}
                             alt="Avatar"
