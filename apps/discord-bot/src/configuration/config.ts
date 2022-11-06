@@ -16,6 +16,7 @@ export const config = {
   starknetIdIndexerUrl: process.env.STARKNET_ID_INDEXER_URL,
   verifierDecimalContractAddress: process.env.VERIFIER_DECIMAL_CONTRACT_ADDRESS,
   discordType: process.env.DISCORD_TYPE,
+  awsRegion: process.env.AWS_REGION,
 };
 
 export type Config = typeof config;

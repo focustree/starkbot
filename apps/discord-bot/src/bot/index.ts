@@ -25,4 +25,3 @@ export async function initDiscordClient(config: Config) {
   logger.info('Discord client initialized');
   return client;
 }
-

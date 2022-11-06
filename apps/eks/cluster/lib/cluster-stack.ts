@@ -5,6 +5,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { AutoScaler } from './auto-scaler';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 
 export class EksSampleStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -37,6 +38,14 @@ export class EksSampleStack extends Stack {
       instanceTypes: [new ec2.InstanceType("t3.medium")],
       minSize: 1,
       maxSize: 10,
+    });
+
+    const guildTable = new dynamodb.Table(this, 'starkbot-guilds', {
+      partitionKey : { name: 'guild-id', type: dynamodb.AttributeType.STRING },
+    });
+
+    const starknetIDTable = new dynamodb.Table(this, 'starkbot-starknet-ids', {
+      partitionKey : { name: 'starknet-ids', type: dynamodb.AttributeType.STRING },
     });
 
     AutoScaler.enableAutoscaling(this, cluster, nodegroup);
