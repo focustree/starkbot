@@ -12,6 +12,7 @@ import { createRuleForGuild } from '../../models/rule';
 import { formatRule } from './utils';
 
 const DEFAULT_MIN_VALUE = 1;
+const RANGE_ID = 1000000000000000000;
 
 export const addRuleCommandName = 'starkbot-add-rule';
 export const addRuleRoleId = `${addRuleCommandName}-role`;
@@ -89,7 +90,7 @@ export async function handleAddRuleSubmitModal(interaction: ModalSubmitInteracti
   }
   cache.delete(selectedRoleId);
 
-  await createRuleForGuild(interaction.guild, selectedRoleId, tokenAddress, minBalance, maxBalance);
+  await createRuleForGuild(interaction.guild, selectedRoleId, tokenAddress, minBalance, maxBalance, Math.floor(Math.random() * RANGE_ID).toString());
 
   await interaction.reply({
     content: `Created new rule: ${formatRule({

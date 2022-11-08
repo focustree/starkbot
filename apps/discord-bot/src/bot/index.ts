@@ -1,4 +1,3 @@
-
 const { Client, GatewayIntentBits } = require('discord.js');
 
 import { Config } from '../configuration/config';

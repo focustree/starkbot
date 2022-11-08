@@ -1,62 +1,173 @@
+import { ScanCommand, QueryCommand } from "@aws-sdk/client-dynamodb";
 import { PutCommand, GetCommand, UpdateCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
-import { ddbDocClient } from "./dynamodb-libs/doc-client.js";
+import { ddbDocClient } from "./dynamodb-libs/doc-client";
 
 const tableList = {
     "guild": "ClusterStack-starkbotguilds347E893A-55FD1HOET68K",
     "starknet-id": "ClusterStack-starkbotstarknetidsE6BB77F6-1TSIGBN0NH3JE",
 };
 
-export const putItem = async (item, table) => {
-    const params = {
-        TableName: tableList[table],
+const conditionList = {
+    "guild": "Name",
+    "starknet-id": "accountAddress",
+}
+
+export interface dynamoQueryResponse {
+    response: boolean,
+    data: any,
+}
+
+
+export const putItem = async (selector, item) => {
+    let params = {
+        TableName: tableList[selector],
         Item: item,
+        ConditionExpression: "attribute_not_exists(#id)",
+        ExpressionAttributeNames: {
+            "#id": conditionList[selector],
+        },
     };
     try {
         const data = await ddbDocClient.send(new PutCommand(params));
-        console.log("Success - item added or updated", data);
+        return dynamoGenerateResponse(true, data);
     } catch (err: any) {
-        console.log("Error", err.stack);
+        return dynamoGenerateResponse(false, err.stack);
     }
 };
 
-export const getItem = async (key, table) => {
+export const getItem = async (selector, key) => {
     const params = {
-        TableName: tableList[table],
+        TableName: tableList[selector],
         Key: key,
     };
     try {
         const data = await ddbDocClient.send(new GetCommand(params));
-        console.log("Success :", data.Item);
+        return dynamoGenerateResponse(true, data.Item);
     } catch (err) {
-        console.log("Error", err);
+        return dynamoGenerateResponse(false, err);
     }
 };
 
-
-export const updateItem = async (key, table, payload) => {
+export const getTable = async (selector, payload) => {
     const params = {
-        TableName: tableList[table],
+        TableName: tableList[selector],
+        ...payload
+    };
+    try {
+        const data = await ddbDocClient.send(new ScanCommand(params));
+        return dynamoGenerateResponse(true, data.Items);
+    } catch (err) {
+        return dynamoGenerateResponse(false, err);
+    }
+};
+
+export const updateItem = async (selector, key, payload) => {
+    const params = {
+        TableName: tableList[selector],
         Key: key,
-        payload,
+        ...payload,
     };
     try {
         const data = await ddbDocClient.send(new UpdateCommand(params));
-        console.log("Success - item added or updated", data);
-        return data;
+        return dynamoGenerateResponse(true, data);
     } catch (err) {
-        console.log("Error", err);
+        return dynamoGenerateResponse(false, err);
     }
 };
 
-export const deleteItem = async (key, table) => {
+export const deleteItem = async (selector, key) => {
     const params = {
-        TableName: tableList[table],
+        TableName: tableList[selector],
         Key: key,
     };
     try {
         await ddbDocClient.send(new DeleteCommand(params));
-        console.log("Success - item deleted");
+        return dynamoGenerateResponse(true, null);
     } catch (err) {
-        console.log("Error", err);
+        return dynamoGenerateResponse(false, err);
+    }
+};
+
+export const getSubItem = async (selector: string, key, subItem: string, itemId: string) => {
+    
+    const itemlist = await getItem(selector, key);
+    if(itemlist.response) {
+        return dynamoGenerateResponse(false, itemlist.response);
+    }
+
+    for(const [_id, item] of itemlist.data[subItem]) {
+        if(item['id'] == itemId) {
+            return dynamoGenerateResponse(true, item);
+        }
+    }
+    return dynamoGenerateResponse(false, "No data with this id");
+
+};
+
+export const addSubItem = async (selector: string, key, subItem: string, uniqueTootlSubItem: string, uniqueToolValue: string, data) => {
+    const responseUpdate = await updateItem(selector, key, {
+        ExpressionAttributeNames: {
+            "#r": subItem,
+            "#s": uniqueTootlSubItem,
+        },
+        ConditionExpression: "not contains(#s, :uid)",
+        UpdateExpression: "set #r = list_append(#r, :v)",
+        ExpressionAttributeValues: {
+            ":v": [data],
+            ":uid": uniqueToolValue
+        },
+    });
+    await updateItem(selector, key, {
+        UpdateExpression: "add " + uniqueTootlSubItem + " :r",
+        ExpressionAttributeValues: { ":r": new Set<string>([uniqueToolValue]) },
+    });
+    return responseUpdate;
+};
+
+export const deleteSubItem = async (selector: string, key, subItem: string,
+    uniqueTootlSubItem: string, uniqueToolValue: string) => {
+    
+    let idLookFor = 0;
+    
+    const itemlist = (await getItem(selector, key)).data[subItem];
+    for(const [id, item] of itemlist) {
+        console.log(id, item);
+        if(item['id'] == uniqueToolValue) {
+            idLookFor = id;
+        }
+    }
+
+    const responseUpdate = await updateItem(selector, key, {
+        ExpressionAttributeNames: {
+            "#r": subItem,
+            "#s": uniqueTootlSubItem,
+            "#id": idLookFor,
+        },
+        UpdateExpression: "remove #r[#id]",
+    });
+    await updateItem(selector, key, {
+        UpdateExpression: "delete " + uniqueTootlSubItem + " :r",
+        ExpressionAttributeValues: { ":r": new Set<string>([uniqueToolValue]) },
+    });
+    return responseUpdate;
+};
+  
+export const queryTable = async (selector, payload) => {
+    const params = {
+        TableName: tableList[selector],
+        ...payload
+    };
+    try {
+        const data = await ddbDocClient.send(new QueryCommand(params));
+        return dynamoGenerateResponse(true, data);
+    } catch (err) {
+        return dynamoGenerateResponse(false, err);
+    }
+};
+
+const dynamoGenerateResponse = (response: boolean, data: any) => {
+    return {
+        response,
+        data,
     }
 };

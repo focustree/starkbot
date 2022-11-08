@@ -1,5 +1,3 @@
-import { useAppContext } from '@starkbot/discord-bot';
-
 import {
   CommandInteraction,
   Client,
@@ -20,7 +18,7 @@ export const deleteRuleId = `${deleteRuleCommandName}-role`;
 export const removeRoleFromUserButtonId = `${deleteRuleCommandName}-role-delete`;
 export const keepRoleFromUserButtonId = `${deleteRuleCommandName}-role-keep`;
 
-export async function deleteRuleCommand(client: Client, interaction: CommandInteraction) {
+export async function deleteRuleCommand(_client: Client, interaction: CommandInteraction) {
   await interaction.deferReply();
 
   let ruleOptions = await getAllRules(interaction);
@@ -69,8 +67,8 @@ export async function handleDeleteRule(interaction: ButtonInteraction, shouldRem
 
   const currentRuleIdToDelete = cache.get(interaction.member.user.id);
   let { nbOfUsers } = await getRuleInfo(interaction, currentRuleIdToDelete);
-  const rule = await deleteRuleForGuild(interaction.guild, currentRuleIdToDelete)
-  const role = interaction.guild.roles.cache.get(rule.roleId);
+  const rule = (await deleteRuleForGuild(interaction.guild, currentRuleIdToDelete)).data;
+  const role = interaction.guild.roles.cache.get(rule["roleId"]);
 
   if (shouldRemoveRole) {
     await removeRoleToUsers(interaction, role)
@@ -83,9 +81,9 @@ export async function handleDeleteRule(interaction: ButtonInteraction, shouldRem
     content: `Deleted rule: ${formatRule({
       role: role.name,
       nbOfUsers,
-      tokenAddress: rule.tokenAddress,
-      minBalance: rule.minBalance,
-      maxBalance: rule.maxBalance,
+      tokenAddress: rule["tokenAddress"],
+      minBalance: rule["minBalance"],
+      maxBalance: rule["maxBalance"],
     })}`,
   });
 }

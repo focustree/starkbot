@@ -1,6 +1,6 @@
-import { BaseGuild, Guild, OAuth2Guild } from "discord.js";
-import { deleteDoc, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
-import { useAppContext } from "..";
+import { BaseGuild, Guild } from "discord.js";
+import { getItem, addSubItem, getSubItem, deleteSubItem } from "../dynamodb";
+import { logger } from '../configuration/logger';
 
 export interface RuleDoc {
     roleId: string;
@@ -8,33 +8,31 @@ export interface RuleDoc {
     minBalance: number;
     maxBalance: number;
 }
-export async function getRulesForGuild(guild: BaseGuild) {
-    const rulesSnapshot = await getDocs(rulesOfGuild(guild.id));
-    return rulesSnapshot.docs
+
+export async function createRuleForGuild(guild: Guild, selectedRoleId: string, tokenAddress: string, minBalance: number, maxBalance: number, ruleid : string) {
+    const responseRule = await addSubItem("guild", { "guild-id": guild.id }, "Rules", "RuleSet", ruleid, {
+        "id": ruleid,
+        "roleId": selectedRoleId,
+        "tokenAddress": tokenAddress,
+        "minBalance": minBalance,
+        "maxBalance": maxBalance,
+    });
+    if (responseRule.response) {
+        logger.info(`Added new rule: ${ruleid}`);
+    }
 }
 
-export async function createRuleForGuild(guild: Guild, selectedRoleId: string, tokenAddress: string, minBalance: number, maxBalance: number) {
-    let rule = doc(rulesOfGuild(guild.id))
-    await setDoc(rule, {
-        roleId: selectedRoleId,
-        tokenAddress,
-        minBalance,
-        maxBalance,
-    });
+export async function getRulesForGuild(guild: BaseGuild) {
+    const rulesSnapshot = await getItem("guild", { "guild-id": guild.id });
+    return rulesSnapshot.data["Rules"];
 }
 
 export async function getRuleForGuild(guild: Guild, id: string) {
-    const ruleSnapshot = await getDoc(doc(rulesOfGuild(guild.id), id));
-    return ruleSnapshot.data()
+    const ruleSnapshot = await getSubItem("guild", { "guild-id": guild.id }, "Rules", id);
+    return ruleSnapshot.data;
 }
 
 export async function deleteRuleForGuild(guild: Guild, id: string) {
-    const ruleDocRef = doc(rulesOfGuild(guild.id), id);
-    const rule = (await getDoc(ruleDocRef)).data();
-    await deleteDoc(ruleDocRef);
-    return rule
-}
-
-function rulesOfGuild(id: string) {
-    return useAppContext().firebase.rulesOfGuild(id);
+    const deleteResponse = await deleteSubItem("guild", { "guild-id": guild.id }, "Rules", "RuleSet", id);
+    return deleteResponse;
 }

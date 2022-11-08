@@ -1,6 +1,6 @@
 // Create a service client module using ES6 syntax.
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import { ddbClient } from "./client.js";
+import { ddbClient } from "./client";
 
 const marshallOptions = {
   // Whether to automatically convert empty strings, blobs, and sets to `null`.

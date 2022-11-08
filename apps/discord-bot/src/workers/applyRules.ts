@@ -1,15 +1,13 @@
-
 import { GuildMember, OAuth2Guild } from 'discord.js';
-
-import { getDocs, query, where } from 'firebase/firestore';
 import { defaultProvider, number, stark } from 'starknet';
 import { useAppContext } from '..';
 import { logger } from '../configuration/logger';
+import { queryTable } from '../dynamodb';
 import { getRulesForGuild, RuleDoc } from '../models/rule';
 
 export async function applyRules() {
   const guilds = await useAppContext().discordClient.guilds.fetch();
-  for (const [id, guild] of guilds) {
+  for (const [_id, guild] of guilds) {
     await applyRulesForGuild(guild);
   }
 }
@@ -17,7 +15,8 @@ export async function applyRules() {
 async function applyRulesForGuild(g: OAuth2Guild) {
   const guild = await g.fetch();
   logger.info(`Apply rules for guild: ${guild.name}`);
-  const rules = (await getRulesForGuild(g)).map((doc) => doc.data());
+  const rules = await getRulesForGuild(g);
+  console.log(rules);
 
   const guildMembers = await guild.members.fetch();
   for (const [id, member] of guildMembers) {
@@ -62,13 +61,19 @@ async function applyRulesForMember(id: string, member: GuildMember, rules: RuleD
 
 
 async function getAccountAddress(discordMemberId: string): Promise<string | null> {
-  const starknetIdsColRef = useAppContext().firebase.starknetIds;
-  const q = query(starknetIdsColRef,
-    where('discordMemberId', '==', discordMemberId)
-  );
-  const starknetIdsSnapshot = await getDocs(q);
-  if (starknetIdsSnapshot.docs.length == 0) {
+
+  const params = {
+    ExpressionAttributeValues: {
+      ":d": discordMemberId,
+    },
+    KeyConditionExpression: "discordMemberId = :d",
+  }
+
+  const starknetIdsSnapshot = (await queryTable("starknet-id", params)).data;
+
+  if (starknetIdsSnapshot.length == 0) {
     return null;
   }
-  return starknetIdsSnapshot.docs[0].data().accountAddress;
+  return starknetIdsSnapshot[0]["accountAddress"];
 }
+
