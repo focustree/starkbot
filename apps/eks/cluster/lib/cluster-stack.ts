@@ -45,7 +45,13 @@ export class EksSampleStack extends Stack {
     });
 
     const starknetIDTable = new dynamodb.Table(this, 'starkbot-starknet-ids', {
-      partitionKey : { name: 'starknet-ids', type: dynamodb.AttributeType.STRING },
+      partitionKey : { name: 'starknet-id', type: dynamodb.AttributeType.STRING },
+    });
+
+    starknetIDTable.addGlobalSecondaryIndex({
+      indexName: "MemberId-index",
+      partitionKey: { name: "discordMemberId", type: dynamodb.AttributeType.STRING},
+      projectionType: dynamodb.ProjectionType.ALL,
     });
 
     AutoScaler.enableAutoscaling(this, cluster, nodegroup);

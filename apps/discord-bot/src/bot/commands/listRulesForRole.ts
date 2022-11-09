@@ -1,4 +1,5 @@
 import { CommandInteraction, Client, SelectMenuInteraction } from 'discord.js';
+import { DiscordRule } from '../../dynamodb-libs/db-types';
 import { getRulesForGuild } from '../../models/rule';
 import { formatRule, numberOfUserWithRole } from './utils';
 
@@ -39,11 +40,11 @@ export async function listRulesForRoleCommand(client: Client, interaction: Comma
 export async function listRulesForRole(interaction: SelectMenuInteraction) {
   await interaction.deferReply();
   const [selectedRoleId] = interaction.values;
-  const ruleDocs = await getRulesForGuild(interaction.guild);
+  const ruleDocs: DiscordRule[] = await getRulesForGuild(interaction.guild);
   const role = interaction.guild.roles.cache.get(selectedRoleId);
   const rules = await Promise.all(
-    ruleDocs.filter(doc => doc.data().roleId == selectedRoleId).map(async (doc) => {
-      const { tokenAddress, minBalance, maxBalance } = doc.data();
+    ruleDocs.filter(doc => doc.roleId == selectedRoleId).map(async (doc) => {
+      const { tokenAddress, minBalance, maxBalance } = doc;
       const nbOfUsers = await numberOfUserWithRole(interaction, role);
       return { role: role.name, nbOfUsers, tokenAddress, minBalance, maxBalance };
     }));

@@ -2,8 +2,9 @@ import { GuildMember, OAuth2Guild } from 'discord.js';
 import { defaultProvider, number, stark } from 'starknet';
 import { useAppContext } from '..';
 import { logger } from '../configuration/logger';
-import { queryTable } from '../dynamodb';
-import { getRulesForGuild, RuleDoc } from '../models/rule';
+import { queryTable } from '../dynamodb-libs/dynamodb';
+import { getRulesForGuild } from '../models/rule';
+import { DiscordRule } from '../dynamodb-libs/db-types';
 
 export async function applyRules() {
   const guilds = await useAppContext().discordClient.guilds.fetch();
@@ -16,18 +17,17 @@ async function applyRulesForGuild(g: OAuth2Guild) {
   const guild = await g.fetch();
   logger.info(`Apply rules for guild: ${guild.name}`);
   const rules = await getRulesForGuild(g);
-  console.log(rules);
 
   const guildMembers = await guild.members.fetch();
-  for (const [id, member] of guildMembers) {
 
-    await applyRulesForMember(id, member, rules)
+  for (const [_id, member] of guildMembers) {
+    await applyRulesForMember(member, rules)
   }
 }
 
-async function applyRulesForMember(id: string, member: GuildMember, rules: RuleDoc[]) {
+async function applyRulesForMember(member: GuildMember, rules: DiscordRule[]) {
   try {
-    const accountAddress = await getAccountAddress(id);
+    const accountAddress = await getAccountAddress(member.user.id);
     if (!accountAddress) {
       return;
     }
@@ -63,17 +63,22 @@ async function applyRulesForMember(id: string, member: GuildMember, rules: RuleD
 async function getAccountAddress(discordMemberId: string): Promise<string | null> {
 
   const params = {
-    ExpressionAttributeValues: {
-      ":d": discordMemberId,
-    },
-    KeyConditionExpression: "discordMemberId = :d",
-  }
+    ReturnConsumedCapacity: "TOTAL",
+    IndexName: "MemberId-index",
+    ExpressionAttributeNames: { "#d": "discordMemberId" },
+    ExpressionAttributeValues: { ":d": { "S": discordMemberId } },
+    KeyConditionExpression: "#d = :d",
+  };
 
-  const starknetIdsSnapshot = (await queryTable("starknet-id", params)).data;
+  const starknetIdsSnapshot = await queryTable("starknet-id", params);
 
-  if (starknetIdsSnapshot.length == 0) {
+  if (!starknetIdsSnapshot.response) {
     return null;
   }
-  return starknetIdsSnapshot[0]["accountAddress"];
+  const items = starknetIdsSnapshot.data.Items;
+  if(items.length == 0) {
+    return null;
+  }
+  return items[0].accountAddress['S'];
 }
 

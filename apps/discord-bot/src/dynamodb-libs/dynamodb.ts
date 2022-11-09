@@ -1,10 +1,10 @@
 import { ScanCommand, QueryCommand } from "@aws-sdk/client-dynamodb";
 import { PutCommand, GetCommand, UpdateCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
-import { ddbDocClient } from "./dynamodb-libs/doc-client";
+import { ddbDocClient } from "./doc-client";
 
 const tableList = {
     "guild": "ClusterStack-starkbotguilds347E893A-55FD1HOET68K",
-    "starknet-id": "ClusterStack-starkbotstarknetidsE6BB77F6-1TSIGBN0NH3JE",
+    "starknet-id": "ClusterStack-starkbotstarknetidsE6BB77F6-1WQXOW8Y02H5I",
 };
 
 const conditionList = {
@@ -91,11 +91,11 @@ export const deleteItem = async (selector, key) => {
 export const getSubItem = async (selector: string, key, subItem: string, itemId: string) => {
     
     const itemlist = await getItem(selector, key);
-    if(itemlist.response) {
+    if(!itemlist.response) {
         return dynamoGenerateResponse(false, itemlist.response);
     }
 
-    for(const [_id, item] of itemlist.data[subItem]) {
+    for(const item of itemlist.data[subItem]) {
         if(item['id'] == itemId) {
             return dynamoGenerateResponse(true, item);
         }
@@ -128,27 +128,30 @@ export const deleteSubItem = async (selector: string, key, subItem: string,
     uniqueTootlSubItem: string, uniqueToolValue: string) => {
     
     let idLookFor = 0;
+    let compt = 0;
     
     const itemlist = (await getItem(selector, key)).data[subItem];
-    for(const [id, item] of itemlist) {
-        console.log(id, item);
+    for(const item of itemlist) {
         if(item['id'] == uniqueToolValue) {
-            idLookFor = id;
+            idLookFor = compt;
         }
+        compt ++;
     }
 
     const responseUpdate = await updateItem(selector, key, {
         ExpressionAttributeNames: {
             "#r": subItem,
-            "#s": uniqueTootlSubItem,
-            "#id": idLookFor,
         },
-        UpdateExpression: "remove #r[#id]",
+        UpdateExpression: "remove #r[" + idLookFor.toString() + "]",
     });
     await updateItem(selector, key, {
         UpdateExpression: "delete " + uniqueTootlSubItem + " :r",
         ExpressionAttributeValues: { ":r": new Set<string>([uniqueToolValue]) },
     });
+
+    if(responseUpdate.response) {
+        responseUpdate.data = itemlist[idLookFor];
+    }
     return responseUpdate;
 };
   
@@ -157,6 +160,7 @@ export const queryTable = async (selector, payload) => {
         TableName: tableList[selector],
         ...payload
     };
+    
     try {
         const data = await ddbDocClient.send(new QueryCommand(params));
         return dynamoGenerateResponse(true, data);

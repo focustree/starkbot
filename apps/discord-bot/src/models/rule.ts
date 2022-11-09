@@ -1,16 +1,11 @@
 import { BaseGuild, Guild } from "discord.js";
-import { getItem, addSubItem, getSubItem, deleteSubItem } from "../dynamodb";
+import { getItem, addSubItem, getSubItem, deleteSubItem, dynamoQueryResponse } from "../dynamodb-libs/dynamodb";
 import { logger } from '../configuration/logger';
+import { DiscordRule } from "../dynamodb-libs/db-types";
 
-export interface RuleDoc {
-    roleId: string;
-    tokenAddress: string;
-    minBalance: number;
-    maxBalance: number;
-}
 
 export async function createRuleForGuild(guild: Guild, selectedRoleId: string, tokenAddress: string, minBalance: number, maxBalance: number, ruleid : string) {
-    const responseRule = await addSubItem("guild", { "guild-id": guild.id }, "Rules", "RuleSet", ruleid, {
+    const responseRule: dynamoQueryResponse = await addSubItem("guild", { "guild-id": guild.id }, "Rules", "RuleSet", ruleid, {
         "id": ruleid,
         "roleId": selectedRoleId,
         "tokenAddress": tokenAddress,
@@ -22,17 +17,22 @@ export async function createRuleForGuild(guild: Guild, selectedRoleId: string, t
     }
 }
 
-export async function getRulesForGuild(guild: BaseGuild) {
-    const rulesSnapshot = await getItem("guild", { "guild-id": guild.id });
-    return rulesSnapshot.data["Rules"];
+export async function getRulesForGuild(guild: BaseGuild): Promise<DiscordRule[]> {
+    const rulesSnapshot: dynamoQueryResponse = await getItem("guild", { "guild-id": guild.id });
+    if(rulesSnapshot.response) {
+        return rulesSnapshot.data.Rules;
+    } else {
+        return null;
+    }
+    
 }
 
-export async function getRuleForGuild(guild: Guild, id: string) {
-    const ruleSnapshot = await getSubItem("guild", { "guild-id": guild.id }, "Rules", id);
+export async function getRuleForGuild(guild: Guild, id: string): Promise<DiscordRule> {
+    const ruleSnapshot: dynamoQueryResponse = await getSubItem("guild", { "guild-id": guild.id }, "Rules", id);
     return ruleSnapshot.data;
 }
 
-export async function deleteRuleForGuild(guild: Guild, id: string) {
-    const deleteResponse = await deleteSubItem("guild", { "guild-id": guild.id }, "Rules", "RuleSet", id);
-    return deleteResponse;
+export async function deleteRuleForGuild(guild: Guild, id: string): Promise<DiscordRule> {
+    const deleteResponse: dynamoQueryResponse = await deleteSubItem("guild", { "guild-id": guild.id }, "Rules", "RuleSet", id);
+    return deleteResponse.data;
 }

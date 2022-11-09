@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { DiscordGuildDoc } from '../dynamodb-libs/db-types';
+import { DiscordGuild, DiscordMember } from '../dynamodb-libs/db-types';
 import { defaultProvider, stark, uint256 } from 'starknet';
 import { config } from '../configuration/config';
 import { logger } from '../configuration/logger';
-import { dynamoQueryResponse, getItem, getTable, putItem } from '../dynamodb';
+import { dynamoQueryResponse, getItem, getTable, putItem } from '../dynamodb-libs/dynamodb';
 
 export async function fetchStarknetIds() {
   const guilds = await getTable("guild", {
@@ -20,13 +20,13 @@ export async function fetchStarknetIds() {
   }
 }
 
-async function fetchStarknetIdsForGuild(guild: DiscordGuildDoc) {
+async function fetchStarknetIdsForGuild(guild: DiscordGuild) {
   logger.info(`Fetching Starknet IDs for guild: ${guild.name}`);
   const dataGuild = await getItem("guild", { "guild-id": guild.id });
-  const members = dataGuild.data["Members"];
+  const members: DiscordMember[] = dataGuild.data["Members"];
   
   for (const member of members) {
-    const starknetId = await fetchStarknetIdsForMember(member["id"]);
+    const starknetId = await fetchStarknetIdsForMember(member.id);
 
     if (!!starknetId) {
       const queryResponse : dynamoQueryResponse = await putItem("starknet-id", {
@@ -34,7 +34,7 @@ async function fetchStarknetIdsForGuild(guild: DiscordGuildDoc) {
       });
 
       if(queryResponse.response) {
-        logger.info(`Added new starknet ID : ${starknetId['starknet-ids']}`);
+        logger.info(`Added new starknet ID : ${starknetId['starknet-id']}`);
       }
     }
   }
@@ -64,7 +64,7 @@ async function fetchStarknetIdsForMember(discordMemberId: string) {
     return {
       accountAddress,
       discordMemberId,
-      "starknet-ids": data.id,
+      "starknet-id": data.id,
     };
   } catch (error) {
     // TODO THERE IS AN ERROR HERE ATM
