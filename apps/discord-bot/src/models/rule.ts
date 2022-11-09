@@ -1,7 +1,8 @@
 import { BaseGuild, Guild } from "discord.js";
-import { getItem, addSubItem, getSubItem, deleteSubItem, dynamoQueryResponse } from "../dynamodb-libs/dynamodb";
+import { getItem } from "../dynamodb/dynamodb";
+import { addSubItem, getSubItem, deleteSubItem } from "../dynamodb/dynamo-item"
 import { logger } from '../configuration/logger';
-import { DiscordRule } from "../dynamodb-libs/db-types";
+import { DiscordRule, dynamoQueryResponse } from "../dynamodb/db-types";
 
 
 export async function createRuleForGuild(guild: Guild, selectedRoleId: string, tokenAddress: string, minBalance: number, maxBalance: number, ruleid : string) {

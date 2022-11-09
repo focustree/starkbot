@@ -35,3 +35,8 @@ export interface Token {
     address: string;
     balance: number;
 }
+
+export interface dynamoQueryResponse {
+    response: boolean,
+    data: any,
+}

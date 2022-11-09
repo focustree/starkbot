@@ -2,9 +2,9 @@ import { GuildMember, OAuth2Guild } from 'discord.js';
 import { defaultProvider, number, stark } from 'starknet';
 import { useAppContext } from '..';
 import { logger } from '../configuration/logger';
-import { queryTable } from '../dynamodb-libs/dynamodb';
+import { queryTable } from '../dynamodb/dynamodb';
 import { getRulesForGuild } from '../models/rule';
-import { DiscordRule } from '../dynamodb-libs/db-types';
+import { DiscordRule } from '../dynamodb/db-types';
 
 export async function applyRules() {
   const guilds = await useAppContext().discordClient.guilds.fetch();

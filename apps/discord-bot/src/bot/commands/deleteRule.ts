@@ -77,10 +77,6 @@ export async function handleDeleteRule(interaction: ButtonInteraction, shouldRem
 
   cache.delete(currentRuleIdToDelete);
 
-  console.log(role);
-  console.log(rule);
-
-
   await interaction.reply({
     content: `Deleted rule: ${formatRule({
       role: role.name,

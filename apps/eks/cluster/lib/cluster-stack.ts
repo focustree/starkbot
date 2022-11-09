@@ -40,15 +40,29 @@ export class EksSampleStack extends Stack {
       maxSize: 10,
     });
 
-    const guildTable = new dynamodb.Table(this, 'starkbot-guilds', {
+    const guildTableProd = new dynamodb.Table(this, 'starkbot-guilds-prod', {
       partitionKey : { name: 'guild-id', type: dynamodb.AttributeType.STRING },
     });
 
-    const starknetIDTable = new dynamodb.Table(this, 'starkbot-starknet-ids', {
+    const starknetIDTableProd = new dynamodb.Table(this, 'starkbot-starknet-ids-prod', {
       partitionKey : { name: 'starknet-id', type: dynamodb.AttributeType.STRING },
     });
 
-    starknetIDTable.addGlobalSecondaryIndex({
+    starknetIDTableProd.addGlobalSecondaryIndex({
+      indexName: "MemberId-index",
+      partitionKey: { name: "discordMemberId", type: dynamodb.AttributeType.STRING},
+      projectionType: dynamodb.ProjectionType.ALL,
+    });
+
+    const guildTableDev = new dynamodb.Table(this, 'starkbot-guilds-dev', {
+      partitionKey : { name: 'guild-id', type: dynamodb.AttributeType.STRING },
+    });
+
+    const starknetIDTableDev = new dynamodb.Table(this, 'starkbot-starknet-ids-dev', {
+      partitionKey : { name: 'starknet-id', type: dynamodb.AttributeType.STRING },
+    });
+
+    starknetIDTableDev.addGlobalSecondaryIndex({
       indexName: "MemberId-index",
       partitionKey: { name: "discordMemberId", type: dynamodb.AttributeType.STRING},
       projectionType: dynamodb.ProjectionType.ALL,

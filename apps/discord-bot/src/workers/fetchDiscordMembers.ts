@@ -1,7 +1,8 @@
 import { OAuth2Guild } from 'discord.js';
 import { useAppContext } from '..';
 import { logger } from '../configuration/logger';
-import { addSubItem, putItem } from '../dynamodb-libs/dynamodb';
+import { putItem } from '../dynamodb/dynamodb';
+import { addSubItem } from "../dynamodb/dynamo-item";
 
 
 export async function fetchDiscordMembers() {

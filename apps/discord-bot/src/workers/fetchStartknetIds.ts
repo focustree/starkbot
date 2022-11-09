@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { DiscordGuild, DiscordMember } from '../dynamodb-libs/db-types';
+import { DiscordGuild, DiscordMember, dynamoQueryResponse } from '../dynamodb/db-types';
 import { defaultProvider, stark, uint256 } from 'starknet';
 import { config } from '../configuration/config';
 import { logger } from '../configuration/logger';
-import { dynamoQueryResponse, getItem, getTable, putItem } from '../dynamodb-libs/dynamodb';
+import { getItem, getTable, putItem } from '../dynamodb/dynamodb';
 
 export async function fetchStarknetIds() {
   const guilds = await getTable("guild", {
