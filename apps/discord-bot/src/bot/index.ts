@@ -1,4 +1,3 @@
-
 const { Client, GatewayIntentBits } = require('discord.js');
 
 import { Config } from '../configuration/config';
@@ -25,4 +24,3 @@ export async function initDiscordClient(config: Config) {
   logger.info('Discord client initialized');
   return client;
 }
-

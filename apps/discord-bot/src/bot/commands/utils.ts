@@ -15,6 +15,6 @@ export function formatShortTokenAddress(tokenAddress: string) {
 
 
 export async function numberOfUserWithRole(interaction: BaseInteraction, role: Role): Promise<number> {
-    let usersWithRole = (await interaction.guild.members.fetch()).filter(member => member.roles.cache.has(role.id))
+    let usersWithRole = (await interaction.guild.members.fetch()).filter(member => member.roles.cache.has(role["id"]))
     return usersWithRole.size
 }

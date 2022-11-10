@@ -1,5 +1,3 @@
-import { useAppContext } from '@starkbot/discord-bot';
-
 import {
   CommandInteraction,
   Client,
@@ -20,7 +18,7 @@ export const deleteRuleId = `${deleteRuleCommandName}-role`;
 export const removeRoleFromUserButtonId = `${deleteRuleCommandName}-role-delete`;
 export const keepRoleFromUserButtonId = `${deleteRuleCommandName}-role-keep`;
 
-export async function deleteRuleCommand(client: Client, interaction: CommandInteraction) {
+export async function deleteRuleCommand(_client: Client, interaction: CommandInteraction) {
   await interaction.deferReply();
 
   let ruleOptions = await getAllRules(interaction);
@@ -69,7 +67,7 @@ export async function handleDeleteRule(interaction: ButtonInteraction, shouldRem
 
   const currentRuleIdToDelete = cache.get(interaction.member.user.id);
   let { nbOfUsers } = await getRuleInfo(interaction, currentRuleIdToDelete);
-  const rule = await deleteRuleForGuild(interaction.guild, currentRuleIdToDelete)
+  const rule = await deleteRuleForGuild(interaction.guild, currentRuleIdToDelete);
   const role = interaction.guild.roles.cache.get(rule.roleId);
 
   if (shouldRemoveRole) {
@@ -99,11 +97,11 @@ async function removeRoleToUsers(interaction: ButtonInteraction, role: Role) {
 
 async function getAllRules(interaction: CommandInteraction) {
   const ruleOptions = (await getRulesForGuild(interaction.guild)).map((doc) => {
-    const { roleId, tokenAddress, minBalance, maxBalance } = doc.data();
+    const { roleId, tokenAddress, minBalance, maxBalance } = doc;
     const role = interaction.guild.roles.cache.get(roleId);
     return {
       label: role.name,
-      value: doc.id,
+      value: doc["id"],
       description: `Token Address: ${formatShortTokenAddress(
         tokenAddress
       )}, Min: ${minBalance}, Max: ${maxBalance}`,
@@ -113,7 +111,7 @@ async function getAllRules(interaction: CommandInteraction) {
 }
 
 async function getRuleInfo(interaction: BaseInteraction, ruleId: string) {
-  const rule = await getRuleForGuild(interaction.guild, ruleId)
+  const rule = await getRuleForGuild(interaction.guild, ruleId);
   const role = interaction.guild.roles.cache.get(rule.roleId);
   let usersWithRoleSize = await numberOfUserWithRole(interaction, role);
   return { ruleId: ruleId, role, nbOfUsers: usersWithRoleSize }

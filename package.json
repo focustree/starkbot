@@ -10,10 +10,8 @@
   "ecr": "071785475400.dkr.ecr.eu-west-3.amazonaws.com/starkbot-base-repository",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "dev": "nx run-many --target start --projects firebase,discord-bot --parallel --output-style stream",
+    "dev": "nx start discord-bot",
     "infra": "nx run-many --target start --projects stack,kube --parallel --output-style stream",
-    "dev:bot": "nx start discord-bot",
-    "dev:firebase": "nx start firebase",
     "infra:deploy": "nx start stack",
     "kube:deploy": "nx start kube",
     "kube:clean": "nx delete kube",
@@ -47,7 +45,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "router": "^1.3.7",
-    "swr": "^1.3.0"
+    "swr": "^1.3.0",
+    "@aws-sdk/client-dynamodb": "^3.204.0",
+    "@aws-sdk/lib-dynamodb": "^3.204.0"
   },
   "devDependencies": {
     "@nrwl/cli": "14.4.0",
