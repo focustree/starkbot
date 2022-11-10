@@ -5,6 +5,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { AutoScaler } from './auto-scaler';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 
 export class EksSampleStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -37,6 +38,34 @@ export class EksSampleStack extends Stack {
       instanceTypes: [new ec2.InstanceType("t3.medium")],
       minSize: 1,
       maxSize: 10,
+    });
+
+    const guildTableProd = new dynamodb.Table(this, 'starkbot-guilds-prod', {
+      partitionKey : { name: 'guild-id', type: dynamodb.AttributeType.STRING },
+    });
+
+    const starknetIDTableProd = new dynamodb.Table(this, 'starkbot-starknet-ids-prod', {
+      partitionKey : { name: 'starknet-id', type: dynamodb.AttributeType.STRING },
+    });
+
+    starknetIDTableProd.addGlobalSecondaryIndex({
+      indexName: "MemberId-index",
+      partitionKey: { name: "discordMemberId", type: dynamodb.AttributeType.STRING},
+      projectionType: dynamodb.ProjectionType.ALL,
+    });
+
+    const guildTableDev = new dynamodb.Table(this, 'starkbot-guilds-dev', {
+      partitionKey : { name: 'guild-id', type: dynamodb.AttributeType.STRING },
+    });
+
+    const starknetIDTableDev = new dynamodb.Table(this, 'starkbot-starknet-ids-dev', {
+      partitionKey : { name: 'starknet-id', type: dynamodb.AttributeType.STRING },
+    });
+
+    starknetIDTableDev.addGlobalSecondaryIndex({
+      indexName: "MemberId-index",
+      partitionKey: { name: "discordMemberId", type: dynamodb.AttributeType.STRING},
+      projectionType: dynamodb.ProjectionType.ALL,
     });
 
     AutoScaler.enableAutoscaling(this, cluster, nodegroup);

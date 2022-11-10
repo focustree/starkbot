@@ -1,30 +1,41 @@
-import { doc, getDocs, setDoc } from 'firebase/firestore';
 import axios from 'axios';
-import { useAppContext } from '..';
-import { DiscordGuildDoc } from '../models/firebase';
+import { DiscordGuild, DiscordMember, dynamoQueryResponse } from '../dynamodb/db-types';
 import { defaultProvider, stark, uint256 } from 'starknet';
 import { config } from '../configuration/config';
 import { logger } from '../configuration/logger';
+import { getItem, getTable, putItem } from '../dynamodb/dynamodb';
 
 export async function fetchStarknetIds() {
-  const appContext = useAppContext();
-  const guilds = await getDocs(appContext.firebase.guilds);
-  for (const guild of guilds.docs) {
-    await fetchStarknetIdsForGuild(guild.data());
+  const guilds = await getTable("guild", {
+    ExpressionAttributeNames: {
+      "#g": "guild-id",
+      "#n": "Name",
+    },
+    ProjectionExpression: "#g, #n",
+  });
+
+  for (const guild of guilds.data) {
+    const prettyGuild = { id: guild["guild-id"]['S'], name: guild["Name"]['S']};
+    await fetchStarknetIdsForGuild(prettyGuild);
   }
 }
 
-async function fetchStarknetIdsForGuild(guild: DiscordGuildDoc) {
+async function fetchStarknetIdsForGuild(guild: DiscordGuild) {
   logger.info(`Fetching Starknet IDs for guild: ${guild.name}`);
-  const appContext = useAppContext();
-  const members = await getDocs(appContext.firebase.membersOfGuild(guild.id));
-  for (const member of members.docs) {
+  const dataGuild = await getItem("guild", { "guild-id": guild.id });
+  const members: DiscordMember[] = dataGuild.data["Members"];
+  
+  for (const member of members) {
     const starknetId = await fetchStarknetIdsForMember(member.id);
+
     if (!!starknetId) {
-      await setDoc(
-        doc(appContext.firebase.starknetIds, `${starknetId.id}`),
-        starknetId
-      );
+      const queryResponse : dynamoQueryResponse = await putItem("starknet-id", {
+        ...starknetId,
+      });
+
+      if(queryResponse.response) {
+        logger.info(`Added new starknet ID : ${starknetId['starknet-id']}`);
+      }
     }
   }
 }
@@ -53,7 +64,7 @@ async function fetchStarknetIdsForMember(discordMemberId: string) {
     return {
       accountAddress,
       discordMemberId,
-      id: data.id,
+      "starknet-id": data.id,
     };
   } catch (error) {
     // TODO THERE IS AN ERROR HERE ATM

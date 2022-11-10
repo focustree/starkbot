@@ -1,15 +1,14 @@
-
 import { GuildMember, OAuth2Guild } from 'discord.js';
-
-import { getDocs, query, where } from 'firebase/firestore';
 import { defaultProvider, number, stark } from 'starknet';
 import { useAppContext } from '..';
 import { logger } from '../configuration/logger';
-import { getRulesForGuild, RuleDoc } from '../models/rule';
+import { queryTable } from '../dynamodb/dynamodb';
+import { getRulesForGuild } from '../models/rule';
+import { DiscordRule } from '../dynamodb/db-types';
 
 export async function applyRules() {
   const guilds = await useAppContext().discordClient.guilds.fetch();
-  for (const [id, guild] of guilds) {
+  for (const [_id, guild] of guilds) {
     await applyRulesForGuild(guild);
   }
 }
@@ -17,18 +16,18 @@ export async function applyRules() {
 async function applyRulesForGuild(g: OAuth2Guild) {
   const guild = await g.fetch();
   logger.info(`Apply rules for guild: ${guild.name}`);
-  const rules = (await getRulesForGuild(g)).map((doc) => doc.data());
+  const rules = await getRulesForGuild(g);
 
   const guildMembers = await guild.members.fetch();
-  for (const [id, member] of guildMembers) {
 
-    await applyRulesForMember(id, member, rules)
+  for (const [_id, member] of guildMembers) {
+    await applyRulesForMember(member, rules)
   }
 }
 
-async function applyRulesForMember(id: string, member: GuildMember, rules: RuleDoc[]) {
+async function applyRulesForMember(member: GuildMember, rules: DiscordRule[]) {
   try {
-    const accountAddress = await getAccountAddress(id);
+    const accountAddress = await getAccountAddress(member.user.id);
     if (!accountAddress) {
       return;
     }
@@ -62,13 +61,24 @@ async function applyRulesForMember(id: string, member: GuildMember, rules: RuleD
 
 
 async function getAccountAddress(discordMemberId: string): Promise<string | null> {
-  const starknetIdsColRef = useAppContext().firebase.starknetIds;
-  const q = query(starknetIdsColRef,
-    where('discordMemberId', '==', discordMemberId)
-  );
-  const starknetIdsSnapshot = await getDocs(q);
-  if (starknetIdsSnapshot.docs.length == 0) {
+
+  const params = {
+    ReturnConsumedCapacity: "TOTAL",
+    IndexName: "MemberId-index",
+    ExpressionAttributeNames: { "#d": "discordMemberId" },
+    ExpressionAttributeValues: { ":d": { "S": discordMemberId } },
+    KeyConditionExpression: "#d = :d",
+  };
+
+  const starknetIdsSnapshot = await queryTable("starknet-id", params);
+
+  if (!starknetIdsSnapshot.response) {
     return null;
   }
-  return starknetIdsSnapshot.docs[0].data().accountAddress;
+  const items = starknetIdsSnapshot.data.Items;
+  if(items.length == 0) {
+    return null;
+  }
+  return items[0].accountAddress['S'];
 }
+

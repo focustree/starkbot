@@ -12,6 +12,7 @@ import { createRuleForGuild } from '../../models/rule';
 import { formatRule } from './utils';
 
 const DEFAULT_MIN_VALUE = 1;
+const RANGE_ID = 1000000000000000000;
 
 export const addRuleCommandName = 'starkbot-add-rule';
 export const addRuleRoleId = `${addRuleCommandName}-role`;
@@ -25,10 +26,19 @@ const cache = new Map<string, string>();
 
 export async function addRuleCommand(client: Client, interaction: CommandInteraction) {
   await interaction.deferReply();
-  const roleOptions = interaction.guild.roles.cache.map((role) => ({
+
+  const roles = interaction.guild.roles.cache;
+  let goodRoles = [];
+  for (const [_id, role] of roles) {
+    if(role.position < interaction.guild.members.me.roles.highest.position) {
+      goodRoles.push(role);
+    }
+  }
+  const roleOptions = goodRoles.map((role) => ({
     label: role.name,
     value: role.id,
   }));
+
   const row = new ActionRowBuilder().addComponents(
     new SelectMenuBuilder()
       .setCustomId(addRuleRoleId)
@@ -46,6 +56,7 @@ export async function addRuleCommand(client: Client, interaction: CommandInterac
 export async function handleAddRuleSelectRole(interaction: SelectMenuInteraction) {
   const [selectedRoleId] = interaction.values;
   const selectedRole = interaction.guild.roles.cache.get(selectedRoleId);
+
   const modal = new ModalBuilder()
     .setCustomId(addRuleCommandName)
     .setTitle(`Add a rule for ${selectedRole.name}`);
@@ -89,7 +100,7 @@ export async function handleAddRuleSubmitModal(interaction: ModalSubmitInteracti
   }
   cache.delete(selectedRoleId);
 
-  await createRuleForGuild(interaction.guild, selectedRoleId, tokenAddress, minBalance, maxBalance);
+  await createRuleForGuild(interaction.guild, selectedRoleId, tokenAddress, minBalance, maxBalance, Math.floor(Math.random() * RANGE_ID).toString());
 
   await interaction.reply({
     content: `Created new rule: ${formatRule({
@@ -114,6 +125,9 @@ function getSelectedRole(interaction: ModalSubmitInteraction, roleId: string): R
   const selectedRole = interaction.guild.roles.cache.get(roleId);
   if (!selectedRole) {
     throw new IllegalArgumentException('Role not found');
+  }
+  if(selectedRole.position >= interaction.guild.members.me.roles.highest.position) {
+    throw new IllegalArgumentException("The bot cannot manage this role. Please try again with another role or change your bot position.");
   }
   return selectedRole;
 }
