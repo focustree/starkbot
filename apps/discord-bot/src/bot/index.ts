@@ -18,7 +18,7 @@ export async function initDiscordClient(config: Config) {
 
   onReady(client);
   onInteractionCreate(client);
-  await client.login(config.discordToken);
+  const retour = await client.login(config.discordToken);
   await client.application.commands.set(commandList);
 
   logger.info('Discord client initialized');
