@@ -62,6 +62,10 @@ export class EksSampleStack extends Stack {
       partitionKey : { name: 'starknet-id', type: dynamodb.AttributeType.STRING },
     });
 
+    const websiteDev = new dynamodb.Table(this, 'website-dev', {
+      partitionKey : { name: 'user-id', type: dynamodb.AttributeType.STRING },
+    });
+
     starknetIDTableDev.addGlobalSecondaryIndex({
       indexName: "MemberId-index",
       partitionKey: { name: "discordMemberId", type: dynamodb.AttributeType.STRING},

@@ -7,4 +7,4 @@ COPY pnpm-lock.yaml .
 RUN pnpm fetch
 COPY package.json .
 RUN pnpm install --offline
-COPY . .
+#COPY . .

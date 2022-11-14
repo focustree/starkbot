@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { App, Chart, ChartProps } from 'cdk8s';
-import { Deployment, ServiceType, Volume, EnvValue, Secret, ServicePort } from 'cdk8s-plus-22';
+import { Deployment, ServiceType, Volume, Secret, ServicePort, EnvFrom } from 'cdk8s-plus-22';
 //import { Deployment, ServiceType, ServicePort, Protocol } from 'cdk8s-plus-22';
 
 
@@ -8,7 +8,36 @@ export class MyChart extends Chart {
   constructor(scope: Construct, id: string, props: ChartProps = { }) {
     super(scope, id, props);
 
-    const sec_db = new Secret(this, "mysql-pass", {stringData: {
+    const starkbotEnvSecret = Secret.fromSecretName(scope, id, 'prod/starkbot/bot');
+
+    const starkbotDeployment = new Deployment(this, "starkbot");
+
+    starkbotDeployment.addContainer(
+      {
+        image: "071785475400.dkr.ecr.eu-west-3.amazonaws.com/starkbot-repository",
+        name: 'starkbot',
+        port: 80,
+        volumeMounts: [
+          {
+            path:'/tmp',
+            volume:Volume.fromEmptyDir(scope, id="tmp-starkbot", 'tmp-starkbot'),
+          },
+        ],
+        envFrom: [new EnvFrom(starkbotEnvSecret)],
+      }
+    )
+
+    /*const exposePortWordPress : ServicePort = {
+      port: 80,
+    };
+
+    starkbotDeployment.exposeViaService({
+      ports: [exposePortWordPress],
+      serviceType: ServiceType.LOAD_BALANCER,
+      name: "starkbot-service",
+    });*/
+
+    /*const sec_db = new Secret(this, "mysql-pass", {stringData: {
       ["password"]: "vY42$5wP6p0+ua",
     }});
 
@@ -49,9 +78,9 @@ export class MyChart extends Chart {
       ports: [exposePortWordPress],
       serviceType: ServiceType.LOAD_BALANCER,
       name: "wordpress-service",
-    });
+    });*/
 
-    const mySQLDeployment = new Deployment(this, "my-sql");
+    /*const mySQLDeployment = new Deployment(this, "my-sql");
 
     mySQLDeployment.addContainer(
       {
@@ -87,7 +116,7 @@ export class MyChart extends Chart {
       ports: [exposePortSQL],
       serviceType: undefined,
       name: "wordpress-mysql",
-    });
+    });*/
 
   }
 }
