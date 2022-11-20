@@ -24,20 +24,21 @@ export const addRuleNrOfNfts = `${addRuleCommandName}-number-of-nfts`;
 const { ActionRowBuilder, SelectMenuBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const cache = new Map<string, string>();
 
+function getAvailablesRolesSorted(interaction: CommandInteraction) {
+  return interaction.guild.roles.cache
+    .filter(role => role.position < interaction.guild.members.me.roles.highest.position)
+    .map((role) => ({
+      label: role.name,
+      value: role.id,
+    }))
+    .sort((role1, role2) => {
+      return role1.label.toString().localeCompare(role2.label.toString())
+    });
+}
 export async function addRuleCommand(client: Client, interaction: CommandInteraction) {
   await interaction.deferReply();
 
-  const roles = interaction.guild.roles.cache;
-  let goodRoles = [];
-  for (const [_id, role] of roles) {
-    if(role.position < interaction.guild.members.me.roles.highest.position) {
-      goodRoles.push(role);
-    }
-  }
-  const roleOptions = goodRoles.map((role) => ({
-    label: role.name,
-    value: role.id,
-  }));
+  const roleOptions = getAvailablesRolesSorted(interaction);
 
   const row = new ActionRowBuilder().addComponents(
     new SelectMenuBuilder()
@@ -126,7 +127,7 @@ function getSelectedRole(interaction: ModalSubmitInteraction, roleId: string): R
   if (!selectedRole) {
     throw new IllegalArgumentException('Role not found');
   }
-  if(selectedRole.position >= interaction.guild.members.me.roles.highest.position) {
+  if (selectedRole.position >= interaction.guild.members.me.roles.highest.position) {
     throw new IllegalArgumentException("The bot cannot manage this role. Please try again with another role or change your bot position.");
   }
   return selectedRole;
