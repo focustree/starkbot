@@ -44,9 +44,9 @@ export async function listRulesForRole(interaction: SelectMenuInteraction) {
   const role = interaction.guild.roles.cache.get(selectedRoleId);
   const rules = await Promise.all(
     ruleDocs.filter(doc => doc.roleId == selectedRoleId).map(async (doc) => {
-      const { tokenAddress, minBalance, maxBalance } = doc;
+      const { tokenAddress, name, minBalance, maxBalance } = doc;
       const nbOfUsers = await numberOfUserWithRole(interaction, role);
-      return { role: role.name, nbOfUsers, tokenAddress, minBalance, maxBalance };
+      return { role: role.name, name, nbOfUsers, tokenAddress, minBalance, maxBalance };
     }));
   if (rules.length == 0) {
     await interaction.followUp({
@@ -56,7 +56,7 @@ export async function listRulesForRole(interaction: SelectMenuInteraction) {
   }
   await interaction.followUp({
     content: `You have ${rules.length} active rules for role ${rules[0].role}: \n${rules
-      .map((rule) => formatRule(rule))
+      .map((rule) => formatRule(rule.role, rule.name, rule.tokenAddress, rule.minBalance, rule.maxBalance, rule.nbOfUsers))
       .join('\n')}`,
   });
   return;

@@ -5,10 +5,11 @@ import { logger } from '../configuration/logger';
 import { DiscordRule, dynamoQueryResponse } from "../dynamodb/db-types";
 
 
-export async function createRuleForGuild(guild: Guild, selectedRoleId: string, tokenAddress: string, minBalance: number, maxBalance: number, ruleid: string) {
+export async function createRuleForGuild(guild: Guild, selectedRoleId: string, ruleName: string, tokenAddress: string, minBalance: number, maxBalance: number, ruleid: string) {
   const responseRule: dynamoQueryResponse = await addSubItem("guild", { "guild-id": guild.id }, "Rules", "RuleSet", ruleid, {
     "id": ruleid,
     "roleId": selectedRoleId,
+    "name": ruleName,
     "tokenAddress": tokenAddress,
     "minBalance": minBalance,
     "maxBalance": maxBalance,

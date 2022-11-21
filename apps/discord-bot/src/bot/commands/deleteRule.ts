@@ -78,13 +78,7 @@ export async function handleDeleteRule(interaction: ButtonInteraction, shouldRem
   cache.delete(currentRuleIdToDelete);
 
   await interaction.reply({
-    content: `Deleted rule: ${formatRule({
-      role: role.name,
-      nbOfUsers,
-      tokenAddress: rule.tokenAddress,
-      minBalance: rule.minBalance,
-      maxBalance: rule.maxBalance,
-    })}`,
+    content: `Deleted rule: ${formatRule(role.name, rule.name, rule.tokenAddress, rule.minBalance, rule.maxBalance, nbOfUsers)}`,
   });
 }
 

@@ -16,6 +16,7 @@ const RANGE_ID = 1000000000000000000;
 
 export const addRuleCommandName = 'starkbot-add-rule';
 export const addRuleRoleId = `${addRuleCommandName}-role`;
+export const addRuleNameId = `${addRuleCommandName}-name`;
 export const addRuleTokenAddressId = `${addRuleCommandName}-token-address`;
 export const addRuleMinBalanceId = `${addRuleCommandName}-min-balance`;
 export const addRuleMaxBalanceId = `${addRuleCommandName}-max-balance`;
@@ -62,6 +63,14 @@ export async function handleAddRuleSelectRole(interaction: SelectMenuInteraction
     .setCustomId(addRuleCommandName)
     .setTitle(`Add a rule for ${selectedRole.name}`);
 
+
+  modal.addComponents(
+    new ActionRowBuilder().addComponents(
+      new TextInputBuilder()
+        .setCustomId(addRuleNameId)
+        .setLabel('Rule name')
+        .setStyle(TextInputStyle.Short)
+    ));
   modal.addComponents(
     new ActionRowBuilder().addComponents(
       new TextInputBuilder()
@@ -92,6 +101,7 @@ export async function handleAddRuleSubmitModal(interaction: ModalSubmitInteracti
 
   const selectedRoleId = getSelectedRoleId(interaction);
   const selectedRole = getSelectedRole(interaction, selectedRoleId);
+  const ruleName = getRuleName(interaction);
   const tokenAddress = getTokenAdress(interaction);
   const minBalance = getMinBalance(interaction);
   const maxBalance = getMaxBalance(interaction);
@@ -101,15 +111,10 @@ export async function handleAddRuleSubmitModal(interaction: ModalSubmitInteracti
   }
   cache.delete(selectedRoleId);
 
-  await createRuleForGuild(interaction.guild, selectedRoleId, tokenAddress, minBalance, maxBalance, Math.floor(Math.random() * RANGE_ID).toString());
+  await createRuleForGuild(interaction.guild, selectedRoleId, ruleName, tokenAddress, minBalance, maxBalance, Math.floor(Math.random() * RANGE_ID).toString());
 
   await interaction.reply({
-    content: `Created new rule: ${formatRule({
-      role: selectedRole.name,
-      tokenAddress,
-      minBalance,
-      maxBalance,
-    })}`,
+    content: `Created new rule: ${formatRule(selectedRole.name, ruleName, tokenAddress, minBalance, maxBalance,)}`,
   });
 }
 
@@ -133,6 +138,13 @@ function getSelectedRole(interaction: ModalSubmitInteraction, roleId: string): R
   return selectedRole;
 }
 
+function getRuleName(interaction: ModalSubmitInteraction): string {
+  const ruleName = interaction.fields.getTextInputValue(addRuleNameId);
+  if (ruleName == '') {
+    throw new IllegalArgumentException('⚠️ No rule name provided');
+  }
+  return ruleName;
+}
 
 function getTokenAdress(interaction: ModalSubmitInteraction): string {
   const tokenAddress = interaction.fields.getTextInputValue(addRuleTokenAddressId).toLowerCase();
