@@ -2,6 +2,8 @@ import { CommandInteraction, Client, SelectMenuInteraction } from 'discord.js';
 import { DiscordRule } from '../../dynamodb/db-types';
 import { getRulesForGuild } from '../../models/rule';
 import { formatRule, numberOfUserWithRole } from './utils';
+import { listRulesCommandFor } from './listRules';
+
 
 const { ActionRowBuilder, SelectMenuBuilder } = require('discord.js');
 
@@ -33,32 +35,13 @@ export async function listRulesForRoleCommand(client: Client, interaction: Comma
     components: [row],
   });
   return;
-
-
 }
 
 export async function listRulesForRole(interaction: SelectMenuInteraction) {
   await interaction.deferReply();
   const [selectedRoleId] = interaction.values;
-  const ruleDocs: DiscordRule[] = await getRulesForGuild(interaction.guild);
-  const role = interaction.guild.roles.cache.get(selectedRoleId);
-  const rules = await Promise.all(
-    ruleDocs.filter(doc => doc.roleId == selectedRoleId).map(async (doc) => {
-      const { tokenAddress, name, minBalance, maxBalance } = doc;
-      const nbOfUsers = await numberOfUserWithRole(interaction, role);
-      return { role: role.name, name, nbOfUsers, tokenAddress, minBalance, maxBalance };
-    }));
-  if (rules.length == 0) {
-    await interaction.followUp({
-      content: `You have no active rules for role ${role.name}`
-    });
-    return;
-  }
-  await interaction.followUp({
-    content: `You have ${rules.length} active rules for role ${rules[0].role}: \n${rules
-      .map((rule) => formatRule(rule.role, rule.name, rule.tokenAddress, rule.minBalance, rule.maxBalance, rule.nbOfUsers))
-      .join('\n')}`,
-  });
-  return;
+  let ruleDocs: DiscordRule[] = await getRulesForGuild(interaction.guild);
+  ruleDocs = ruleDocs.filter(doc => doc.roleId == selectedRoleId);
+  await listRulesCommandFor(interaction, ruleDocs);
 }
 

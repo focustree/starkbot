@@ -1,13 +1,19 @@
-import { CommandInteraction, Client } from 'discord.js';
+import { CommandInteraction, Client, SelectMenuInteraction } from 'discord.js';
+import { DiscordRule } from '../../dynamodb/db-types';
 import { getRulesForGuild } from '../../models/rule';
 import { formatRule, numberOfUserWithRole } from './utils';
 
 export async function listRulesCommand(client: Client, interaction: CommandInteraction) {
   await interaction.deferReply();
   const ruleDocs = await getRulesForGuild(interaction.guild);
-  if (ruleDocs == null) {
+  await listRulesCommandFor(interaction, ruleDocs)
+}
+
+export async function listRulesCommandFor(interaction: CommandInteraction | SelectMenuInteraction, ruleDocs: DiscordRule[]) {
+
+  if (ruleDocs == null || ruleDocs.length == 0) {
     await interaction.followUp({
-      content: `You have no active rules`
+      content: `No active rules`
     });
     return;
   }
@@ -25,6 +31,5 @@ export async function listRulesCommand(client: Client, interaction: CommandInter
       .map((rule) => formatRule(rule.role, rule.name, rule.tokenAddress, rule.minBalance, rule.maxBalance, rule.nbOfUsers))
       .join('\n')}`,
   });
-  return;
-}
 
+}

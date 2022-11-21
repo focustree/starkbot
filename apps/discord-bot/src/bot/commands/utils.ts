@@ -1,10 +1,10 @@
 import { BaseInteraction, Role } from "discord.js";
-// TODO Reformat here to take name into account
+
 export function formatRule(role: string, ruleName: string, tokenAddress: string, minBalance: number, maxBalance: number, nbOfUsers?: number) {
+  let userString = 'user';
+  if (nbOfUsers > 1) userString += 's';
   return `\`\`\`
-    • Role: ${role} (${nbOfUsers ? (nbOfUsers.toString()) : '0'} user(s))
-    • Name: ${ruleName}
-    • Token Address: ${tokenAddress}
+  Rule "${ruleName}" (${tokenAddress}) for role "${role}" has ${nbOfUsers ? (nbOfUsers.toString()) : '0'} ${userString}:
     • Min Balance: ${minBalance}
     • Max Balance: ${maxBalance}\`\`\``;
 }
