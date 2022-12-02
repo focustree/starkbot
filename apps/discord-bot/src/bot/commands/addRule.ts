@@ -16,6 +16,7 @@ const RANGE_ID = 1000000000000000000;
 
 export const addRuleCommandName = 'starkbot-add-rule';
 export const addRuleRoleId = `${addRuleCommandName}-role`;
+export const addRuleNameId = `${addRuleCommandName}-name`;
 export const addRuleTokenAddressId = `${addRuleCommandName}-token-address`;
 export const addRuleMinBalanceId = `${addRuleCommandName}-min-balance`;
 export const addRuleMaxBalanceId = `${addRuleCommandName}-max-balance`;
@@ -24,20 +25,21 @@ export const addRuleNrOfNfts = `${addRuleCommandName}-number-of-nfts`;
 const { ActionRowBuilder, SelectMenuBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const cache = new Map<string, string>();
 
+function getAvailablesRolesSorted(interaction: CommandInteraction) {
+  return interaction.guild.roles.cache
+    .filter(role => role.position < interaction.guild.members.me.roles.highest.position)
+    .map((role) => ({
+      label: role.name,
+      value: role.id,
+    }))
+    .sort((role1, role2) => {
+      return role1.label.toString().localeCompare(role2.label.toString())
+    });
+}
 export async function addRuleCommand(client: Client, interaction: CommandInteraction) {
   await interaction.deferReply();
 
-  const roles = interaction.guild.roles.cache;
-  let goodRoles = [];
-  for (const [_id, role] of roles) {
-    if(role.position < interaction.guild.members.me.roles.highest.position) {
-      goodRoles.push(role);
-    }
-  }
-  const roleOptions = goodRoles.map((role) => ({
-    label: role.name,
-    value: role.id,
-  }));
+  const roleOptions = getAvailablesRolesSorted(interaction);
 
   const row = new ActionRowBuilder().addComponents(
     new SelectMenuBuilder()
@@ -61,6 +63,14 @@ export async function handleAddRuleSelectRole(interaction: SelectMenuInteraction
     .setCustomId(addRuleCommandName)
     .setTitle(`Add a rule for ${selectedRole.name}`);
 
+
+  modal.addComponents(
+    new ActionRowBuilder().addComponents(
+      new TextInputBuilder()
+        .setCustomId(addRuleNameId)
+        .setLabel('Rule name')
+        .setStyle(TextInputStyle.Short)
+    ));
   modal.addComponents(
     new ActionRowBuilder().addComponents(
       new TextInputBuilder()
@@ -91,6 +101,7 @@ export async function handleAddRuleSubmitModal(interaction: ModalSubmitInteracti
 
   const selectedRoleId = getSelectedRoleId(interaction);
   const selectedRole = getSelectedRole(interaction, selectedRoleId);
+  const ruleName = getRuleName(interaction);
   const tokenAddress = getTokenAdress(interaction);
   const minBalance = getMinBalance(interaction);
   const maxBalance = getMaxBalance(interaction);
@@ -100,15 +111,10 @@ export async function handleAddRuleSubmitModal(interaction: ModalSubmitInteracti
   }
   cache.delete(selectedRoleId);
 
-  await createRuleForGuild(interaction.guild, selectedRoleId, tokenAddress, minBalance, maxBalance, Math.floor(Math.random() * RANGE_ID).toString());
+  await createRuleForGuild(interaction.guild, selectedRoleId, ruleName, tokenAddress, minBalance, maxBalance, Math.floor(Math.random() * RANGE_ID).toString());
 
   await interaction.reply({
-    content: `Created new rule: ${formatRule({
-      role: selectedRole.name,
-      tokenAddress,
-      minBalance,
-      maxBalance,
-    })}`,
+    content: `Created new rule: ${formatRule(selectedRole.name, ruleName, tokenAddress, minBalance, maxBalance,)}`,
   });
 }
 
@@ -126,12 +132,19 @@ function getSelectedRole(interaction: ModalSubmitInteraction, roleId: string): R
   if (!selectedRole) {
     throw new IllegalArgumentException('Role not found');
   }
-  if(selectedRole.position >= interaction.guild.members.me.roles.highest.position) {
+  if (selectedRole.position >= interaction.guild.members.me.roles.highest.position) {
     throw new IllegalArgumentException("The bot cannot manage this role. Please try again with another role or change your bot position.");
   }
   return selectedRole;
 }
 
+function getRuleName(interaction: ModalSubmitInteraction): string {
+  const ruleName = interaction.fields.getTextInputValue(addRuleNameId);
+  if (ruleName == '') {
+    throw new IllegalArgumentException('⚠️ No rule name provided');
+  }
+  return ruleName;
+}
 
 function getTokenAdress(interaction: ModalSubmitInteraction): string {
   const tokenAddress = interaction.fields.getTextInputValue(addRuleTokenAddressId).toLowerCase();
