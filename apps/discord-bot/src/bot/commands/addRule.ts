@@ -39,7 +39,20 @@ function getAvailablesRolesSorted(interaction: CommandInteraction) {
 export async function addRuleCommand(client: Client, interaction: CommandInteraction) {
   await interaction.deferReply();
 
-  const roleOptions = getAvailablesRolesSorted(interaction);
+  const roles = interaction.guild.roles.cache;
+  let goodRoles = [];
+  for (const [_id, role] of roles) {
+    if(role.position < interaction.guild.members.me.roles.highest.position) {
+      goodRoles.push(role);
+    } /*else {
+      goodRoles.push(role);
+    }*/
+  }
+
+  const roleOptions = goodRoles.map((role) => ({
+    label: role.name,
+    value: role.id,
+  }));
 
   const row = new ActionRowBuilder().addComponents(
     new SelectMenuBuilder()
@@ -132,8 +145,8 @@ function getSelectedRole(interaction: ModalSubmitInteraction, roleId: string): R
   if (!selectedRole) {
     throw new IllegalArgumentException('Role not found');
   }
-  if (selectedRole.position >= interaction.guild.members.me.roles.highest.position) {
-    throw new IllegalArgumentException("The bot cannot manage this role. Please try again with another role or change your bot position.");
+  if(selectedRole.position >= interaction.guild.members.me.roles.highest.position) {
+    throw new IllegalArgumentException("The bot cannot manage this role. Check that the bot has the premission to manage roles. If so, please try again with another role or change the bot position.");
   }
   return selectedRole;
 }

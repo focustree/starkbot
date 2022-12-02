@@ -1,4 +1,4 @@
-import { GuildMember, OAuth2Guild } from 'discord.js';
+import { GuildMember, OAuth2Guild, Guild } from 'discord.js';
 import { defaultProvider, number, stark } from 'starknet';
 import { useAppContext } from '..';
 import { logger } from '../configuration/logger';
@@ -6,26 +6,37 @@ import { queryTable } from '../dynamodb/dynamodb';
 import { getRulesForGuild } from '../models/rule';
 import { DiscordRule } from '../dynamodb/db-types';
 
+// mutex to lock db access when it is modified
+export let compromisedDB = [];
+
 export async function applyRules() {
   const guilds = await useAppContext().discordClient.guilds.fetch();
+  let promiseList = [];
   for (const [_id, guild] of guilds) {
-    await applyRulesForGuild(guild);
+    await promiseList.push(guild);
   }
+
+  await Promise.all(promiseList.map((arg) => applyRulesForGuild(arg)));
 }
 
 async function applyRulesForGuild(g: OAuth2Guild) {
   const guild = await g.fetch();
+  setCPDB(`${guild.name}`, false);
   logger.info(`Apply rules for guild: ${guild.name}`);
   const rules = await getRulesForGuild(g);
 
   const guildMembers = await guild.members.fetch();
 
   for (const [_id, member] of guildMembers) {
-    await applyRulesForMember(member, rules)
+    if(getCPDB(`${guild.name}`)) {
+      setCPDB(`${guild.name}`, false);
+      return;
+    }
+    await applyRulesForMember(guild, member, rules)
   }
 }
 
-async function applyRulesForMember(member: GuildMember, rules: DiscordRule[]) {
+async function applyRulesForMember(guild: Guild, member: GuildMember, rules: DiscordRule[]) {
   try {
     const accountAddress = await getAccountAddress(member.user.id);
     if (!accountAddress) {
@@ -42,14 +53,14 @@ async function applyRulesForMember(member: GuildMember, rules: DiscordRule[]) {
         (balance < rule.minBalance || balance > rule.maxBalance) &&
         member.roles.cache.has(rule.roleId)
       ) {
-        logger.info(`Remove  role: ${member.roles.cache.get(rule.roleId).name}`);
+        logger.info(`${guild.name}: Remove role ${member.roles.cache.get(rule.roleId).name} for ${member.user.username}`);
         await member.roles.remove(rule.roleId);
       } else if (
         balance >= rule.minBalance &&
         balance <= rule.maxBalance &&
         !member.roles.cache.has(rule.roleId)
       ) {
-        logger.info(`Add role: ${rule.roleId}`);
+        logger.info(`${guild.name}: Add role ${guild.roles.cache.get(rule.roleId).name} for ${member.user.username}`);
         await member.roles.add(rule.roleId);
 
       }
@@ -82,3 +93,10 @@ async function getAccountAddress(discordMemberId: string): Promise<string | null
   return items[0].accountAddress['S'];
 }
 
+export function setCPDB(guild: string, value: boolean) {
+  compromisedDB[guild] = value;
+}
+
+export function getCPDB(guild: string) {
+  return compromisedDB[guild];
+}

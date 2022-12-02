@@ -16,11 +16,13 @@
     "kube:deploy": "nx start kube",
     "kube:clean": "nx delete kube",
     "web:launch": "nx start website",
+    "docker:login": "nx run discord-bot:login-ecr",
     "docker:build:base": "docker build -f base.dockerfile -t ${npm_package_ecr} . ",
     "docker:push:base:latest": "docker push ${npm_package_ecr}",
     "docker:tag:base": "docker tag ${npm_package_ecr} ${npm_package_ecr}:$(git rev-parse --short HEAD)",
     "docker:push:base:tagged": "docker push ${npm_package_ecr}:$(git rev-parse --short HEAD)",
-    "docker:deploy:base": "pnpm docker:build:base && pnpm docker:push:base:latest && pnpm docker:tag:base && pnpm docker:push:base:tagged"
+    "docker:deploy:base": "pnpm docker:build:base && pnpm docker:push:base:latest && pnpm docker:tag:base && pnpm docker:push:base:tagged",
+    "docker:deploy:app": "nx run discord-bot:deploy"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.204.0",
@@ -31,9 +33,9 @@
     "axios": "^0.27.2",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.20.0",
-    "cdk8s": "^2.5.18",
-    "cdk8s-plus-22": "^2.0.0-rc.152",
-    "constructs": "^10.1.131",
+    "cdk8s": "^2.5.45",
+    "cdk8s-plus-25": "^2.0.27",
+    "constructs": "^10.1.160",
     "discord.js": "^14.3.0",
     "dotenv": "^16.0.2",
     "firebase": "^9.8.4",

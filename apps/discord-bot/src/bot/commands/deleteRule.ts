@@ -10,6 +10,7 @@ const { ActionRowBuilder, SelectMenuBuilder, ButtonBuilder, ButtonStyle } = requ
 
 import { deleteRuleForGuild, getRuleForGuild, getRulesForGuild } from '../../models/rule';
 import { formatRule, formatShortTokenAddress, numberOfUserWithRole } from './utils';
+import { setCPDB } from '../../workers/applyRules';
 
 const cache = new Map<string, string>();
 
@@ -71,6 +72,7 @@ export async function handleDeleteRule(interaction: ButtonInteraction, shouldRem
   const role = interaction.guild.roles.cache.get(rule.roleId);
 
   if (shouldRemoveRole) {
+    setCPDB(`${interaction.guild.name}`, true);
     await removeRoleToUsers(interaction, role)
     nbOfUsers = 0;
   }

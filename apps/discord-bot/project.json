@@ -39,27 +39,63 @@
         "lintFilePatterns": ["apps/discord-bot/**/*.ts"]
       }
     },
-    "docker:build": {
+    "docker-build": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "docker build --no-cache -f ./apps/discord-bot/Dockerfile -t ghcr.io/gabsn/starkbot-discord-bot:$(git rev-parse --short HEAD) ."
+          "docker build --no-cache -f ./apps/discord-bot/Dockerfile -t $AWS_LINK/$AWS_ECR ."
         ]
       }
     },
-    "docker:push": {
+    "docker-push-raw": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "docker push ghcr.io/gabsn/starkbot-discord-bot:$(git rev-parse --short HEAD)"
+          "docker push $AWS_LINK/$AWS_ECR"
         ]
       }
     },
-    "docker:run": {
+    "docker-tag": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "docker run -d --env-file .env.prod ghcr.io/gabsn/starkbot-discord-bot"
+          "docker tag $AWS_LINK/$AWS_ECR $AWS_LINK/$AWS_ECR:$(git rev-parse --short HEAD)"
+        ]
+      }
+    },
+    "docker-push": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "docker push $AWS_LINK/$AWS_ECR:$(git rev-parse --short HEAD)"
+        ]
+      }
+    },
+    "docker-run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "docker run -d --env-file .env $AWS_LINK/$AWS_ECR"
+        ]
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx run discord-bot:docker-build",
+          "nx run discord-bot:docker-push-raw",
+          "nx run discord-bot:docker-tag",
+          "nx run discord-bot:docker-push"
+        ],
+        "parallel": false
+      }
+    },
+    "login-ecr": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "aws ecr get-login-password --region $AWS_REGION --profile $AWS_PROFILE | docker login --username AWS --password-stdin $AWS_LINK"
         ]
       }
     }
