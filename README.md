@@ -1,4 +1,4 @@
-# starkbot
+# Starkbot
 
 Assign discord roles based on owned NFTs ✨
 
@@ -25,21 +25,17 @@ Give it a role that has the enough permissions!
 /starkbot-add-rule
 ```
 
-### On-premise
+### Deploy it yourself
 
-You can run the already prepared docker image:
+#### Fill your environment variables
 
-```
-docker run -d --restart always --env-file .env ghcr.io/gabsn/starkbot-discord-bot:bb0107b
-```
-
-You need to create a `.env` file with your own discord and firebase credentials:
+You need to create a `.env` file with your informations and credentials:
 
 ```
 ENV=dev
 
-DISCORD_CLIENT_ID=
-DISCORD_BOT_TOKEN=
+DISCORD_CLIENT_ID_DEV=
+DISCORD_BOT_TOKEN_DEV=
 
 STARKNET_ID_CONTRACT_ADDRESS=0x0798e884450c19e072d6620fefdbeb7387d0453d3fd51d95f5ace1f17633d88b
 STARKNET_ID_INDEXER_URL=https://goerli.indexer.starknet.id/field_data_to_id
@@ -47,7 +43,11 @@ VERIFIER_DECIMAL_CONTRACT_ADDRESS=2858829565965467824506234522366406559425492229
 DISCORD_TYPE=28263441981469284
 
 AWS_PROFILE=
+AWS_NAME=
+AWS_ECR=
+AWS_DB_PROFILE=
 AWS_REGION=
+
 DYNAMODB_TABLE_GUILD_DEV=
 DYNAMODB_TABLE_STARKNET_ID_DEV=
 
@@ -56,9 +56,25 @@ RST_KEY=
 API_URL="http://localhost:3000/api"
 ```
 
-- Fill the 2 missing DISCORD variables with your bot application credentials
-- Fill the 3 missing AWS variables with your AWS profile (only for stack deployment) and region, as well as your DynamoDB tables names
-- Fill the 2 missing token key with generated tokens (see website section below)
+- Fill the 2 missing DISCORD variables with your bot application credentials (create one on [discord dev portal](https://discord.com/developers) )
+- Fill `AWS_PROFILE` with the aws profile you want to use
+- Fill `AWS_NAME` with the name of the iam user you are using
+- Fill `AWS_DB_PROFILE` with the aws profile you want to use to run the app and reach the db. We recommand using a IAM user with minimum privileges for security reasons
+- Fill `AWS_REGION` with the aws region you want to use 
+- Fill the 2 missing token key with generated tokens (only for running website, see website section below)
+
+#### Run the bot locally
+
+- Deploy the infra with `pnpm infra:deploy`
+- Grab your ECR repositories name and fill it in package.json and in environment variables
+- Fill the 2 missing DynamoDB variable with your tables name and config
+- Run `pnpm dev` to launch the bot locally
+
+#### Deploy the bot on your EKS cluster
+
+- Deploy base image with `pnpm docker:deploy:base`
+- Create an `aws-credentials` file in root and fill it with your `AWS_DB_PROFILE` credentials. This file is put into the docker image during building
+- Deploy app in EKS cluster with `pnpm kube:deploy`
 
 ## Roadmap
 
@@ -76,9 +92,11 @@ API_URL="http://localhost:3000/api"
 - [x] Make sure only admins can add / delete rules
 - [x] Create a Github workflow to automatically deploy the `starkbot` in production
 - [x] Move DBMS from Firebase to DynamoDB
-- [ ] Create an EKS cluster and deploy Starkbot into it to increase scalability
+- [x] Create an EKS cluster and deploy Starkbot into it to increase scalability
+- [ ] Rework parallelism
+- [ ] Monitor I/O of users to record only server changes
 - [ ] Add monitoring to get alerted when the bot crashes
-- [ ] Breakdown the different async functions in independent services to increase the scalability
+- [ ] Breakdown the different async functions in independent services and use Kubernetes queues to increase the scalability
 
 
 ## Starkbot website
@@ -106,6 +124,8 @@ You can then reach the website at `http://localhost:3000`
 3. Install dependencies with `pnpm install`
 4. Use node 18 with `nvm install 18 && nvm use default 18`
 5. Setup your environment variables as mentionned above
+
+If you are an Onlydust contributor, don't deploy the infra on your personnal account. Simply ask the project lead to generate you some access tokens.
 
 
 ### Getting Started

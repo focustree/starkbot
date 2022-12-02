@@ -11,6 +11,6 @@ export async function handleButton(interaction: ButtonInteraction) {
             await handleDeleteRule(interaction, true);
             return;
         default:
-            logger.warn(`Button for "${interaction.customId}" isn't supported yet`)
+            logger.warn(`${interaction.guild.name}: Button for "${interaction.customId}" isn't supported yet`)
     }
 }

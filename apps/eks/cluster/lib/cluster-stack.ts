@@ -6,17 +6,13 @@ import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { AutoScaler } from './auto-scaler';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+require("dotenv").config();
 
 export class EksSampleStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const vpc = new ec2.Vpc(this, id="eks-vpc");
-
-    /*const iam_role = new iam.Role(this, id="master-role", {
-      roleName: "master-role",
-      assumedBy: new iam.AccountPrincipal(this.account),
-    });*/
 
     const worker_repository = new ecr.Repository(this, 'starkbot-ecr', {
       repositoryName: "starkbot-repository"
@@ -33,6 +29,18 @@ export class EksSampleStack extends Stack {
       defaultCapacity: 0,
       version: eks.KubernetesVersion.V1_21,
     });
+
+    let username : string = "";
+
+    if(process.env.AWS_NAME == null) {
+      console.log("No user configured, please complete AWS_NAME in environment variables");
+    } else {
+      username = process.env.AWS_NAME;
+    }
+
+    const adminUser = iam.User.fromUserName(scope, 'admin-user', username);
+
+    cluster.awsAuth.addUserMapping(adminUser, { groups: [ 'system:masters' ]});
 
     const nodegroup = cluster.addNodegroupCapacity("nodegroup", {
       instanceTypes: [new ec2.InstanceType("t3.medium")],

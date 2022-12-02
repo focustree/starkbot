@@ -1,25 +1,33 @@
 import { logger } from './logger';
-require("dotenv").config()
+require("dotenv").config();
 
 let dynamodbConfig;
+let discordConfig;
 
 if(process.env.ENV == "dev") {
   dynamodbConfig = {
     dynamodbTableGuild: process.env.DYNAMODB_TABLE_GUILD_DEV,
     dynamodbTableStarknetId: process.env.DYNAMODB_TABLE_STARKNET_ID_DEV,
-  }
+  };
+  discordConfig = {
+    discordToken: process.env.DISCORD_BOT_TOKEN_DEV,
+    discordClientId: process.env.DISCORD_CLIENT_ID_DEV,
+    discordInviteLink: `https://discord.com/api/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID_DEV}&permissions=268435456&scope=bot%20applications.commands`,
+  };
 } else if(process.env.ENV == "prod") {
   dynamodbConfig = {
     dynamodbTableGuild: process.env.DYNAMODB_TABLE_GUILD_PROD,
     dynamodbTableStarknetId: process.env.DYNAMODB_TABLE_STARKNET_ID_PROD,
-  }
+  };
+  discordConfig = {
+    discordToken: process.env.DISCORD_BOT_TOKEN_PROD,
+    discordClientId: process.env.DISCORD_CLIENT_ID_PROD,
+    discordInviteLink: `https://discord.com/api/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID_PROD}&permissions=268435456&scope=bot%20applications.commands`,
+  };
 }
 
 export const config = {
-  // Discord
-  discordToken: process.env.DISCORD_BOT_TOKEN,
-  discordClientId: process.env.DISCORD_CLIENT_ID,
-  discordInviteLink: `https://discord.com/api/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&permissions=0&scope=bot%20applications.commands`,
+  // Discord ID
   discordType: process.env.DISCORD_TYPE,
   // Starknet ID
   starknetIdContractAddress: process.env.STARKNET_ID_CONTRACT_ADDRESS,
@@ -27,7 +35,11 @@ export const config = {
   verifierDecimalContractAddress: process.env.VERIFIER_DECIMAL_CONTRACT_ADDRESS,
   // AWS
   awsRegion: process.env.AWS_REGION,
-  ...dynamodbConfig
+  awsDBprofile: process.env.AWS_DB_PROFILE,
+  // DynamoDB
+  ...dynamodbConfig,
+  // Discord
+  ...discordConfig,
 };
 
 export type Config = typeof config;

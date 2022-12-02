@@ -13,11 +13,14 @@ export async function fetchStarknetIds() {
     },
     ProjectionExpression: "#g, #n",
   });
+  let promiseList = [];
 
   for (const guild of guilds.data) {
     const prettyGuild = { id: guild["guild-id"]['S'], name: guild["Name"]['S']};
-    await fetchStarknetIdsForGuild(prettyGuild);
+    await promiseList.push(prettyGuild);
   }
+
+  await Promise.all(promiseList.map((arg) => fetchStarknetIdsForGuild(arg)));
 }
 
 async function fetchStarknetIdsForGuild(guild: DiscordGuild) {
@@ -34,7 +37,7 @@ async function fetchStarknetIdsForGuild(guild: DiscordGuild) {
       });
 
       if(queryResponse.response) {
-        logger.info(`Added new starknet ID : ${starknetId['starknet-id']}`);
+        logger.info(`${guild.name}: Added new starknet ID for ${member.username} (${starknetId['starknet-id']})`);
       }
     }
   }

@@ -5,11 +5,11 @@ import { commandList } from "../../commands/commandList";
 export async function handleCommand(client: Client, interaction: CommandInteraction): Promise<void> {
     const command = commandList.find((c) => c.name === interaction.command.name);
     if (!command) {
-        logger.warn(`Command not found: ${command.name}`);
+        logger.warn(`${interaction.guild.name}: Command not found: ${command.name}`);
         return;
     };
     try {
-        logger.info(`Running command: ${command.name}`);
+        logger.info(`${interaction.guild.name}: Running command: ${command.name}`);
         await command.run(client, interaction);
     } catch (error) {
         logger.error(error);

@@ -1,123 +1,69 @@
 import { Construct } from 'constructs';
-import { App, Chart, ChartProps } from 'cdk8s';
-import { Deployment, ServiceType, Volume, Secret, ServicePort, EnvFrom } from 'cdk8s-plus-22';
-//import { Deployment, ServiceType, ServicePort, Protocol } from 'cdk8s-plus-22';
+import { App, Chart, ChartProps, Duration } from 'cdk8s';
+import { Deployment, Volume, Secret, EnvValue, ISecret, Probe } from 'cdk8s-plus-25';
+require("dotenv").config();
 
 
 export class MyChart extends Chart {
   constructor(scope: Construct, id: string, props: ChartProps = { }) {
     super(scope, id, props);
 
-    const starkbotEnvSecret = Secret.fromSecretName(scope, id, 'prod/starkbot/bot');
+    const starkbotEnvSecret : ISecret = new Secret(this, "starkbot-env-secret", {stringData: {
+      ['ENV']: 'prod',
+      ['DISCORD_CLIENT_ID_PROD']: returnString(process.env.DISCORD_CLIENT_ID_PROD),
+      ['DISCORD_BOT_TOKEN_PROD']: returnString(process.env.DISCORD_BOT_TOKEN_PROD),
+      ['STARKNET_ID_CONTRACT_ADDRESS']: returnString(process.env.STARKNET_ID_CONTRACT_ADDRESS),
+      ['STARKNET_ID_INDEXER_URL']: returnString(process.env.STARKNET_ID_INDEXER_URL),
+      ['VERIFIER_DECIMAL_CONTRACT_ADDRESS']: returnString(process.env.VERIFIER_DECIMAL_CONTRACT_ADDRESS),
+      ['DISCORD_TYPE']: returnString(process.env.DISCORD_TYPE),
+      ['AWS_DB_PROFILE']: returnString(process.env.AWS_DB_PROFILE),
+      ['AWS_REGION']: returnString(process.env.AWS_REGION),
+      ['DYNAMODB_TABLE_GUILD_PROD']: returnString(process.env.DYNAMODB_TABLE_GUILD_PROD),
+      ['DYNAMODB_TABLE_STARKNET_ID_PROD']: returnString(process.env.DYNAMODB_TABLE_STARKNET_ID_PROD),
+    }});
 
-    const starkbotDeployment = new Deployment(this, "starkbot");
+    const starkbotDeployment = new Deployment(this, "starkbot", {replicas: 1});
+
+    const startupProbe = Probe.fromCommand( ["cat", "/.aws/credentials"], {
+      timeoutSeconds: Duration.seconds(20),
+    });
 
     starkbotDeployment.addContainer(
       {
-        image: "071785475400.dkr.ecr.eu-west-3.amazonaws.com/starkbot-repository",
+        image: returnString(process.env.AWS_LINK + "/" + process.env.AWS_ECR),
         name: 'starkbot',
-        port: 80,
+        port: 22,
         volumeMounts: [
           {
             path:'/tmp',
             volume:Volume.fromEmptyDir(scope, id="tmp-starkbot", 'tmp-starkbot'),
           },
         ],
-        envFrom: [new EnvFrom(starkbotEnvSecret)],
+        envVariables: {
+          ['ENV']: EnvValue.fromSecretValue({key: 'ENV', secret: starkbotEnvSecret}),
+          ['DISCORD_CLIENT_ID_PROD']: EnvValue.fromSecretValue({key: 'DISCORD_CLIENT_ID_PROD', secret: starkbotEnvSecret}),
+          ['DISCORD_BOT_TOKEN_PROD']: EnvValue.fromSecretValue({key: 'DISCORD_BOT_TOKEN_PROD', secret: starkbotEnvSecret}),
+          ['STARKNET_ID_CONTRACT_ADDRESS']: EnvValue.fromSecretValue({key: 'STARKNET_ID_CONTRACT_ADDRESS', secret: starkbotEnvSecret}),
+          ['STARKNET_ID_INDEXER_URL']: EnvValue.fromSecretValue({key: 'STARKNET_ID_INDEXER_URL', secret: starkbotEnvSecret}),
+          ['VERIFIER_DECIMAL_CONTRACT_ADDRESS']: EnvValue.fromSecretValue({key: 'VERIFIER_DECIMAL_CONTRACT_ADDRESS', secret: starkbotEnvSecret}),
+          ['DISCORD_TYPE']: EnvValue.fromSecretValue({key: 'DISCORD_TYPE', secret: starkbotEnvSecret}),
+          ['AWS_DB_PROFILE']: EnvValue.fromSecretValue({key: 'AWS_DB_PROFILE', secret: starkbotEnvSecret}),
+          ['AWS_REGION']: EnvValue.fromSecretValue({key: 'AWS_REGION', secret: starkbotEnvSecret}),
+          ['DYNAMODB_TABLE_GUILD_PROD']: EnvValue.fromSecretValue({key: 'DYNAMODB_TABLE_GUILD_PROD', secret: starkbotEnvSecret}),
+          ['DYNAMODB_TABLE_STARKNET_ID_PROD']: EnvValue.fromSecretValue({key: 'DYNAMODB_TABLE_STARKNET_ID_PROD', secret: starkbotEnvSecret}),
+        },
+        startup: startupProbe,
       }
     )
 
-    /*const exposePortWordPress : ServicePort = {
-      port: 80,
-    };
+  }
+}
 
-    starkbotDeployment.exposeViaService({
-      ports: [exposePortWordPress],
-      serviceType: ServiceType.LOAD_BALANCER,
-      name: "starkbot-service",
-    });*/
-
-    /*const sec_db = new Secret(this, "mysql-pass", {stringData: {
-      ["password"]: "vY42$5wP6p0+ua",
-    }});
-
-    const wordpressDeployment = new Deployment(this, "wordpress");
-
-    wordpressDeployment.addContainer(
-      {
-        image: 'wordpress',
-        name: 'wordpress',
-        port:80,
-        volumeMounts: [
-          {
-            path:'/var/www/html',
-            volume:Volume.fromEmptyDir(scope, id="dir-wordpress", 'dir-wordpress'),
-          },
-          {
-            path:'/tmp',
-            volume:Volume.fromEmptyDir(scope, id="tmp-wordpress", 'tmp-wordpress'),
-          },
-          {
-            path: '/var/run/apache2',
-            volume:Volume.fromEmptyDir(scope, id="apache-wordpress", 'apache-wordpress'),
-          }
-        ],
-        envVariables: {
-          ["WORDPRESS_DB_HOST"]: EnvValue.fromValue("wordpress-mysql"),
-          ["WORDPRESS_DB_USER"]: EnvValue.fromValue("root"),
-          ["WORDPRESS_DB_PASSWORD"]: EnvValue.fromSecretValue({key: "password", secret: sec_db}),
-        }
-      }
-    )
-
-    const exposePortWordPress : ServicePort = {
-      port: 80,
-    };
-
-    wordpressDeployment.exposeViaService({
-      ports: [exposePortWordPress],
-      serviceType: ServiceType.LOAD_BALANCER,
-      name: "wordpress-service",
-    });*/
-
-    /*const mySQLDeployment = new Deployment(this, "my-sql");
-
-    mySQLDeployment.addContainer(
-      {
-        image: 'mysql', 
-        name: 'mysql',
-        port:3306, 
-        volumeMounts: 
-        [
-          {
-            path:'/var/lib/mysql',
-            volume:Volume.fromEmptyDir(scope, "dirdb", 'dirdb'),
-          },
-          {
-            path:'/tmp',
-            volume:Volume.fromEmptyDir(scope, "tmp-sql", 'tmp-sql'),
-          },
-          {
-            path:'/var/run/mysqld',
-            volume:Volume.fromEmptyDir(scope, "dirdb2", 'dirdb2'),
-          }
-        ],
-        envVariables: {
-          ["MYSQL_ROOT_PASSWORD"]: EnvValue.fromSecretValue({key: "password", secret: sec_db}),
-        }
-      }
-    );
-
-    const exposePortSQL : ServicePort = {
-      port: 3306,
-    };
-
-    mySQLDeployment.exposeViaService({
-      ports: [exposePortSQL],
-      serviceType: undefined,
-      name: "wordpress-mysql",
-    });*/
-
+function returnString(maybeString: string | undefined): string {
+  if(maybeString == null) {
+    return "";
+  } else {
+    return maybeString;
   }
 }
 
