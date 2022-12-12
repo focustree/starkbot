@@ -44,6 +44,7 @@ DISCORD_TYPE=28263441981469284
 
 AWS_PROFILE=
 AWS_NAME=
+AWS_LINK=
 AWS_ECR=
 AWS_DB_PROFILE=
 AWS_REGION=
@@ -62,6 +63,7 @@ API_URL="http://localhost:3000/api"
 - Fill `AWS_DB_PROFILE` with the aws profile you want to use to run the app and reach the db. We recommand using a IAM user with minimum privileges for security reasons
 - Fill `AWS_REGION` with the aws region you want to use 
 - Fill the 2 missing token key with generated tokens (only for running website, see website section below)
+- For using Github Actions Workflow : change ECR names in cd.yaml and add your credentials in github secrets. We recommand using a IAM user with minimum privileges for security reasons
 
 #### Run the bot locally
 

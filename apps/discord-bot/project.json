@@ -43,7 +43,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "docker build --no-cache -f ./apps/discord-bot/Dockerfile -t $AWS_LINK/$AWS_ECR ."
+          "docker build --build-arg ECR_REPO=$AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_BASE_ECR --no-cache -f ./apps/discord-bot/Dockerfile -t $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_PRINCIPAL_ECR ."
         ]
       }
     },
@@ -51,7 +51,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "docker push $AWS_LINK/$AWS_ECR"
+          "docker push $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_PRINCIPAL_ECR"
         ]
       }
     },
@@ -59,7 +59,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "docker tag $AWS_LINK/$AWS_ECR $AWS_LINK/$AWS_ECR:$(git rev-parse --short HEAD)"
+          "docker tag $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_PRINCIPAL_ECR $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_PRINCIPAL_ECR:$(git rev-parse --short HEAD)"
         ]
       }
     },
@@ -67,7 +67,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "docker push $AWS_LINK/$AWS_ECR:$(git rev-parse --short HEAD)"
+          "docker push $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_PRINCIPAL_ECR:$(git rev-parse --short HEAD)"
         ]
       }
     },
@@ -75,7 +75,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "docker run -d --env-file .env $AWS_LINK/$AWS_ECR"
+          "docker run -d --env-file .env $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_PRINCIPAL_ECR"
         ]
       }
     },
@@ -95,8 +95,20 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "aws ecr get-login-password --region $AWS_REGION --profile $AWS_PROFILE | docker login --username AWS --password-stdin $AWS_LINK"
+          "aws ecr get-login-password --region $AWS_REGION --profile $AWS_PROFILE | docker login --username AWS --password-stdin $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com"
         ]
+      }
+    },
+    "docker-deploy-base": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "docker build -f base.dockerfile -t $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_BASE_ECR . ",
+          "docker push $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_BASE_ECR",
+          "docker tag $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_BASE_ECR $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_BASE_ECR:$(git rev-parse --short HEAD)",
+          "docker push $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_BASE_ECR:$(git rev-parse --short HEAD)"
+        ],
+        "parallel": false
       }
     }
   },

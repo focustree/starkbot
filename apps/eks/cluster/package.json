@@ -12,8 +12,11 @@
     "cdk": "cdk"
   },
   "devDependencies": {
-    "@types/node": "^18.11.4",
     "@types/jest": "^27.5.2",
+    "@types/node": "^18.11.4",
     "@types/prettier": "2.6.0"
+  },
+  "dependencies": {
+    "aws-cdk": "^2.53.0"
   }
 }

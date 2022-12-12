@@ -10,7 +10,7 @@ const { ActionRowBuilder, SelectMenuBuilder, ButtonBuilder, ButtonStyle } = requ
 
 import { deleteRuleForGuild, getRuleForGuild, getRulesForGuild } from '../../models/rule';
 import { formatRule, formatShortTokenAddress, numberOfUserWithRole } from './utils';
-import { setCPDB } from '../../workers/applyRules';
+import { setCPDB } from '../../workers/tools';
 
 const cache = new Map<string, string>();
 

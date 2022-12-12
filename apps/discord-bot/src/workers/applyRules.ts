@@ -5,38 +5,38 @@ import { logger } from '../configuration/logger';
 import { queryTable } from '../dynamodb/dynamodb';
 import { getRulesForGuild } from '../models/rule';
 import { DiscordRule } from '../dynamodb/db-types';
+import { printError, getCPDB, setCPDB } from './tools';
+import * as async from "async";
 
-// mutex to lock db access when it is modified
-export let compromisedDB = [];
 
 export async function applyRules() {
   const guilds = await useAppContext().discordClient.guilds.fetch();
-  let promiseList = [];
-  for (const [_id, guild] of guilds) {
-    await promiseList.push(guild);
-  }
 
-  await Promise.all(promiseList.map((arg) => applyRulesForGuild(arg)));
+  await async.each(guilds.map(item => item), applyRulesForGuild, (err) => printError(err))
+  //await Promise.all(promiseList.map((arg) => applyRulesForGuild(arg)));
 }
 
 async function applyRulesForGuild(g: OAuth2Guild) {
   const guild = await g.fetch();
   setCPDB(`${guild.name}`, false);
   logger.info(`Apply rules for guild: ${guild.name}`);
-  const rules = await getRulesForGuild(g);
 
   const guildMembers = await guild.members.fetch();
 
-  for (const [_id, member] of guildMembers) {
-    if(getCPDB(`${guild.name}`)) {
-      setCPDB(`${guild.name}`, false);
-      return;
-    }
-    await applyRulesForMember(guild, member, rules)
-  }
+  await async.each(guildMembers.map(item => item), applyRuleIf, (err) => printError(err));
 }
 
-async function applyRulesForMember(guild: Guild, member: GuildMember, rules: DiscordRule[]) {
+async function applyRuleIf(member: GuildMember) {
+  if(getCPDB(`${member.guild.name}`)) {
+    setCPDB(`${member.guild.name}`, false);
+    return;
+  }
+  await applyRulesForMember(member);
+}
+
+async function applyRulesForMember(member: GuildMember) {
+  const guild = member.guild;
+  const rules: DiscordRule[] = await getRulesForGuild(guild);
   try {
     const accountAddress = await getAccountAddress(member.user.id);
     if (!accountAddress) {
@@ -91,12 +91,4 @@ async function getAccountAddress(discordMemberId: string): Promise<string | null
     return null;
   }
   return items[0].accountAddress['S'];
-}
-
-export function setCPDB(guild: string, value: boolean) {
-  compromisedDB[guild] = value;
-}
-
-export function getCPDB(guild: string) {
-  return compromisedDB[guild];
 }

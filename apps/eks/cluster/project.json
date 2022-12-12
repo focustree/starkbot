@@ -12,13 +12,141 @@
             ]
         }
       },
-      "deploy": {
+      "deploy-dynamo": {
         "executor": "nx:run-commands",
         "options": {
             "cwd": "./apps/eks/cluster",
             "commands": [
-                "cdk deploy --profile $AWS_PROFILE --require-approval never"
+                "cdk deploy DynamoBotStack --profile $AWS_PROFILE --require-approval never"
             ]
+        }
+      },
+      "destroy-dynamo": {
+        "executor": "nx:run-commands",
+        "options": {
+            "cwd": "./apps/eks/cluster",
+            "commands": [
+                "cdk destroy DynamoBotStack --profile $AWS_PROFILE --require-approval never"
+            ]
+        }
+      },
+      "deploy-ecr": {
+        "executor": "nx:run-commands",
+        "options": {
+            "cwd": "./apps/eks/cluster",
+            "commands": [
+                "cdk deploy ECRStack --profile $AWS_PROFILE --require-approval never"
+            ]
+        }
+      },
+      "destroy-ecr": {
+        "executor": "nx:run-commands",
+        "options": {
+            "cwd": "./apps/eks/cluster",
+            "commands": [
+                "cdk destroy ECRStack --profile $AWS_PROFILE --require-approval never"
+            ]
+        }
+      },
+      "deploy-cluster": {
+        "executor": "nx:run-commands",
+        "options": {
+            "cwd": "./apps/eks/cluster",
+            "commands": [
+                "cdk deploy ClusterStack --profile $AWS_PROFILE --require-approval never"
+            ]
+        }
+      },
+      "destroy-cluster": {
+        "executor": "nx:run-commands",
+        "options": {
+            "cwd": "./apps/eks/cluster",
+            "commands": [
+                "cdk destroy ClusterStack --profile $AWS_PROFILE --require-approval never"
+            ]
+        }
+      },
+      "deploy-website": {
+        "executor": "nx:run-commands",
+        "options": {
+            "cwd": "./apps/eks/cluster",
+            "commands": [
+                "cdk deploy DynamoWebsiteStack --profile $AWS_PROFILE --require-approval never"
+            ]
+        }
+      },
+      "destroy-website": {
+        "executor": "nx:run-commands",
+        "options": {
+            "cwd": "./apps/eks/cluster",
+            "commands": [
+                "cdk destroy DynamoWebsiteStack --profile $AWS_PROFILE --require-approval never"
+            ]
+        }
+      },
+      "update-website": {
+        "executor": "nx:run-commands",
+        "options": {
+          "commands": [
+            "nx run stack:compile",
+            "nx run stack:deploy-website"
+          ],
+          "parallel": false
+        }
+      },
+      "update-dynamodb": {
+        "executor": "nx:run-commands",
+        "options": {
+          "commands": [
+            "nx run stack:compile",
+            "nx run stack:deploy-dynamo"
+          ],
+          "parallel": false
+        }
+      },
+      "update-cluster": {
+        "executor": "nx:run-commands",
+        "options": {
+          "commands": [
+            "nx run stack:compile",
+            "nx run stack:deploy-cluster"
+          ],
+          "parallel": false
+        }
+      },
+      "deploy-all": {
+        "executor": "nx:run-commands",
+        "options": {
+          "commands": [
+            "nx run stack:compile",
+            "nx run stack:deploy-ecr",
+            "nx run stack:deploy-cluster",
+            "nx run stack:deploy-dynamo",
+            "nx run stack:deploy-website"
+          ],
+          "parallel": false
+        }
+      },
+      "destroy-all": {
+        "executor": "nx:run-commands",
+        "options": {
+          "commands": [
+            "nx run stack:destroy-ecr",
+            "nx run stack:destroy-cluster",
+            "nx run stack:destroy-dynamo",
+            "nx run stack:destroy-website"
+          ],
+          "parallel": false
+        }
+      },
+      "deploy-update": {
+        "executor": "nx:run-commands",
+        "options": {
+          "commands": [
+            "nx run stack:deploy-cluster",
+            "nx run stack:deploy-dynamo"
+          ],
+          "parallel": false
         }
       },
       "start": {
@@ -26,7 +154,18 @@
         "options": {
           "commands": [
             "nx run stack:compile",
-            "nx run stack:deploy"
+            "nx run stack:deploy-update"
+          ],
+          "parallel": false
+        }
+      },
+      "delete": {
+        "executor": "nx:run-commands",
+        "options": {
+          "commands": [
+            "nx run stack:destroy-cluster",
+            "nx run stack:destroy-dynamo",
+            "nx run stack:destroy-website"
           ],
           "parallel": false
         }

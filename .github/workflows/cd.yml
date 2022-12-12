@@ -86,9 +86,10 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: starkbot-repository
+          ECR_BASE_REPOSITORY: starkbot-base-repository
           IMAGE_TAG: ${{ github.run_id }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY -f apps/discord-bot/Dockerfile .
+          docker build --build-arg ECR_REPO=$ECR_REGISTRY/$ECR_BASE_REPOSITORY -t $ECR_REGISTRY/$ECR_REPOSITORY -f apps/discord-bot/Dockerfile .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG

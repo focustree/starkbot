@@ -30,7 +30,7 @@ export class MyChart extends Chart {
 
     starkbotDeployment.addContainer(
       {
-        image: returnString(process.env.AWS_LINK + "/" + process.env.AWS_ECR),
+        image: returnString(process.env.AWS_ACCOUNT_NUMBER + ".dkr.ecr." + process.env.AWS_REGION + ".amazonaws.com/" + process.env.AWS_PRINCIPAL_ECR),
         name: 'starkbot',
         port: 22,
         volumeMounts: [
