@@ -2,6 +2,11 @@ import { ScanCommand, QueryCommand } from "@aws-sdk/client-dynamodb";
 import { PutCommand, GetCommand, UpdateCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
 import { ddbDocClient } from "./doc-client";
 import { config } from "../configuration/config";
+import { Mutex } from 'async-mutex';
+
+const dbsafe = new Mutex();
+const RANGE_ID = 1000000000000000000;
+
 
 const tableList = {
   "guild": config.dynamodbTableGuild,
@@ -22,9 +27,23 @@ export const putItem = async (selector, item) => {
       "#id": conditionList[selector],
     },
   };
-  return await handleError(async () => {
-    return (await ddbDocClient.send(new PutCommand(params)));
+
+  let pid : number = Math.floor(Math.random() * RANGE_ID);
+  //console.log(pid.toString());
+  let resp;
+
+  await dbsafe.acquire().then(async function(release) {
+    //console.log("pid " + pid.toString() + " acquired");
+
+    resp = await handleError(async () => {
+      return await ddbDocClient.send(new PutCommand(params));
+    });
+
+    //console.log("pid " + pid.toString() + " released");
+    release();
   });
+
+  return resp
 };
 
 export const getItem = async (selector, key) => {
@@ -53,9 +72,25 @@ export const updateItem = async (selector, key, payload) => {
     Key: key,
     ...payload,
   };
-  return await handleError(async () => {
-    return await ddbDocClient.send(new UpdateCommand(params));
+
+  //console.log(params);
+
+  let resp;
+  let pid : number = Math.floor(Math.random() * RANGE_ID);
+  //console.log(pid);
+
+  await dbsafe.acquire().then(async function(release) {
+    //console.log("pid " + pid.toString() + " acquired");
+
+    resp = await handleError(async () => {
+      return await ddbDocClient.send(new UpdateCommand(params));
+    });
+
+    //console.log("pid " + pid.toString() + " released");
+    release();
   });
+    
+  return resp;
 };
 
 export const deleteItem = async (selector, key) => {
@@ -63,10 +98,21 @@ export const deleteItem = async (selector, key) => {
     TableName: tableList[selector],
     Key: key,
   };
-  return await handleError(async () => {
-    await ddbDocClient.send(new DeleteCommand(params));
-    return null;
+
+  let pid : number = Math.floor(Math.random() * RANGE_ID);
+
+  await dbsafe.acquire().then(async function(release) {
+    //console.log("pid " + pid.toString() + " acquired");
+
+    await handleError(async () => {
+      return await ddbDocClient.send(new DeleteCommand(params));
+    });
+    
+    //console.log("pid " + pid.toString() + " released");
+    release();
   });
+
+  return null
 };
 
 export const queryTable = async (selector, payload) => {

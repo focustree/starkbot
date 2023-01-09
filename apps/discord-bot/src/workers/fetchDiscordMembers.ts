@@ -16,6 +16,7 @@ export async function fetchDiscordMembers() {
 
 async function fetchDiscordMembersForGuild(g: OAuth2Guild) {
   const guild = await g.fetch();
+  logger.info("carrying of guild " + guild.name);
   const responseGuild = await putItem("guild", {
     "guild-id": guild.id,
     "Name": guild.name,
@@ -36,29 +37,30 @@ async function fetchDiscordMembersForGuild(g: OAuth2Guild) {
   logger.info(`Fetching members for guild: ${guild.name}`);
   const guildMembers = await guild.members.fetch();
 
-  await async.each(guildMembers.map((item) => item), fetchMember, (err) => printError(err) );
+  await async.each(guildMembers.map((item) => item), fetchMember, (err) => printError(err));
 
 }
 
 async function fetchMember(member: GuildMember) {
+  //logger.info("carrying of user " + member.user.username);
   for (const [_, role] of member.roles.cache) {
-    if(member.guild.name == "focustree.app") {console.log("role")};
+    //if(member.guild.name == "focustree.app") {console.log("role")};
     const responseRole = await addSubItem("guild", { "guild-id": member.guild.id }, "Roles", "RoleSet", role.id, {
       "id": role.id,
       "name": role.name,
     });
-    if(member.guild.name == "focustree.app") {console.log("resp ok")};
+    //if(member.guild.name == "focustree.app") {console.log("resp ok")};
     if(responseRole.response) {
       logger.info(`${member.guild.name}: Added new role: ${role.name}`);
     }
   }
-  if(member.guild.name == "focustree.app") {console.log("roles ok")};
+  //if(member.guild.name == "focustree.app") {console.log("roles ok")};
   const responseMember = await addSubItem("guild", { "guild-id": member.guild.id }, "Members", "MemberSet", member.id, {
     "id": member.id,
     "username": member.user.username,
     "roleIds": member.roles.cache.map((r) => r.id),
   });
-  if(member.guild.name == "focustree.app") {console.log("member demand ok \n")};
+  //if(member.guild.name == "focustree.app") {console.log("member demand ok \n")};
   if(responseMember.response) {
     logger.info(`${member.guild.name}: Added new member: ${member.user.username}`);
   }

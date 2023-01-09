@@ -103,7 +103,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "docker build -f base.dockerfile -t $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_BASE_ECR . ",
+          "docker build --no-cache -f base.dockerfile -t $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_BASE_ECR . ",
           "docker push $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_BASE_ECR",
           "docker tag $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_BASE_ECR $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_BASE_ECR:$(git rev-parse --short HEAD)",
           "docker push $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_BASE_ECR:$(git rev-parse --short HEAD)"

@@ -8,6 +8,7 @@ if(process.env.ENV == "dev") {
   dynamodbConfig = {
     dynamodbTableGuild: process.env.DYNAMODB_TABLE_GUILD_DEV,
     dynamodbTableStarknetId: process.env.DYNAMODB_TABLE_STARKNET_ID_DEV,
+    awsDBprofile: process.env.AWS_DB_DEV_PROFILE,
   };
   discordConfig = {
     discordToken: process.env.DISCORD_BOT_TOKEN_DEV,
@@ -18,6 +19,7 @@ if(process.env.ENV == "dev") {
   dynamodbConfig = {
     dynamodbTableGuild: process.env.DYNAMODB_TABLE_GUILD_PROD,
     dynamodbTableStarknetId: process.env.DYNAMODB_TABLE_STARKNET_ID_PROD,
+    awsDBprofile: process.env.AWS_DB_PROD_PROFILE,
   };
   discordConfig = {
     discordToken: process.env.DISCORD_BOT_TOKEN_PROD,
@@ -35,7 +37,6 @@ export const config = {
   verifierDecimalContractAddress: process.env.VERIFIER_DECIMAL_CONTRACT_ADDRESS,
   // AWS
   awsRegion: process.env.AWS_REGION,
-  awsDBprofile: process.env.AWS_DB_PROFILE,
   // DynamoDB
   ...dynamodbConfig,
   // Discord

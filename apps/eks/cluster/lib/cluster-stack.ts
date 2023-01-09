@@ -175,11 +175,13 @@ export class ClusterStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    const instance = "t3.large";
+
     const vpc = new ec2.Vpc(this, id="eks-vpc", { vpcName: "Starkbot-cluster-vpc" });
     
     const cluster = new eks.Cluster(this, id='starkbot-cluster', {
       clusterName: "starkbot-cluster",
-      defaultCapacityInstance: new ec2.InstanceType("t3.medium"),
+      defaultCapacityInstance: new ec2.InstanceType(instance),
       vpc: vpc,
       defaultCapacity: 0,
       version: eks.KubernetesVersion.V1_21,
@@ -198,7 +200,7 @@ export class ClusterStack extends Stack {
     cluster.awsAuth.addUserMapping(adminUser, { groups: [ 'system:masters' ]});
 
     const nodegroup = cluster.addNodegroupCapacity("nodegroup", {
-      instanceTypes: [new ec2.InstanceType("t3.medium")],
+      instanceTypes: [new ec2.InstanceType(instance)],
       minSize: 1,
       maxSize: 10,
     });

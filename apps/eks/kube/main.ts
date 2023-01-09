@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
-import { App, Chart, ChartProps, Duration } from 'cdk8s';
-import { Deployment, Volume, Secret, EnvValue, ISecret, Probe } from 'cdk8s-plus-25';
+import { App, Chart, ChartProps, Duration, Size } from 'cdk8s';
+import { Deployment, Volume, Secret, EnvValue, ISecret, Probe, Cpu } from 'cdk8s-plus-25';
 require("dotenv").config();
 
 
@@ -16,7 +16,7 @@ export class MyChart extends Chart {
       ['STARKNET_ID_INDEXER_URL']: returnString(process.env.STARKNET_ID_INDEXER_URL),
       ['VERIFIER_DECIMAL_CONTRACT_ADDRESS']: returnString(process.env.VERIFIER_DECIMAL_CONTRACT_ADDRESS),
       ['DISCORD_TYPE']: returnString(process.env.DISCORD_TYPE),
-      ['AWS_DB_PROFILE']: returnString(process.env.AWS_DB_PROFILE),
+      ['AWS_DB_PROD_PROFILE']: returnString(process.env.AWS_DB_PROD_PROFILE),
       ['AWS_REGION']: returnString(process.env.AWS_REGION),
       ['DYNAMODB_TABLE_GUILD_PROD']: returnString(process.env.DYNAMODB_TABLE_GUILD_PROD),
       ['DYNAMODB_TABLE_STARKNET_ID_PROD']: returnString(process.env.DYNAMODB_TABLE_STARKNET_ID_PROD),
@@ -47,12 +47,22 @@ export class MyChart extends Chart {
           ['STARKNET_ID_INDEXER_URL']: EnvValue.fromSecretValue({key: 'STARKNET_ID_INDEXER_URL', secret: starkbotEnvSecret}),
           ['VERIFIER_DECIMAL_CONTRACT_ADDRESS']: EnvValue.fromSecretValue({key: 'VERIFIER_DECIMAL_CONTRACT_ADDRESS', secret: starkbotEnvSecret}),
           ['DISCORD_TYPE']: EnvValue.fromSecretValue({key: 'DISCORD_TYPE', secret: starkbotEnvSecret}),
-          ['AWS_DB_PROFILE']: EnvValue.fromSecretValue({key: 'AWS_DB_PROFILE', secret: starkbotEnvSecret}),
+          ['AWS_DB_PROD_PROFILE']: EnvValue.fromSecretValue({key: 'AWS_DB_PROD_PROFILE', secret: starkbotEnvSecret}),
           ['AWS_REGION']: EnvValue.fromSecretValue({key: 'AWS_REGION', secret: starkbotEnvSecret}),
           ['DYNAMODB_TABLE_GUILD_PROD']: EnvValue.fromSecretValue({key: 'DYNAMODB_TABLE_GUILD_PROD', secret: starkbotEnvSecret}),
           ['DYNAMODB_TABLE_STARKNET_ID_PROD']: EnvValue.fromSecretValue({key: 'DYNAMODB_TABLE_STARKNET_ID_PROD', secret: starkbotEnvSecret}),
         },
         startup: startupProbe,
+        resources: {
+          cpu: {
+            request: Cpu.millis(1500),
+            limit: Cpu.millis(2000)
+          },
+          memory: {
+            request: Size.mebibytes(2048),
+            limit: Size.mebibytes(4096)
+          }
+        }
       }
     )
 
