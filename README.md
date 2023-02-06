@@ -18,7 +18,7 @@ If you want to try it out on your server, follow those steps:
 2. [Mint a BRIQ NFT](https://briq.construction) with the same wallet
 3. [Invite starkbot](https://discord.com/api/oauth2/authorize?client_id=993439991822815292&permissions=268435456&scope=bot%20applications.commands) on your Discord server
 4. Assign it a role and put this role at the top of your role list (so it can manage the below roles).  
-Give it a role that has the enough permissions!
+Give it a role that has enough permissions!
 5. Create your own rules by typing `/starkbot-add-rule` in #general
 
 ```
@@ -27,7 +27,7 @@ Give it a role that has the enough permissions!
 
 ### Deploy it yourself
 
-#### Fill your environment variables
+#### Fill in your environment variables
 
 You need to create a `.env` file with your informations and credentials:
 
@@ -59,7 +59,7 @@ API_URL="http://localhost:3000/api"
 - Fill the 2 missing DISCORD variables with your bot application credentials (create one on [discord dev portal](https://discord.com/developers) )
 - Fill `AWS_PROFILE` with the aws profile you want to use
 - Fill `AWS_NAME` with the name of the iam user you are using
-- Fill `AWS_DB_PROFILE` with the aws profile you want to use to run the app and reach the db. We recommand using a IAM user with minimum privileges for security reasons
+- Fill `AWS_DB_PROFILE` with the aws profile you want to use to run the app and reach the db. We recommend using a IAM user with minimum privileges for security reasons
 - Fill `AWS_REGION` with the aws region you want to use 
 - Fill the 2 missing token key with generated tokens (only for running website, see website section below)
 
@@ -67,7 +67,7 @@ API_URL="http://localhost:3000/api"
 
 - Deploy the infra with `pnpm infra:deploy`
 - Grab your ECR repositories name and fill it in package.json and in environment variables
-- Fill the 2 missing DynamoDB variable with your tables name and config
+- Fill the 2 missing DynamoDB variables with your tables name and config
 - Run `pnpm dev` to launch the bot locally
 
 #### Deploy the bot on your EKS cluster
@@ -123,9 +123,9 @@ You can then reach the website at `http://localhost:3000`
 2. Install [pnpm](https://pnpm.io/installation#using-npm)
 3. Install dependencies with `pnpm install`
 4. Use node 18 with `nvm install 18 && nvm use default 18`
-5. Setup your environment variables as mentionned above
+5. Setup your environment variables as mentioned above
 
-If you are an Onlydust contributor, don't deploy the infra on your personnal account. Simply ask the project lead to generate you some access tokens.
+If you are an Onlydust contributor, don't deploy the infra on your personal account. Simply ask the project lead to generate you some access tokens.
 
 
 ### Getting Started
