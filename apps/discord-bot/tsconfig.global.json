@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./master/tsconfig.json",
+    },
+    {
+      "path": "./dynamodb/tsconfig.json",
+    },
+    {
+      "path": "./member_fetcher/tsconfig.json",
+    },
+    {
+      "path": "./rule_applyer/tsconfig.json",
+    },
+    {
+      "path": "./starknetID_fetcher/tsconfig.json",
+    }
+  ]
+}
