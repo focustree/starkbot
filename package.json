@@ -5,7 +5,7 @@
   "private": true,
   "engines": {
     "node": ">=18",
-    "pnpm": "7"
+    "pnpm": "8"
   },
   "ecr": "071785475400.dkr.ecr.eu-west-3.amazonaws.com/starkbot-base-repository",
   "scripts": {
@@ -36,7 +36,7 @@
     "cdk8s": "^2.5.45",
     "cdk8s-plus-25": "^2.0.27",
     "constructs": "^10.1.160",
-    "discord.js": "^14.3.0",
+    "discord.js": "^14.10.2",
     "dotenv": "^16.0.2",
     "firebase": "^9.8.4",
     "fs": "^0.0.1-security",
