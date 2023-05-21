@@ -1,10 +1,11 @@
 import { GuildMember } from 'discord.js';
-import { logger } from './configuration/logger';
-import { addSubItem } from '../../dynamoQueries';
+import { logger } from '../../configuration/logger';
+import { addSubItem } from '../../models/dynamoQueries';
 
 export async function fetchMember(member: GuildMember) {
   //logger.info("carrying of user " + member.user.username);
   for (const [_, role] of member.roles.cache) {
+    
     const responseRole = await addSubItem(
       'guild',
       { 'guild-id': member.guild.id },
@@ -20,6 +21,7 @@ export async function fetchMember(member: GuildMember) {
       logger.info(`${member.guild.name}: Added new role: ${role.name}`);
     }
   }
+
   const responseMember = await addSubItem(
     'guild',
     { 'guild-id': member.guild.id },

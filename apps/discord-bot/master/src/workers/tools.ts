@@ -1,4 +1,4 @@
-import { logger } from '../configuration/logger';
+import { logger } from '../../../configuration/logger';
 
 
 // mutex to lock db access when it is modified

@@ -1,6 +1,6 @@
 import { Client } from 'discord.js';
-import { config, safePrintConfig } from './configuration/config';
-import { initDiscordClient } from './bot';
+import { config, safePrintConfig } from '../../configuration/config';
+import { initDiscordClient } from './bot/init';
 import { doLoopOnWorkers } from './workers/workerManager';
 
 export interface AppContext {

@@ -1,5 +1,5 @@
 import { Client } from 'discord.js';
-import { logger } from '../../configuration/logger';
+import { logger } from '../../../../configuration/logger';
 
 export function onReady(client: Client): void {
   client.once('ready', () => {

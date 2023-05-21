@@ -2,10 +2,14 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
-    "discord-bot": "apps/discord-bot",
+    "bot-master": "apps/discord-bot/master",
     "starknet": "apps/starknet",
     "stack": "apps/eks/cluster",
     "kube": "apps/eks/kube",
-    "website": "apps/webapp"
+    "website": "apps/webapp",
+    "dynamodb": "apps/discord-bot/dynamodb",
+    "member-fetcher": "apps/discord-bot/member-fetcher",
+    "rule-applyer": "apps/discord-bot/rule-applyer",
+    "starknetID-fetcher": "apps/discord-bot/starknetID-fetcher"
   }
 }

@@ -2,12 +2,23 @@ import {
   DiscordGuild,
   DiscordMember,
   dynamoQueryResponse,
-} from '../../../types';
+} from '../../../models/types';
+import { logger } from '../../../configuration/logger';
+import { getItem, getTable, putItem } from '../../../models/dynamoQueries';
 import axios from 'axios';
-import { defaultProvider, stark, uint256 } from 'starknet';
-import { config } from '../configuration/config';
-import { logger } from '../configuration/logger';
-import { getItem, getTable, putItem } from '../../../dynamoQueries';
+
+async function fetchStarknetIdsForMember(member) {
+  return (await axios({
+    method: 'get',
+    url: 'https://fetchSID/',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: JSON.stringify({
+      member
+    }),
+  }));
+}
 
 export async function fetchStarknetIds() {
   const guilds = await getTable('guild', {
@@ -52,35 +63,4 @@ async function fetchStarknetIdsForGuild(guild: DiscordGuild) {
   }
 }
 
-async function fetchStarknetIdsForMember(discordMemberId: string) {
-  try {
-    const { data } = await axios.get(config.starknetIdIndexerUrl, {
-      params: {
-        field: config.discordType,
-        verifier: config.verifierDecimalContractAddress,
-        data: discordMemberId,
-      },
-    });
-    if (!data.id) {
-      return null;
-    }
-    const {
-      result: [accountAddress],
-    } = await defaultProvider.callContract({
-      contractAddress: config.starknetIdContractAddress,
-      entrypoint: 'ownerOf',
-      calldata: stark.compileCalldata({
-        ...uint256.bnToUint256(data.id),
-      }),
-    });
-    return {
-      accountAddress,
-      discordMemberId,
-      'starknet-id': data.id,
-    };
-  } catch (error) {
-    // TODO THERE IS AN ERROR HERE ATM
-    //logger.error(error);
-    return null;
-  }
-}
+

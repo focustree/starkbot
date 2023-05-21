@@ -1,14 +1,13 @@
 import {
   CommandInteraction,
   Client,
-  SelectMenuInteraction,
   Role,
   ButtonInteraction,
   BaseInteraction,
 } from 'discord.js';
 const { ActionRowBuilder, SelectMenuBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
-import { deleteRuleForGuild, getRuleForGuild, getRulesForGuild } from '../../models/rule';
+import { deleteRuleForGuild, getRuleForGuild, getRulesForGuild } from '../../../../models/rule';
 import { formatRule, formatShortTokenAddress, numberOfUserWithRole } from './utils';
 import { setCPDB } from '../../workers/tools';
 
@@ -44,7 +43,7 @@ export async function deleteRuleCommand(_client: Client, interaction: CommandInt
   return;
 }
 
-export async function askKeepOrRemoveRole(interaction: SelectMenuInteraction) {
+export async function askKeepOrRemoveRole(interaction) {
   const row = new ActionRowBuilder()
     .addComponents(
       new ButtonBuilder()

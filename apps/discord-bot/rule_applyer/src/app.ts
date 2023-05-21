@@ -1,5 +1,5 @@
 import express from 'express';
-const dynamoRouter = require('./routes/router');
+const ruleRouter = require('./routes/ruleRouter');
 
 const app = express();
 
@@ -18,6 +18,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('api/dynamodb', dynamoRouter);
+app.use('/api/dynamodb', ruleRouter);
 
 module.exports = app;

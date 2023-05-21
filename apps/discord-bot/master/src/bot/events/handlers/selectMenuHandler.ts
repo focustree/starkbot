@@ -1,11 +1,10 @@
-import { logger } from "apps/discord-bot/master/src/configuration/logger";
-import { SelectMenuInteraction } from "discord.js";
+import { logger } from "../../../../../configuration/logger";
 import { addRuleRoleId, handleAddRuleSelectRole } from "../../commands/addRule";
 import { askKeepOrRemoveRole, deleteRuleId } from "../../commands/deleteRule";
 import { listRuleForRoleId, listRulesForRole } from "../../commands/listRulesForRole";
 
 
-export async function handleSelectMenu(interaction: SelectMenuInteraction) {
+export async function handleSelectMenu(interaction) {
     switch (interaction.customId) {
         case deleteRuleId:
             await askKeepOrRemoveRole(interaction);

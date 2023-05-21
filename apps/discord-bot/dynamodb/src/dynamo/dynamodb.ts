@@ -6,7 +6,7 @@ import {
   DeleteCommand,
 } from '@aws-sdk/lib-dynamodb';
 import { ddbDocClient } from './doc-client';
-import { config } from '../configuration/config';
+import { config } from '../../../configuration/config';
 import { Mutex } from 'async-mutex';
 
 const dbsafe = new Mutex();

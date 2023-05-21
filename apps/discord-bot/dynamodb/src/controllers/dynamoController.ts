@@ -8,8 +8,13 @@ import {
   queryTable,
 } from '../dynamo/dynamodb';
 
+async function print_test(message) {
+  console.log(message);
+}
+
 export async function putItemCtr(req, res, next) {
-  putItem(req.selector, req.item)
+  //putItem(req.selector, req.item)
+  print_test("PutItem")
     .then(() => {
       res.status(201).json({
         message: 'Item saved successfully!',
@@ -23,7 +28,8 @@ export async function putItemCtr(req, res, next) {
 }
 
 export async function getItemCtr(req, res, next) {
-  getItem(req.selector, req.key)
+  //getItem(req.selector, req.key)
+  print_test("GetItem")
     .then((item) => {
       res.status(200).json(item);
     })
@@ -35,7 +41,8 @@ export async function getItemCtr(req, res, next) {
 }
 
 export async function updateItemCtr(req, res, next) {
-  updateItem(req.selector, req.key, req.payload)
+  //updateItem(req.selector, req.key, req.payload)
+  print_test("UpdateItem")
     .then(() => {
       res.status(201).json({
         message: 'Item updated successfully!',
@@ -49,7 +56,8 @@ export async function updateItemCtr(req, res, next) {
 }
 
 export async function deleteItemCtr(req, res, next) {
-  deleteItem(req.selector, req.key)
+  //deleteItem(req.selector, req.key)
+  print_test("DeleteItem")
     .then(() => {
       res.status(200).json({
         message: 'Item deleted successfully!',
@@ -63,14 +71,15 @@ export async function deleteItemCtr(req, res, next) {
 }
 
 export async function addSubItemCtr(req, res, next) {
-  addSubItem(
+  /*addSubItem(
     req.selector,
     req.key,
     req.subItem,
     req.uniqueTootlSubItem,
     req.uniqueToolValue,
     req.data
-  )
+  )*/
+  print_test("AddSubItem")
     .then(() => {
       res.status(201).json({
         message: 'Item saved successfully!',
@@ -84,7 +93,8 @@ export async function addSubItemCtr(req, res, next) {
 }
 
 export async function getSubItemCtr(req, res, next) {
-  getSubItem(req.selector, req.key, req.subItem, req.itemId)
+  //getSubItem(req.selector, req.key, req.subItem, req.itemId)
+  print_test("GetSubItem")
     .then((item) => {
       res.status(200).json(item);
     })
@@ -96,13 +106,14 @@ export async function getSubItemCtr(req, res, next) {
 }
 
 export async function deleteSubItemCtr(req, res, next) {
-  deleteSubItem(
+  /*deleteSubItem(
     req.selector,
     req.key,
     req.subItem,
     req.uniqueTootlSubItem,
     req.uniqueToolValue
-  )
+  )*/
+  print_test("DeleteSubItem")
     .then(() => {
       res.status(200).json({
         message: 'Item deleted successfully!',
@@ -116,7 +127,8 @@ export async function deleteSubItemCtr(req, res, next) {
 }
 
 export async function getTableCtr(req, res, next) {
-  getTable(req.selector, req.payload)
+  //getTable(req.selector, req.payload)
+  print_test("GetTable")
     .then((items) => {
       res.status(200).json(items);
     })
@@ -128,7 +140,8 @@ export async function getTableCtr(req, res, next) {
 }
 
 export async function queryTableCtr(req, res, next) {
-  queryTable(req.selector, req.payload)
+  //queryTable(req.selector, req.payload)
+  print_test("QueryTable")
     .then((items) => {
       res.status(200).json(items);
     })

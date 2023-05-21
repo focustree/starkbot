@@ -1,7 +1,6 @@
 import { CommandInteraction, Client, SelectMenuInteraction } from 'discord.js';
-import { DiscordRule } from '../../../../dynamodb/db-types';
-import { getRulesForGuild } from '../../models/rule';
-import { formatRule, numberOfUserWithRole } from './utils';
+import { DiscordRule } from '../../../../models/types';
+import { getRulesForGuild } from '../../../../models/rule';
 import { listRulesCommandFor } from './listRules';
 
 

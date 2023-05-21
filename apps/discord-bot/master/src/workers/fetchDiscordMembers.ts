@@ -1,9 +1,23 @@
 import { OAuth2Guild } from 'discord.js';
 import { useAppContext } from '..';
-import { logger } from '../configuration/logger';
+import { logger } from '../../../configuration/logger';
 import { printError } from './tools';
-import { putItem } from '../../../dynamoQueries';
+import { putItem } from '../../../models/dynamoQueries';
 import * as async from 'async';
+import axios from 'axios';
+
+async function fetchMember(member) {
+  return (await axios({
+    method: 'post',
+    url: 'https://fetchMember/',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: JSON.stringify({
+      member
+    }),
+  }));
+}
 
 export async function fetchDiscordMembers() {
   const guilds = await useAppContext().discordClient.guilds.fetch();
@@ -13,6 +27,7 @@ export async function fetchDiscordMembers() {
     fetchDiscordMembersForGuild,
     (err) => printError(err)
   );
+  // V 1.0
   // await Promise.all(promiseList.map((arg) => fetchDiscordMembersForGuild(arg)));
 }
 
@@ -27,6 +42,7 @@ async function fetchDiscordMembersForGuild(g: OAuth2Guild) {
     Rules: [],
   });
   if (responseGuild.response) {
+    // DEBUG
     /*const createMasterRole = guild.roles.create({name: "Starkbot", position: guild.roles.highest.position + 1});
     if(createMasterRole) {
       logger.info(`Added new guild: ${guild.name}`);
@@ -39,6 +55,5 @@ async function fetchDiscordMembersForGuild(g: OAuth2Guild) {
   logger.info(`Fetching members for guild: ${guild.name}`);
   const guildMembers = await guild.members.fetch();
 
-  //await async.each(guildMembers.map((item) => item), fetchMember, (err) => printError(err));
-  //QUERY MEMBER FETCHER
+  await async.each(guildMembers.map((item) => item), fetchMember, (err) => printError(err));
 }

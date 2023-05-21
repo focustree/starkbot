@@ -2,13 +2,12 @@ import {
   CommandInteraction,
   Client,
   ModalSubmitInteraction,
-  SelectMenuInteraction,
-  Role,
+  Role
 } from 'discord.js';
 
 import { number } from 'starknet';
 import { IllegalArgumentException } from '../../errors/illegalArgumentError';
-import { createRuleForGuild } from '../../models/rule';
+import { createRuleForGuild } from '../../../../models/rule';
 import { formatRule } from './utils';
 
 const DEFAULT_MIN_VALUE = 1;
@@ -68,7 +67,7 @@ export async function addRuleCommand(client: Client, interaction: CommandInterac
   return;
 }
 
-export async function handleAddRuleSelectRole(interaction: SelectMenuInteraction) {
+export async function handleAddRuleSelectRole(interaction) {
   const [selectedRoleId] = interaction.values;
   const selectedRole = interaction.guild.roles.cache.get(selectedRoleId);
 

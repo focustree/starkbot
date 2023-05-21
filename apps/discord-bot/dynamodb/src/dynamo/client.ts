@@ -1,5 +1,5 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { config } from '../configuration/config';
+import { config } from '../../../configuration/config';
 import { fromIni } from "@aws-sdk/credential-providers";
 
 const credentials = fromIni({
