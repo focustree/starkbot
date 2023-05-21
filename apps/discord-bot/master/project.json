@@ -1,0 +1,116 @@
+{
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/discord-bot/master/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/discord-bot/master",
+        "main": "apps/discord-bot/master/src/server.ts",
+        "tsConfig": "apps/discord-bot/master/tsconfig.json",
+        "assets": ["apps/discord-bot/master/src/assets"]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/discord-bot/master/src/environments/environment.ts",
+              "with": "apps/discord-bot/master/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "start": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "bot-master:build"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/discord-bot/master/**/*.ts"]
+      }
+    },
+    "docker-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "docker build --build-arg ECR_REPO=$AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_BASE_ECR --no-cache -f ./apps/discord-bot/Dockerfile -t $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_PRINCIPAL_ECR ."
+        ]
+      }
+    },
+    "docker-push-raw": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "docker push $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_PRINCIPAL_ECR"
+        ]
+      }
+    },
+    "docker-tag": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "docker tag $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_PRINCIPAL_ECR $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_PRINCIPAL_ECR:$(git rev-parse --short HEAD)"
+        ]
+      }
+    },
+    "docker-push": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "docker push $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_PRINCIPAL_ECR:$(git rev-parse --short HEAD)"
+        ]
+      }
+    },
+    "docker-run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "docker run -d --env-file .env $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_PRINCIPAL_ECR"
+        ]
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx run discord-bot:docker-build",
+          "nx run discord-bot:docker-push-raw",
+          "nx run discord-bot:docker-tag",
+          "nx run discord-bot:docker-push"
+        ],
+        "parallel": false
+      }
+    },
+    "login-ecr": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "aws ecr get-login-password --region $AWS_REGION --profile $AWS_PROFILE | docker login --username AWS --password-stdin $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com"
+        ]
+      }
+    },
+    "docker-deploy-base": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "docker build --no-cache -f base.dockerfile -t $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_BASE_ECR . ",
+          "docker push $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_BASE_ECR",
+          "docker tag $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_BASE_ECR $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_BASE_ECR:$(git rev-parse --short HEAD)",
+          "docker push $AWS_ACCOUNT_NUMBER.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_BASE_ECR:$(git rev-parse --short HEAD)"
+        ],
+        "parallel": false
+      }
+    }
+  },
+  "tags": []
+}
